@@ -1,0 +1,68 @@
+##########################################
+# BACKEND (.NET / ASP.NET Core)
+##########################################
+
+backend/**/bin/
+backend/**/obj/
+backend/**/*.exe
+backend/**/*.dll
+backend/**/*.pdb
+backend/**/*.user
+backend/**/*.suo
+backend/**/*.csproj.user
+
+# EF Core Migrations
+backend/**/Migrations/*Snapshot.cs
+
+# App settings & secrets
+backend/**/.env
+backend/**/appsettings.*.json
+!backend/**/appsettings.json
+
+# Logs
+backend/**/*.log
+
+
+##########################################
+# MOBILE (Angular / NativeScript)
+##########################################
+
+mobile/node_modules/
+mobile/dist/
+mobile/platforms/
+mobile/build/
+
+# Logs
+mobile/npm-debug.log*
+mobile/yarn-debug.log*
+mobile/yarn-error.log*
+
+# IDE & OS
+mobile/.vscode/
+mobile/.idea/
+.DS_Store
+Thumbs.db
+
+
+##########################################
+# GENERAL
+##########################################
+
+# VS/VSCode global
+.vscode/
+.idea/
+**/.vs/
+
+# System & temp files
+*.swp
+*.tmp
+*.bak
+*.db
+*.sqlite
+
+# Test & coverage
+coverage/
+test-results/
+*.trx
+*.coverage
+*.coveragexml
