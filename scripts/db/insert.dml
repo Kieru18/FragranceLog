@@ -12,3 +12,10 @@ VALUES
     (3, 'Moderate'),
     (4, 'Long Lasting'),
     (5, 'Eternal');
+
+
+INSERT INTO Genders (GenderId, Name) 
+VALUES 
+	(1, 'Male'),
+	(2, 'Female'),
+	(3, 'Unisex');
