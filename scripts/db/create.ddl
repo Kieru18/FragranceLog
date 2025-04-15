@@ -107,7 +107,6 @@ CREATE TABLE ReviewPhotos (
 );
 
 -- Primary Keys
-
 ALTER TABLE Companies ADD CONSTRAINT PK_Companies PRIMARY KEY (CompanyId);
 ALTER TABLE Countries ADD CONSTRAINT PK_Countries PRIMARY KEY (Code);
 ALTER TABLE Groups ADD CONSTRAINT PK_Groups PRIMARY KEY (GroupId);
@@ -125,8 +124,20 @@ ALTER TABLE PerfumePhotos ADD CONSTRAINT PK_PerfumePhotos PRIMARY KEY (PhotoId);
 ALTER TABLE NotePhotos ADD CONSTRAINT PK_NotePhotos PRIMARY KEY (PhotoId);
 ALTER TABLE ReviewPhotos ADD CONSTRAINT PK_ReviewPhotos PRIMARY KEY (PhotoId);
 
--- Foreign Keys
+-- Unique Constraints
+ALTER TABLE Companies ADD CONSTRAINT UQ_Companies_Name UNIQUE (Name);
+ALTER TABLE Countries ADD CONSTRAINT UQ_Countries_Name UNIQUE (Name);
+ALTER TABLE Groups ADD CONSTRAINT UQ_Groups_Name UNIQUE (Name);
+ALTER TABLE Genders ADD CONSTRAINT UQ_Genders_Name UNIQUE (Name);
+ALTER TABLE NoteTypes ADD CONSTRAINT UQ_NoteTypes_Name UNIQUE (Name);
+ALTER TABLE Sillage ADD CONSTRAINT UQ_Sillage_Name UNIQUE (Name);
+ALTER TABLE Longevity ADD CONSTRAINT UQ_Longevity_Name UNIQUE (Name);
+ALTER TABLE Brands ADD CONSTRAINT UQ_Brands_Name UNIQUE (Name);
+ALTER TABLE Users ADD CONSTRAINT UQ_Users_Username UNIQUE (Username);
+ALTER TABLE Users ADD CONSTRAINT UQ_Users_Email UNIQUE (Email);
+ALTER TABLE Notes ADD CONSTRAINT UQ_Notes_Name UNIQUE (Name);
 
+-- Foreign Keys
 ALTER TABLE Brands ADD CONSTRAINT FK_Brands_Company FOREIGN KEY (CompanyId) REFERENCES Companies(CompanyId);
 ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Brand FOREIGN KEY (BrandId) REFERENCES Brands(BrandId);
 ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Country FOREIGN KEY (CountryCode) REFERENCES Countries(Code);
@@ -135,10 +146,30 @@ ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Gender FOREIGN KEY (GenderId) RE
 ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Longevity FOREIGN KEY (LongevityId) REFERENCES Longevity(LongevityId);
 ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Sillage FOREIGN KEY (SillageId) REFERENCES Sillage(SillageId);
 ALTER TABLE Notes ADD CONSTRAINT FK_Notes_NoteType FOREIGN KEY (NoteTypeId) REFERENCES NoteTypes(NoteTypeId);
-ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
-ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_Note FOREIGN KEY (NoteId) REFERENCES Notes(NoteId);
+ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId) ON DELETE CASCADE;
+ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_Note FOREIGN KEY (NoteId) REFERENCES Notes(NoteId) ON DELETE CASCADE;
 ALTER TABLE Reviews ADD CONSTRAINT FK_Reviews_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
 ALTER TABLE Reviews ADD CONSTRAINT FK_Reviews_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
-ALTER TABLE PerfumePhotos ADD CONSTRAINT FK_PerfumePhotos_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
-ALTER TABLE NotePhotos ADD CONSTRAINT FK_NotePhotos_Note FOREIGN KEY (NoteId) REFERENCES Notes(NoteId);
-ALTER TABLE ReviewPhotos ADD CONSTRAINT FK_ReviewPhotos_Review FOREIGN KEY (ReviewId) REFERENCES Reviews(ReviewId);
+ALTER TABLE PerfumePhotos ADD CONSTRAINT FK_PerfumePhotos_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId) ON DELETE CASCADE;
+ALTER TABLE NotePhotos ADD CONSTRAINT FK_NotePhotos_Note FOREIGN KEY (NoteId) REFERENCES Notes(NoteId) ON DELETE CASCADE;
+ALTER TABLE ReviewPhotos ADD CONSTRAINT FK_ReviewPhotos_Review FOREIGN KEY (ReviewId) REFERENCES Reviews(ReviewId) ON DELETE SET NULL;
+
+-- Check Constraints
+ALTER TABLE Companies ADD CONSTRAINT CHK_Companies_Name CHECK (LEN(Name) > 0);
+ALTER TABLE Countries ADD CONSTRAINT CHK_Countries_Code CHECK (LEN(Code) = 3 AND Code = UPPER(Code));
+ALTER TABLE Groups ADD CONSTRAINT CHK_Groups_Name CHECK (LEN(Name) > 0);
+ALTER TABLE Genders ADD CONSTRAINT CHK_Genders_Name CHECK (Name IN ('Male', 'Female', 'Unisex'));
+ALTER TABLE NoteTypes ADD CONSTRAINT CHK_NoteTypes_Name CHECK (Name IN ('Top', 'Middle', 'Base'));
+ALTER TABLE Sillage ADD CONSTRAINT CHK_Sillage_Name CHECK (Name IN ('Intimate', 'Moderate', 'Strong', 'Enormous'));
+ALTER TABLE Longevity ADD CONSTRAINT CHK_Longevity_Name CHECK (Name IN ('Very Weak', 'Weak', 'Moderate', 'Long Lasting', 'Eternal'));
+ALTER TABLE Brands ADD CONSTRAINT CHK_Brands_Name CHECK (LEN(Name) > 0);
+ALTER TABLE Users ADD CONSTRAINT CHK_Users_Email CHECK (Email LIKE '%@%.%' AND LEN(Email) >= 5);
+ALTER TABLE Users ADD CONSTRAINT CHK_Users_Password CHECK (LEN(Password) >= 8);
+ALTER TABLE Perfumes ADD CONSTRAINT CHK_Perfumes_Name CHECK (LEN(Name) > 0);
+ALTER TABLE Perfumes ADD CONSTRAINT CHK_Perfumes_LaunchYear CHECK (LaunchYear IS NULL OR (LaunchYear >= 1800 AND LaunchYear <= YEAR(GETDATE())));
+ALTER TABLE Notes ADD CONSTRAINT CHK_Notes_Name CHECK (LEN(Name) > 0);
+ALTER TABLE Reviews ADD CONSTRAINT CHK_Reviews_Rating CHECK (Rating BETWEEN 1 AND 5);
+ALTER TABLE Reviews ADD CONSTRAINT CHK_Reviews_Comment CHECK (Comment IS NULL OR LEN(Comment) <= 2000);
+ALTER TABLE PerfumePhotos ADD CONSTRAINT CHK_PerfumePhotos_Path CHECK (LEN(Path) > 0 AND (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg'));
+ALTER TABLE NotePhotos ADD CONSTRAINT CHK_NotePhotos_Path CHECK (LEN(Path) > 0 AND (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg'));
+ALTER TABLE ReviewPhotos ADD CONSTRAINT CHK_ReviewPhotos_Path CHECK (LEN(Path) > 0 AND (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg'));
