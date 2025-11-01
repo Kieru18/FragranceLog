@@ -19,3 +19,15 @@ VALUES
 	(1, 'Male'),
 	(2, 'Female'),
 	(3, 'Unisex');
+
+INSERT INTO Seasons  (SeasonId, Name) 
+VALUES
+    (1,'Spring'),
+    (2,'Summer'),
+    (3,'Autumn'),
+    (4,'Winter');
+
+INSERT INTO Daytimes (DaytimeId, Name) 
+VALUES
+    (1,'Day'),
+    (2,'Night');
