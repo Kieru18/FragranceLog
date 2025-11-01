@@ -1,8 +1,21 @@
-<ActionBar>
-  <Label text="Home"></Label>
-</ActionBar>
+<ActionBar title="FragranceLog"></ActionBar>
 
-<GridLayout>
-  <!-- Add your page content here -->
-  <Label text="Hello" class="text-lg text-center"></Label>
-</GridLayout>
+<ScrollView>
+  <StackLayout class="p-4 space-y-4">
+    <Label text="Perfume of the Day" class="section-title"></Label>
+    <Label text="Bleu de Chanel" class="perfume-name"></Label>
+    <Label text="Masculine, fresh, and timeless." class="perfume-desc"></Label>
+
+    <Label text="Quick Actions" class="section-title"></Label>
+    <StackLayout orientation="horizontal" class="space-x-2">
+      <Button text="➕ Add Perfume" [nsRouterLink]="['/add']" class="quick-btn"></Button>
+      <Button text="📚 My Collection" [nsRouterLink]="['/collection']" class="quick-btn"></Button>
+    </StackLayout>
+
+    <Label text="Recent Reviews" class="section-title"></Label>
+    <StackLayout>
+      <Label text="⭐ 4.5 – Dior Sauvage" class="review-title"></Label>
+      <Label text="Amazing projection. Got compliments all day." textWrap="true"></Label>
+    </StackLayout>
+  </StackLayout>
+</ScrollView>
