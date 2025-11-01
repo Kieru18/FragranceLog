@@ -1,0 +1,33 @@
+INSERT INTO Sillage (SillageId, Name)
+VALUES
+    (1, 'Intimate'),
+    (2, 'Moderate'),
+    (3, 'Strong'),
+    (4, 'Enormous');
+
+INSERT INTO Longevity (LongevityId, Name)
+VALUES
+    (1, 'Very Weak'),
+    (2, 'Weak'),
+    (3, 'Moderate'),
+    (4, 'Long Lasting'),
+    (5, 'Eternal');
+
+
+INSERT INTO Genders (GenderId, Name) 
+VALUES 
+	(1, 'Male'),
+	(2, 'Female'),
+	(3, 'Unisex');
+
+INSERT INTO Seasons  (SeasonId, Name) 
+VALUES
+    (1,'Spring'),
+    (2,'Summer'),
+    (3,'Autumn'),
+    (4,'Winter');
+
+INSERT INTO Daytimes (DaytimeId, Name) 
+VALUES
+    (1,'Day'),
+    (2,'Night');
