@@ -1,21 +1,44 @@
-<ActionBar title="FragranceLog"></ActionBar>
+<GridLayout rows="*, auto" class="bg-gray-50 h-full">
 
-<ScrollView>
-  <StackLayout class="p-4 space-y-4">
-    <Label text="Perfume of the Day" class="section-title"></Label>
-    <Label text="Bleu de Chanel" class="perfume-name"></Label>
-    <Label text="Masculine, fresh, and timeless." class="perfume-desc"></Label>
+    <ScrollView row="0">
+        <StackLayout class="p-6">
 
-    <Label text="Quick Actions" class="section-title"></Label>
-    <StackLayout orientation="horizontal" class="space-x-2">
-      <Button text="➕ Add Perfume" [nsRouterLink]="['/add']" class="quick-btn"></Button>
-      <Button text="📚 My Collection" [nsRouterLink]="['/collection']" class="quick-btn"></Button>
-    </StackLayout>
+            <StackLayout class="mb-8 rounded-xl p-4 bg-white shadow-md">
+                <Label text="Perfume of the Day" class="text-gray-700 text-sm font-semibold mb-2"></Label>
+                <Image src="~/assets/images/bleu.jpg" stretch="aspectFit" class="h-40 w-full rounded-lg mb-3"></Image>
+                <Label text="Bleu de Chanel" class="text-xl font-semibold text-gray-900 mb-1"></Label>
+                <Label text="Masculine, fresh and timeless fragrance." class="text-gray-600 text-sm" textWrap="true"></Label>
+            </StackLayout>
 
-    <Label text="Recent Reviews" class="section-title"></Label>
-    <StackLayout>
-      <Label text="⭐ 4.5 – Dior Sauvage" class="review-title"></Label>
-      <Label text="Amazing projection. Got compliments all day." textWrap="true"></Label>
-    </StackLayout>
-  </StackLayout>
-</ScrollView>
+            <StackLayout class="mb-8">
+                <Label text="Quick Actions" class="text-gray-700 text-sm font-semibold mb-3"></Label>
+                <GridLayout columns="*, *" class="gap-4">
+                    <Button col="0" text="➕ Add Perfume" class="bg-indigo-500 text-white rounded-lg py-3 font-semibold"></Button>
+                    <Button col="1" text="📚 My Collection" class="bg-gray-200 text-gray-800 rounded-lg py-3 font-semibold"></Button>
+                </GridLayout>
+            </StackLayout>
+
+            <StackLayout class="mb-8">
+                <Label text="Recent Reviews" class="text-gray-700 text-sm font-semibold mb-3"></Label>
+
+                <StackLayout class="bg-white rounded-xl p-4 shadow-sm mb-3">
+                    <Label text="⭐ 4.5 — Dior Sauvage" class="text-base font-medium text-gray-900 mb-1"></Label>
+                    <Label text="Amazing projection, got compliments all day." class="text-gray-600 text-sm" textWrap="true"></Label>
+                </StackLayout>
+
+                <StackLayout class="bg-white rounded-xl p-4 shadow-sm mb-3">
+                    <Label text="⭐ 5.0 — Aventus by Creed" class="text-base font-medium text-gray-900 mb-1"></Label>
+                    <Label text="A true classic. Timeless masculine scent." class="text-gray-600 text-sm" textWrap="true"></Label>
+                </StackLayout>
+            </StackLayout>
+
+        </StackLayout>
+    </ScrollView>
+
+    <GridLayout row="1" columns="*, *, *" class="bg-white border-t border-gray-200 py-3 shadow-sm">
+        <Button col="0" text="🏠 Home" class="text-gray-900 text-sm font-semibold"></Button>
+        <Button col="1" text="🔍 Explore" class="text-gray-900 text-sm font-semibold"></Button>
+        <Button col="2" text="👤 Profile" class="text-gray-900 text-sm font-semibold"></Button>
+    </GridLayout>
+
+</GridLayout>
