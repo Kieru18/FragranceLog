@@ -4,9 +4,16 @@ module.exports = {
   darkMode: ['class', '.ns-dark'],
   theme: {
     extend: {
-      colors: {
-        accent: '#6366F1',
-      },
+        colors: {
+            'brand-gold': '#D3A54A',
+            'brand-gold-light': '#E3B65B',
+            'brand-gold-dark': '#B98E3C',
+            'bg-dark': '#0D0D0D',
+            'bg-dark-secondary': '#1A1A1A',
+            'text-primary': '#F5F5F5',
+            'text-secondary': '#B8B8B8',
+            'highlight': '#8A7FFF',
+        },
     },
   },
   plugins: [],
