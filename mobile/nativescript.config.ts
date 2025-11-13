@@ -1,7 +1,7 @@
 import { NativeScriptConfig } from '@nativescript/core';
 
 export default {
-  id: 'org.kieru.fragrancelog',
+  id: 'com.kieru.fragrancelog',
   appPath: 'src',
   appResourcesPath: 'App_Resources',
   android: {
