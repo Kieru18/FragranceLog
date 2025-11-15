@@ -1,9 +1,8 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { registerElement } from '@nativescript/angular';
 import { RouterLink } from '@angular/router';
-import { Image } from '@nativescript/core';
+import { Image, Page } from '@nativescript/core';
 import { NgForOf, NgIf } from '@angular/common';
-
 
 registerElement('Image', () => Image);
 
@@ -40,6 +39,10 @@ export class HomeComponent {
     reviews: 342,
     users: 4_200,
   };
+
+  constructor(private page: Page) {
+    this.page.actionBarHidden = true;
+  }
 
   toFixedRating(r: number) {
     return r.toFixed(1);
