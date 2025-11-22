@@ -22,4 +22,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <RootNamespace>Infrastructure</RootNamespace>
+    <ModelNamespace>Core.Entities</ModelNamespace>
+    <ContextNamespace>Infrastructure.Data</ContextNamespace>
+  </PropertyGroup>
+
 </Project>
