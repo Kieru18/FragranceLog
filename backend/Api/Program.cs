@@ -32,6 +32,7 @@ namespace Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddScoped<PasswordHasher>();
             builder.Services.AddScoped<JwtService>();
 
             builder.Services.AddDbContext<FragranceLogContext>(options =>
