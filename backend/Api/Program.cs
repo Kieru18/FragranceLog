@@ -1,5 +1,8 @@
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-//using Infrastructure.Data;
 
 namespace Api
 {
@@ -9,15 +12,27 @@ namespace Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            if (!builder.Environment.IsDevelopment())
+            {
+                string? keyVaultUrl = builder.Configuration["KeyVaultUrl"];
+
+                if (!string.IsNullOrEmpty(keyVaultUrl))
+                {
+                    var secretClient = new SecretClient(
+                            new Uri(keyVaultUrl),
+                            new DefaultAzureCredential()
+                        );
+
+                    builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+                }
+            }
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //builder.Services.AddDbContext<FragranceLogContext>(options =>
-                //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<FragranceLogContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("FragranceLog")));
 
             var app = builder.Build();
 
