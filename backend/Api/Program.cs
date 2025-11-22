@@ -2,6 +2,7 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api
@@ -30,6 +31,8 @@ namespace Api
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddScoped<JwtService>();
 
             builder.Services.AddDbContext<FragranceLogContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("FragranceLog")));
