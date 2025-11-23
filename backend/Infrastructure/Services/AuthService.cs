@@ -1,5 +1,6 @@
 ﻿using Core.DTOs;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +14,10 @@ namespace Infrastructure.Services
         private readonly JwtService _jwt;
 
         public AuthService(
-            FragranceLogContext context,
-            PasswordHasher hasher,
-            JwtService jwt)
+                FragranceLogContext context,
+                PasswordHasher hasher,
+                JwtService jwt
+            )
         {
             _context = context;
             _hasher = hasher;
@@ -28,7 +30,7 @@ namespace Infrastructure.Services
                 u.Email == dto.Email || u.Username == dto.Username);
 
             if (exists)
-                throw new InvalidOperationException("User already exists.");
+                throw new ConflictException("User already exists.");
 
             var user = new User
             {
@@ -55,10 +57,10 @@ namespace Infrastructure.Services
             var user = await _context.Users
                 .FirstOrDefaultAsync(u =>
                     u.Username == dto.UsernameOrEmail ||
-                    u.Email == dto.UsernameOrEmail) ?? throw new UnauthorizedAccessException();
+                    u.Email == dto.UsernameOrEmail) ?? throw new UnauthorizedException("Invalid credentials.");
 
             if (!_hasher.Verify(dto.Password, user.Password))
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedException("Invalid credentials.");
 
             var access = _jwt.GenerateAccessToken(user);
             var refresh = _jwt.GenerateRefreshToken(user.UserId);
@@ -72,19 +74,23 @@ namespace Infrastructure.Services
 
         public async Task<AuthResponseDto> RefreshAsync(string refreshToken)
         {
-            var principal = _jwt.ValidateRefreshToken(refreshToken) ?? throw new UnauthorizedAccessException();
-            var claim = principal.Claims.FirstOrDefault(c => c.Type == "sub") ?? throw new UnauthorizedAccessException();
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new ValidationException("Refresh token missing.");
+
+            var principal = _jwt.ValidateRefreshToken(refreshToken) ?? throw new UnauthorizedException("Invalid refresh token.");
+
+            var claim = principal.Claims.FirstOrDefault(c => c.Type == "sub") ?? throw new UnauthorizedException("Invalid refresh token.");
 
             if (!int.TryParse(claim.Value, out var userId))
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedException("Invalid refresh token.");
 
-            var user = await _context.Users.FindAsync(userId) ?? throw new UnauthorizedAccessException();
-            var access = _jwt.GenerateAccessToken(user);
+            var user = await _context.Users.FindAsync(userId) ?? throw new UnauthorizedException("User not found.");
+            var newAccess = _jwt.GenerateAccessToken(user);
             var newRefresh = _jwt.GenerateRefreshToken(user.UserId);
 
             return new AuthResponseDto
             {
-                AccessToken = access,
+                AccessToken = newAccess,
                 RefreshToken = newRefresh
             };
         }
