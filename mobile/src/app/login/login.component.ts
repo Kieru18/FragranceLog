@@ -56,6 +56,12 @@ export class LoginComponent {
   }
 
   goToRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/register'], <any>{
+      transition: {
+        name: 'slide',
+        duration: 220,
+        curve: 'easeInOut'
+      }
+    });
   }
 }
