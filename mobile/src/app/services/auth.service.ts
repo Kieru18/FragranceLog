@@ -83,7 +83,7 @@ export class AuthService {
       this.refreshTimerId = null;
     }
     this.authenticated$.next(false);
-    this.zone.run(() => this.router.navigate(['/auth/login']));
+    this.zone.run(() => this.router.navigate(['/login']));
   }
 
   isAuthenticated() {
