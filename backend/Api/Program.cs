@@ -1,8 +1,11 @@
 using Api.Middleware;
+using Api.Validators;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Core.Interfaces;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +32,9 @@ namespace Api
                     builder.Configuration.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
                 }
             }
+
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>(); 
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
