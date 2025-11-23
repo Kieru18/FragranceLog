@@ -1,0 +1,72 @@
+<GridLayout rows="auto, *" class="bg-bg-dark">
+
+  <ActionBar row="0"
+             title="Create account"
+             class="bg-bg-dark text-text-primary">
+  </ActionBar>
+
+  <ScrollView row="1" class="bg-bg-dark">
+    <StackLayout class="px-6 py-8">
+
+      <Label text="Join FragranceLog"
+             class="text-2xl font-semibold text-text-primary mb-1"></Label>
+
+      <Label text="Start building your perfume collection"
+             class="text-sm text-text-secondary mb-6"></Label>
+
+      <StackLayout [formGroup]="form">
+
+        <StackLayout class="mb-4">
+          <Label text="Username"
+                 class="text-xs text-text-secondary mb-1"></Label>
+
+          <TextField formControlName="username"
+                     class="bg-bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
+                     hint="username"></TextField>
+        </StackLayout>
+
+        <StackLayout class="mb-4">
+          <Label text="Email"
+                 class="text-xs text-text-secondary mb-1"></Label>
+
+          <TextField formControlName="email"
+                     keyboardType="email"
+                     class="bg-bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
+                     hint="you@example.com"></TextField>
+        </StackLayout>
+
+        <StackLayout class="mb-4">
+          <Label text="Password"
+                 class="text-xs text-text-secondary mb-1"></Label>
+
+          <TextField formControlName="password"
+                     secure="true"
+                     class="bg-bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
+                     hint="Create a strong password"></TextField>
+        </StackLayout>
+
+      </StackLayout>
+
+      <Button text="Create account"
+              class="mt-6 bg-brand-gold text-bg-dark font-semibold rounded-2xl py-3"
+              [isEnabled]="form.valid && !loading"
+              [class.opacity-50]="loading || form.invalid"
+              (tap)="onSubmit()"></Button>
+
+      <Label *ngIf="error"
+             [text]="error"
+             class="mt-3 text-xs text-red-500"></Label>
+
+      <StackLayout class="mt-10 items-center">
+        <Label text="Already have an account?"
+               class="text-xs text-text-secondary mb-1"></Label>
+
+        <Label text="Log in"
+               class="text-sm text-highlight font-semibold"
+               (tap)="goToLogin()"></Label>
+      </StackLayout>
+
+    </StackLayout>
+  </ScrollView>
+
+</GridLayout>
