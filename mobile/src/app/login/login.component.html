@@ -31,10 +31,6 @@
 
       </StackLayout>
 
-      <Label text="Forgot password?"
-             class="mt-2 text-xs text-highlight text-right"
-             (tap)="null"></Label>
-
       <Button text="Log in"
               class="mt-6 bg-brand-gold text-bg-dark font-semibold rounded-2xl py-3"
               [isEnabled]="form.valid && !loading"
@@ -45,14 +41,21 @@
              [text]="error"
              class="mt-3 text-xs text-red-500"></Label>
 
-      <StackLayout class="mt-10 items-center">
-        <Label text="Don’t have an account?"
-               class="text-xs text-text-secondary mb-1"></Label>
+      <GridLayout columns="*, *" class="mt-10">
+        <StackLayout col="0" class="items-start" verticalAlignment="bottom">
+          <Label text="Don’t have an account?"
+                 class="text-xs text-text-secondary mb-1"></Label>
+          <Label text="Register"
+                 class="text-sm text-highlight font-semibold"
+                 (tap)="goToRegister()"></Label>
+        </StackLayout>
 
-        <Label text="Register"
+        <Label col="1" text="Forgot password?"
                class="text-sm text-highlight font-semibold"
-               (tap)="goToRegister()"></Label>
-      </StackLayout>
+               horizontalAlignment="right"
+               verticalAlignment="bottom"
+               (tap)="null"></Label>
+      </GridLayout>
 
     </StackLayout>
   </ScrollView>
