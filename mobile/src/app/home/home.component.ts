@@ -8,7 +8,7 @@ registerElement('Image', () => Image);
 
 @Component({
   standalone: true,
-  selector: 'ns-home',
+  selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   imports: [RouterLink, NgForOf, NgIf],
