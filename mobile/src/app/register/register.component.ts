@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { RegisterDto } from '../models/register.dto';
+import { Page } from '@nativescript/core';
 
 @Component({
   standalone: true,
@@ -25,8 +26,10 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    private page: Page
   ) {
+    this.page.actionBarHidden = true;
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
