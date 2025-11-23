@@ -24,6 +24,36 @@ namespace Infrastructure.Services
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         }
 
+        public ClaimsPrincipal? ValidateAccessToken(string token)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var key = GetKey();
+
+                var parameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = _config["Jwt:Issuer"],
+
+                    ValidateAudience = true,
+                    ValidAudience = _config["Jwt:Audience"],
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                return handler.ValidateToken(token, parameters, out _);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public string GenerateAccessToken(User user)
         {
             var key = GetKey();
