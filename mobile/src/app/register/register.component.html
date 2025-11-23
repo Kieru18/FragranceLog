@@ -43,10 +43,15 @@
       </StackLayout>
 
       <Button text="Create account"
-              class="mt-6 bg-brand-gold text-bg-dark font-semibold rounded-2xl py-3"
-              [isEnabled]="form.valid && !loading"
-              [class.opacity-50]="loading || form.invalid"
+              class="mt-6 bg-brand-gold text-bg-dark font-semibold rounded-2xl py-3 uppercase"
+              [isEnabled]="form.valid"
+              [class.opacity-50]="form.invalid"
+              [visibility]="loading ? 'collapse' : 'visible'"
               (tap)="onSubmit()"></Button>
+      <GridLayout class="mt-6 bg-brand-gold rounded-2xl py-3 opacity-50"
+                  [visibility]="loading ? 'visible' : 'collapse'">
+        <ActivityIndicator [busy]="true" color="#0D0D0D"></ActivityIndicator>
+      </GridLayout>
 
       <Label *ngIf="error"
              [text]="error"
