@@ -1,42 +1,7 @@
-.section-title {
-    font-size: 20;
-    font-weight: bold;
-    margin-bottom: 8;
-    color: #333;
-  }
-  
-  .featured-image {
-    height: 200;
-    border-radius: 12;
-    margin-bottom: 12;
-  }
-  
-  .perfume-name {
-    font-size: 18;
-    font-weight: bold;
-    color: #444;
-  }
-  
-  .perfume-desc {
-    font-size: 14;
-    color: #666;
-    margin-bottom: 20;
-  }
-  
-  .quick-btn {
-    font-size: 14;
-    padding: 10;
-    background-color: #f0f0f0;
-    border-radius: 8;
-  }
-  
-  .review-card {
-    margin-top: 12;
-    box-shadow: 2 2 4 #ccc;
-  }
-  
-  .review-title {
-    font-weight: bold;
-    margin-bottom: 8;
-  }
-  
+ActionBar {
+  font-family: "Poppins", sans-serif;
+}
+
+Label {
+  font-family: "Inter", sans-serif;
+}

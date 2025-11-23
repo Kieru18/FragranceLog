@@ -1,13 +1,23 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{css,xml,html,vue,svelte,ts,tsx}'],
-  // use the .ns-dark class to control dark mode (applied by NativeScript) - since 'media' (default) is not supported.
   darkMode: ['class', '.ns-dark'],
   theme: {
-    extend: {},
+    extend: {
+        colors: {
+            'brand-gold': '#D3A54A',
+            'brand-gold-light': '#E3B65B',
+            'brand-gold-dark': '#B98E3C',
+            'bg-dark': '#0D0D0D',
+            'bg-dark-secondary': '#1A1A1A',
+            'text-primary': '#F5F5F5',
+            'text-secondary': '#B8B8B8',
+            'highlight': '#8A7FFF',
+        },
+    },
   },
   plugins: [],
   corePlugins: {
-    preflight: false, // disables browser-specific resets
+    preflight: false,
   },
-}
+};

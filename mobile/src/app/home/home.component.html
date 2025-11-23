@@ -1,21 +1,81 @@
-<ActionBar title="FragranceLog"></ActionBar>
+<GridLayout rows="auto, *, auto" class="bg-bg-dark h-full">
 
-<ScrollView>
-  <StackLayout class="p-4 space-y-4">
-    <Label text="Perfume of the Day" class="section-title"></Label>
-    <Label text="Bleu de Chanel" class="perfume-name"></Label>
-    <Label text="Masculine, fresh, and timeless." class="perfume-desc"></Label>
-
-    <Label text="Quick Actions" class="section-title"></Label>
-    <StackLayout orientation="horizontal" class="space-x-2">
-      <Button text="➕ Add Perfume" [nsRouterLink]="['/add']" class="quick-btn"></Button>
-      <Button text="📚 My Collection" [nsRouterLink]="['/collection']" class="quick-btn"></Button>
+    <StackLayout row="0" class="px-4 pt-6 pb-3">
+        <Label text="Good evening" class="text-text-secondary text-sm mb-1"></Label>
+        <Label [text]="'Welcome back'" class="text-text-primary text-2xl font-semibold"></Label>
     </StackLayout>
 
-    <Label text="Recent Reviews" class="section-title"></Label>
-    <StackLayout>
-      <Label text="⭐ 4.5 – Dior Sauvage" class="review-title"></Label>
-      <Label text="Amazing projection. Got compliments all day." textWrap="true"></Label>
-    </StackLayout>
-  </StackLayout>
-</ScrollView>
+    <ScrollView row="1">
+        <StackLayout class="px-4 pb-6 space-y-6">
+
+            <StackLayout class="rounded-xl overflow-hidden" style="background-color: rgba(255,255,255,0.02)">
+                <GridLayout columns="auto, *" rows="auto" class="p-4 items-center">
+                    <Image src="{{ featured.image }}" stretch="aspectFill" col="0" class="h-36 w-36 rounded-lg mr-4"></Image>
+                    <StackLayout col="1">
+                        <Label [text]="featured.name" class="text-text-primary text-xl font-bold mb-1"></Label>
+                        <Label [text]="featured.tagline" class="text-text-secondary text-sm mb-3" textWrap="true"></Label>
+                        <StackLayout orientation="horizontal" class="items-center">
+                            <Label [text]="'⭐ ' + toFixedRating(featured.rating)" class="text-brand-gold font-semibold mr-3"></Label>
+                            <Button [text]="'Save'" class="px-3 py-2 rounded-lg bg-bg-dark-secondary border border-brand-gold text-brand-gold font-medium mr-2"></Button>
+                            <Button [text]="'Share'" class="px-3 py-2 rounded-lg bg-transparent border border-gray-800 text-text-secondary font-medium"></Button>
+                        </StackLayout>
+                    </StackLayout>
+                </GridLayout>
+            </StackLayout>
+
+            <GridLayout columns="*, auto, *">
+                <StackLayout col="0" class="rounded-xl p-4 bg-bg-dark-secondary items-center">
+                    <Label text="Quick Actions" class="text-text-secondary text-xs mb-3"></Label>
+                    <Button [text]="actions[0].icon + ' ' + actions[0].title" [nsRouterLink]="[actions[0].route]" class="w-full py-3 rounded-lg bg-transparent border border-gray-800 text-text-primary font-medium"></Button>
+                </StackLayout>
+
+                <StackLayout col="1" class="rounded-xl p-4 bg-bg-dark-secondary items-center transform scale-105 shadow-md mx-2" style="border-color: rgba(211,165,74,0.14);">
+                    <Label text="Quick Add" class="text-text-secondary text-xs mb-2"></Label>
+                    <Button [text]="actions[0].icon" [nsRouterLink]="[actions[0].route]" class="rounded-full h-14 w-14 text-xl bg-brand-gold text-bg-dark font-bold"></Button>
+                </StackLayout>
+
+                <StackLayout col="2" class="rounded-xl p-4 bg-bg-dark-secondary items-center">
+                    <Label text="Collection" class="text-text-secondary text-xs mb-3"></Label>
+                    <Button [text]="actions[1].icon + ' ' + actions[1].title" [nsRouterLink]="[actions[1].route]" class="w-full py-3 rounded-lg bg-transparent border border-gray-800 text-text-primary font-medium"></Button>
+                </StackLayout>
+            </GridLayout>
+
+            <StackLayout class="rounded-xl p-4 bg-bg-dark-secondary">
+                <Label text="Recent Reviews" class="text-text-secondary text-sm font-semibold mb-3"></Label>
+
+                <StackLayout *ngFor="let r of recentReviews" class="mb-3 rounded-lg p-3 bg-bg-dark items-start">
+                    <GridLayout columns="auto, *">
+                        <Image [src]="r.image" class="h-14 w-14 rounded-md mr-3" stretch="aspectFill" col="0"></Image>
+                        <StackLayout col="1">
+                            <Label [text]="r.perfume" class="text-text-primary font-semibold"></Label>
+                            <Label [text]="'⭐ ' + r.rating" class="text-brand-gold text-sm mb-1"></Label>
+                            <Label [text]="r.excerpt" class="text-text-secondary text-sm" textWrap="true"></Label>
+                        </StackLayout>
+                    </GridLayout>
+                </StackLayout>
+
+            </StackLayout>
+
+            <GridLayout columns="*, *" class="rounded-xl p-4 bg-bg-dark-secondary">
+                <StackLayout>
+                    <Label text="Perfumes" class="text-text-secondary text-xs"></Label>
+                    <Label [text]="stats.perfumes" class="text-text-primary text-xl font-semibold"></Label>
+                </StackLayout>
+                <StackLayout>
+                    <Label text="Reviews" class="text-text-secondary text-xs"></Label>
+                    <Label [text]="stats.reviews" class="text-text-primary text-xl font-semibold"></Label>
+                </StackLayout>
+            </GridLayout>
+
+        </StackLayout>
+    </ScrollView>
+
+    <GridLayout row="2" columns="*,*,*,*,*" class="py-3 px-4 bg-bg-dark-secondary border-t border-gray-800">
+        <Button col="0" text="🏠" [nsRouterLink]="['/home']" class="text-text-secondary text-sm bg-transparent border-0"></Button>
+        <Button col="1" text="🔍" [nsRouterLink]="['/explore']" class="text-text-secondary text-sm bg-transparent border-0"></Button>
+        <Button col="2" text="➕" [nsRouterLink]="['/add']" class="h-12 w-12 rounded-full bg-brand-gold text-bg-dark font-bold"></Button>
+        <Button col="3" text="📚" [nsRouterLink]="['/collection']" class="text-text-secondary text-sm bg-transparent border-0"></Button>
+        <Button col="4" text="👤" [nsRouterLink]="['/profile']" class="text-text-secondary text-sm bg-transparent border-0"></Button>
+    </GridLayout>
+
+</GridLayout>
