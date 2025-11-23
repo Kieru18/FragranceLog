@@ -4,7 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { LoginDto } from '../models/login.dto';
-import { Page } from '@nativescript/core';
+import { Page, Utils } from '@nativescript/core';
 
 @Component({
   standalone: true,
@@ -37,6 +37,7 @@ export class LoginComponent {
   }
 
   onSubmit() {
+    Utils.dismissSoftInput();
     if (this.form.invalid || this.loading) {
       return;
     }
