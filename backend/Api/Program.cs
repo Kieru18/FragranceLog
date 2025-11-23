@@ -57,6 +57,7 @@ namespace Api
             }
 
             app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseHttpsRedirection();
 
