@@ -31,15 +31,21 @@
 
       </StackLayout>
 
-      <Button text="Log in"
-              class="mt-6 bg-brand-gold text-bg-dark font-semibold rounded-2xl py-3 uppercase"
-              [isEnabled]="form.valid"
-              [class.opacity-50]="form.invalid"
-              [visibility]="loading ? 'collapse' : 'visible'"
-              (tap)="onSubmit()"></Button>
-      <GridLayout class="mt-6 bg-brand-gold rounded-2xl py-3 opacity-50"
-                  [visibility]="loading ? 'visible' : 'collapse'">
-        <ActivityIndicator [busy]="true" color="#0D0D0D"></ActivityIndicator>
+      <GridLayout class="mt-6 bg-brand-gold rounded-2xl"
+                  [class.opacity-50]="form.invalid || loading"
+                  [isEnabled]="!loading"
+                  (tap)="!loading && onSubmit()">
+
+        <Label text="Log in"
+               class="text-bg-dark font-semibold uppercase py-3"
+               horizontalAlignment="center"
+               verticalAlignment="center"
+               [opacity]="loading ? 0 : 1"></Label>
+
+        <ActivityIndicator [busy]="loading"
+                           color="#0D0D0D"
+                           [opacity]="loading ? 1 : 0"
+                           horizontalAlignment="center"></ActivityIndicator>
       </GridLayout>
 
       <Label *ngIf="error"
