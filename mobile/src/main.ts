@@ -9,15 +9,12 @@ import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { withInterceptorsFromDi } from '@angular/common/http';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { Application } from '@nativescript/core';
 
 /**
  * Disable zone by setting this to true
  * Then also adjust polyfills.ts (see note there)
  */
 const EXPERIMENTAL_ZONELESS = false;
-
-Application.setSystemAppearance('dark');
 
 runNativeScriptAngularApp({
   appModuleBootstrap: () => {
