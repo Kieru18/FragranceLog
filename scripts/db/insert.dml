@@ -31,3 +31,9 @@ INSERT INTO Daytimes (DaytimeId, Name)
 VALUES
     (1,'Day'),
     (2,'Night');
+
+INSERT INTO NoteTypes (NoteTypeId, Name)
+VALUES
+    (1,'Top'),
+    (2,'Middle'),
+    (3,'Base');
