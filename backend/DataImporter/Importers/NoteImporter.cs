@@ -4,9 +4,9 @@ using AngleSharp.Dom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Entities;
+//using Core.Entities;
 using DataImporter.Model;
-using Infrastructure.Data;
+//using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 namespace DataImporter.Importers;
 
@@ -22,7 +22,7 @@ public class NoteImporter : BaseImporter
         
         await SaveToDatabase(result);
         
-        Console.WriteLine($"Imported: {result.NoteTypes.Count} note types, {result.Notes.Count} notes");
+        //Console.WriteLine($"Imported: {result.NoteTypes.Count} note types, {result.Notes.Count} notes");
     }
     
     private IElement FindGridForGroup(IElement groupSection)
@@ -107,7 +107,7 @@ public class NoteImporter : BaseImporter
             if (string.IsNullOrEmpty(groupName))
                 continue;
         
-            result.NoteTypes.Add(new NoteType { Name = groupName });
+            //result.NoteTypes.Add(new NoteType { Name = groupName });
         
             var grid = FindGridForGroup(groupSection);
             if (grid != null)
@@ -124,34 +124,34 @@ public class NoteImporter : BaseImporter
     
     private async Task SaveToDatabase(NoteImportResult result)
     {
-        await using var context = new FragranceLogContext();
+        //await using var context = new FragranceLogContext();
         
-        foreach (var noteType in result.NoteTypes)
-        {
-            if (!context.NoteTypes.Any(nt => nt.Name == noteType.Name))
-            {
-                context.NoteTypes.Add(noteType);
-            }
-        }
+        //foreach (var noteType in result.NoteTypes)
+        //{
+        //    if (!context.NoteTypes.Any(nt => nt.Name == noteType.Name))
+        //    {
+        //        context.NoteTypes.Add(noteType);
+        //    }
+        //}
         
-        // await context.SaveChangesAsync();
+        //// await context.SaveChangesAsync();
         
-        foreach (var note in result.Notes)
-        {
-            var noteTypeId = context.NoteTypes
-                .Where(nt => nt.Name == note.NoteTypeName)
-                .Select(nt => nt.NoteTypeId)
-                .FirstOrDefault();
+        //foreach (var note in result.Notes)
+        //{
+        //    var noteTypeId = context.NoteTypes
+        //        .Where(nt => nt.Name == note.NoteTypeName)
+        //        .Select(nt => nt.NoteTypeId)
+        //        .FirstOrDefault();
                 
-            if (!context.Notes.Any(n => n.Name == note.Name && n.NoteTypeId == noteTypeId))
-            {
-                context.Notes.Add(new Note 
-                { 
-                    Name = note.Name, 
-                    NoteTypeId = noteTypeId 
-                });
-            }
-        }
+        //    if (!context.Notes.Any(n => n.Name == note.Name && n.NoteTypeId == noteTypeId))
+        //    {
+        //        context.Notes.Add(new Note 
+        //        { 
+        //            Name = note.Name, 
+        //            NoteTypeId = noteTypeId 
+        //        });
+        //    }
+        //}
         // await context.SaveChangesAsync();
     }
 }
