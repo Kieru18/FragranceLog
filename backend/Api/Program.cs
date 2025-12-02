@@ -7,7 +7,7 @@ using Azure.Security.KeyVault.Secrets;
 using Core.Interfaces;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-//using Infrastructure.Data;
+using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -47,19 +47,19 @@ namespace Api
             builder.Services.AddScoped<PasswordHasher>();
             builder.Services.AddScoped<JwtService>();
             
-            //builder.Services.AddDbContext<FragranceLogContext>(options =>
-            //    options.UseSqlServer(
-            //        builder.Configuration.GetConnectionString("FragranceLog"),
-            //        sqlOptions =>
-            //        {
-            //            sqlOptions.EnableRetryOnFailure(
-            //                maxRetryCount: 3,
-            //                maxRetryDelay: TimeSpan.FromSeconds(30),
-            //                errorNumbersToAdd: null
-            //            );
-            //        }
-            //    )
-            //);
+            builder.Services.AddDbContext<FragranceLogContext>(options =>
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("FragranceLog"),
+                    sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 3,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null
+                        );
+                    }
+                )
+            );
 
 
             var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);

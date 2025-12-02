@@ -1,4 +1,4 @@
-﻿//using Core.Entities;
+﻿using Core.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -54,28 +54,28 @@ namespace Infrastructure.Services
             }
         }
 
-        //public string GenerateAccessToken(User user)
-        //{
-        //    var key = GetKey();
-        //    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        public string GenerateAccessToken(User user)
+        {
+            var key = GetKey();
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        //    var claims = new List<Claim>
-        //    {
-        //        new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-        //        new(JwtRegisteredClaimNames.UniqueName, user.Username),
-        //        new(JwtRegisteredClaimNames.Email, user.Email)
-        //    };
+            var claims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new(JwtRegisteredClaimNames.UniqueName, user.Username),
+                new(JwtRegisteredClaimNames.Email, user.Email)
+            };
 
-        //    var token = new JwtSecurityToken(
-        //        issuer: _config["Jwt:Issuer"],
-        //        audience: _config["Jwt:Audience"],
-        //        claims: claims,
-        //        expires: DateTime.UtcNow.AddMinutes(30),
-        //        signingCredentials: credentials
-        //    );
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(30),
+                signingCredentials: credentials
+            );
 
-        //    return new JwtSecurityTokenHandler().WriteToken(token);
-        //}
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
         public ClaimsPrincipal? ValidateRefreshToken(string token)
         {

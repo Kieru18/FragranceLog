@@ -1,20 +1,20 @@
 ﻿using Core.DTOs;
-//using Core.Entities;
+using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
-//using Infrastructure.Data;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services
 {
     public class AuthService : IAuthService
     {
-        //private readonly FragranceLogContext _context;
+        private readonly FragranceLogContext _context;
         private readonly PasswordHasher _hasher;
         private readonly JwtService _jwt;
 
         public AuthService(
-                //FragranceLogContext context,
+                FragranceLogContext context,
                 PasswordHasher hasher,
                 JwtService jwt
             )
@@ -26,26 +26,24 @@ namespace Infrastructure.Services
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
         {
-            //var exists = await _context.Users.AnyAsync(u =>
-            //    u.Email == dto.Email || u.Username == dto.Username);
+            var exists = await _context.Users.AnyAsync(u =>
+                u.Email == dto.Email || u.Username == dto.Username);
 
-            //if (exists)
-            //    throw new ConflictException("User already exists.");
+            if (exists)
+                throw new ConflictException("User already exists.");
 
-            //var user = new User
-            //{
-            //    Username = dto.Username,
-            //    Email = dto.Email,
-            //    Password = _hasher.Hash(dto.Password)
-            //};
+            var user = new User
+            {
+                Username = dto.Username,
+                Email = dto.Email,
+                Password = _hasher.Hash(dto.Password)
+            };
 
-            //_context.Users.Add(user);
-            //await _context.SaveChangesAsync();
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
-            //var access = _jwt.GenerateAccessToken(user);
-            //var refresh = _jwt.GenerateRefreshToken(user.UserId);
-            var access = "";
-            var refresh = "";
+            var access = _jwt.GenerateAccessToken(user);
+            var refresh = _jwt.GenerateRefreshToken(user.UserId);
 
             return new AuthResponseDto
             {
@@ -56,20 +54,17 @@ namespace Infrastructure.Services
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
-            //var user = await _context.Users
-            //    .FirstOrDefaultAsync(u =>
-            //        u.Username == dto.UsernameOrEmail ||
-            //        u.Email == dto.UsernameOrEmail) ?? throw new UnauthorizedException("Invalid credentials.");
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u =>
+                    u.Username == dto.UsernameOrEmail ||
+                    u.Email == dto.UsernameOrEmail) ?? throw new UnauthorizedException("Invalid credentials.");
 
-            //if (!_hasher.Verify(dto.Password, user.Password))
-            //    throw new UnauthorizedException("Invalid credentials.");
+            if (!_hasher.Verify(dto.Password, user.Password))
+                throw new UnauthorizedException("Invalid credentials.");
 
-            //var access = _jwt.GenerateAccessToken(user);
-            //var refresh = _jwt.GenerateRefreshToken(user.UserId);
-
-            var access = "";
-            var refresh = "";
-
+            var access = _jwt.GenerateAccessToken(user);
+            var refresh = _jwt.GenerateRefreshToken(user.UserId);
+            
             return new AuthResponseDto
             {
                 AccessToken = access,
@@ -89,12 +84,10 @@ namespace Infrastructure.Services
             if (!int.TryParse(claim.Value, out var userId))
                 throw new UnauthorizedException("Invalid refresh token.");
 
-            //var user = await _context.Users.FindAsync(userId) ?? throw new UnauthorizedException("User not found.");
-            //var newAccess = _jwt.GenerateAccessToken(user);
-            //var newRefresh = _jwt.GenerateRefreshToken(user.UserId);
+            var user = await _context.Users.FindAsync(userId) ?? throw new UnauthorizedException("User not found.");
+            var newAccess = _jwt.GenerateAccessToken(user);
+            var newRefresh = _jwt.GenerateRefreshToken(user.UserId);
 
-            var newAccess = "";
-            var newRefresh = "";
 
             return new AuthResponseDto
             {
