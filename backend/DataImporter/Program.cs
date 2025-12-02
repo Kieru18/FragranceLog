@@ -8,7 +8,9 @@ public class Program
     public static async Task Main(string[] args)
     {
         var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false)
+            .AddJsonFile("appsettings.Development.json", optional: true)
             .Build();
             
         var settings = config.GetSection("ImporterSettings").Get<ImporterSettings>();
