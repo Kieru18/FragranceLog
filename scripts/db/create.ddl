@@ -60,13 +60,13 @@ CREATE TABLE Perfumes (
 
 CREATE TABLE Notes (
     NoteId INT IDENTITY NOT NULL,
-    Name NVARCHAR(40) NOT NULL,
-    NoteTypeId INT NOT NULL
+    Name NVARCHAR(40) NOT NULL
 );
 
 CREATE TABLE PerfumeNote (
     PerfumeId INT NOT NULL,
-    NoteId INT NOT NULL
+    NoteId INT NOT NULL,
+    NoteTypeId INT NOT NULL
 );
 
 CREATE TABLE PerfumeGroup (
@@ -164,7 +164,7 @@ ALTER TABLE Brands ADD CONSTRAINT PK_Brands PRIMARY KEY (BrandId);
 ALTER TABLE Users ADD CONSTRAINT PK_Users PRIMARY KEY (UserId);
 ALTER TABLE Perfumes ADD CONSTRAINT PK_Perfumes PRIMARY KEY (PerfumeId);
 ALTER TABLE Notes ADD CONSTRAINT PK_Notes PRIMARY KEY (NoteId);
-ALTER TABLE PerfumeNote ADD CONSTRAINT PK_PerfumeNote PRIMARY KEY (PerfumeId, NoteId);
+ALTER TABLE PerfumeNote ADD CONSTRAINT PK_PerfumeNote PRIMARY KEY (PerfumeId, NoteId, NoteTypeId);
 ALTER TABLE PerfumeGroup ADD CONSTRAINT PK_PerfumeGroup PRIMARY KEY (PerfumeId, GroupId);
 ALTER TABLE Reviews ADD CONSTRAINT PK_Reviews PRIMARY KEY (ReviewId);
 ALTER TABLE PerfumePhotos ADD CONSTRAINT PK_PerfumePhotos PRIMARY KEY (PhotoId);
@@ -200,7 +200,7 @@ ALTER TABLE ReviewPhotos ADD CONSTRAINT UQ_ReviewPhotos_Review UNIQUE (ReviewId)
 ALTER TABLE Brands ADD CONSTRAINT FK_Brands_Company FOREIGN KEY (CompanyId) REFERENCES Companies(CompanyId);
 ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Brand FOREIGN KEY (BrandId) REFERENCES Brands(BrandId);
 ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Country FOREIGN KEY (CountryCode) REFERENCES Countries(Code);
-ALTER TABLE Notes ADD CONSTRAINT FK_Notes_NoteType FOREIGN KEY (NoteTypeId) REFERENCES NoteTypes(NoteTypeId);
+ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_NoteType FOREIGN KEY (NoteTypeId) REFERENCES NoteTypes(NoteTypeId);
 ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId) ON DELETE CASCADE;
 ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_Note FOREIGN KEY (NoteId) REFERENCES Notes(NoteId) ON DELETE CASCADE;
 ALTER TABLE PerfumeGroup ADD CONSTRAINT FK_PerfumeGroup_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
