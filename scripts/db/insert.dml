@@ -158,8 +158,8 @@ VALUES
     ('KAZ', 'Kazakhstan'),
     ('KEN', 'Kenya'),
     ('KIR', 'Kiribati'),
-    ('PRK', 'orth Korea'),
-    ('KOR', 'outh Korea'),
+    ('PRK', 'North Korea'),
+    ('KOR', 'South Korea'),
     ('KWT', 'Kuwait'),
     ('KGZ', 'Kyrgyzstan'),
     ('LAO', 'Lao People's Democratic Republic'),
@@ -288,5 +288,6 @@ VALUES
     ('ESH', 'Western Sahara'),
     ('YEM', 'Yemen'),
     ('ZMB', 'Zambia'),
-    ('ZWE', 'Zimbabwe');
+    ('ZWE', 'Zimbabwe'),
+    ('ZZZ', 'Unknown');
 
