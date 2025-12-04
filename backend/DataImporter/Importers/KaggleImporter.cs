@@ -39,135 +39,123 @@ public class KaggleImporter
         Console.WriteLine("Reading CSV...");
         var processed = 0;
 
-        _db.ChangeTracker.AutoDetectChangesEnabled = false;
+        var rows = _csvReader.ReadRows(_options.CsvPath)
+        .Where(r => !string.IsNullOrWhiteSpace(r.PerfumeName)
+                    && !string.IsNullOrWhiteSpace(r.BrandName))
+        .ToList();
 
-        try
+        Console.WriteLine($"Loaded {rows.Count} rows.");
+
+        var unknownCompany = await EnsureUnknownCompanyAsync(cancellationToken);
+        var importerUsers = await EnsureFakeUsersAsync(cancellationToken);
+
+        var countriesByName = await _db.Countries
+            .AsNoTracking()
+            .ToDictionaryAsync(c => c.Name, c => c, StringComparer.OrdinalIgnoreCase, cancellationToken);
+
+        var brandIdsByName = await _db.Brands
+            .AsNoTracking()
+            .ToDictionaryAsync(b => b.Name, b => b.BrandId, StringComparer.OrdinalIgnoreCase, cancellationToken);
+
+        var noteIdsByName = await _db.Notes
+            .AsNoTracking()
+            .ToDictionaryAsync(n => n.Name, n => n.NoteId, StringComparer.OrdinalIgnoreCase, cancellationToken);
+
+        var groupsByName = await _db.Groups
+            .ToDictionaryAsync(
+                g => g.Name,
+                g => g,
+                StringComparer.OrdinalIgnoreCase,
+                cancellationToken);
+
+        var noteTypesByName = await _db.NoteTypes
+            .AsNoTracking()
+            .ToDictionaryAsync(nt => nt.Name, nt => nt, StringComparer.OrdinalIgnoreCase, cancellationToken);
+
+        var gendersByName = await _db.Genders
+            .AsNoTracking()
+            .ToDictionaryAsync(g => g.Name, g => g, StringComparer.OrdinalIgnoreCase, cancellationToken);
+
+        var existingPerfumes = await _db.Perfumes
+            .AsNoTracking()
+            .Include(p => p.Brand)
+            .ToListAsync(cancellationToken);
+
+        var perfumeKeySet = new HashSet<string>(
+            existingPerfumes.Select(p => $"{p.Brand.Name}||{p.Name}"),
+            StringComparer.OrdinalIgnoreCase);
+
+        Console.WriteLine("Importing perfumes...");
+
+        foreach (var row in rows)
         {
-            var rows = _csvReader.ReadRows(_options.CsvPath)
-            .Where(r => !string.IsNullOrWhiteSpace(r.PerfumeName)
-                     && !string.IsNullOrWhiteSpace(r.BrandName))
-            .ToList();
+            cancellationToken.ThrowIfCancellationRequested();
 
-            Console.WriteLine($"Loaded {rows.Count} rows.");
-
-            var unknownCompany = await EnsureUnknownCompanyAsync(cancellationToken);
-            var importerUsers = await EnsureFakeUsersAsync(cancellationToken);
-
-            var countriesByName = await _db.Countries
-                .AsNoTracking()
-                .ToDictionaryAsync(c => c.Name, c => c, StringComparer.OrdinalIgnoreCase, cancellationToken);
-
-            var brandIdsByName = await _db.Brands
-                .AsNoTracking()
-                .ToDictionaryAsync(b => b.Name, b => b.BrandId, StringComparer.OrdinalIgnoreCase, cancellationToken);
-
-            var noteIdsByName = await _db.Notes
-                .AsNoTracking()
-                .ToDictionaryAsync(n => n.Name, n => n.NoteId, StringComparer.OrdinalIgnoreCase, cancellationToken);
-
-            var groupIdsByName = await _db.Groups
-                .AsNoTracking()
-                .ToDictionaryAsync(g => g.Name, g => g.GroupId, StringComparer.OrdinalIgnoreCase, cancellationToken);
-
-
-            var noteTypesByName = await _db.NoteTypes
-                .AsNoTracking()
-                .ToDictionaryAsync(nt => nt.Name, nt => nt, StringComparer.OrdinalIgnoreCase, cancellationToken);
-
-            var gendersByName = await _db.Genders
-                .AsNoTracking()
-                .ToDictionaryAsync(g => g.Name, g => g, StringComparer.OrdinalIgnoreCase, cancellationToken);
-
-            var existingPerfumes = await _db.Perfumes
-                .AsNoTracking()
-                .Include(p => p.Brand)
-                .ToListAsync(cancellationToken);
-
-            var perfumeKeySet = new HashSet<string>(
-                existingPerfumes.Select(p => $"{p.Brand.Name}||{p.Name}"),
-                StringComparer.OrdinalIgnoreCase);
-
-            Console.WriteLine("Importing perfumes...");
-
-            foreach (var row in rows)
+            processed++;
+            if (processed % 1000 == 0)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                processed++;
-                if (processed % 1000 == 0)
-                {
-                    Console.WriteLine($"Processed {processed}/{rows.Count}...");
-                }
-
-                var countryEntity = _countryResolver.Resolve(row.Country, countriesByName);
-                if (countryEntity == null)
-                {
-                    throw new Exception($"Country '{row.Country}' could not be resolved.");
-                }
-
-                var normalizedBrandName = _nameNormalizer.Normalize(row.BrandName);
-                var brandId = EnsureBrandId(normalizedBrandName, unknownCompany, brandIdsByName);
-
-                var normalizedPerfumeName = _nameNormalizer.Normalize(row.PerfumeName);
-                var perfumeKey = $"{normalizedBrandName}||{normalizedPerfumeName}";
-
-                if (perfumeKeySet.Contains(perfumeKey))
-                {
-                    continue;
-                }
-
-                var perfume = new Perfume
-                {
-                    Name = normalizedPerfumeName,
-                    BrandId = brandId,
-                    CountryCode = countryEntity.Code,
-                    LaunchYear = ParseYear(row.YearRaw),
-                    Description = null
-                };
-
-                _db.Perfumes.Add(perfume);
-
-                perfumeKeySet.Add(perfumeKey);
-
-                AddNotes(perfume, row.TopNotesRaw, "Top", noteIdsByName, noteTypesByName);
-                AddNotes(perfume, row.MiddleNotesRaw, "Middle", noteIdsByName, noteTypesByName);
-                AddNotes(perfume, row.BaseNotesRaw, "Base", noteIdsByName, noteTypesByName);
-
-                foreach (var rawAccord in row.GetAccords())
-                {
-                    var normalized = _nameNormalizer.Normalize(rawAccord);
-
-                    if (!groupIdsByName.TryGetValue(normalized, out var groupId))
-                    {
-                        var group = new Group { Name = normalized };
-                        _db.Groups.Add(group);
-                        _db.SaveChanges();
-
-                        groupId = group.GroupId;
-                        groupIdsByName[normalized] = groupId;
-                    }
-
-                    perfume.Groups ??= new List<Group>();
-                    perfume.Groups.Add(new Group { GroupId = groupId });
-                }
-
-
-                var ratingCount = ParseInt(row.RatingCountRaw);
-                var ratingValue = ParseDouble(row.RatingValueRaw);
-
-                if (ratingCount > 0 && ratingValue > 0)
-                {
-                    await GenerateReviewsAsync(perfume, ratingValue, ratingCount, importerUsers[0], cancellationToken);
-                    await GenerateGenderVotesAsync(perfume, row.Gender, ratingCount, importerUsers, gendersByName, cancellationToken);
-                }
-
-                await _db.SaveChangesAsync(cancellationToken);
-                _db.ChangeTracker.Clear();
+                Console.WriteLine($"Processed {processed}/{rows.Count}...");
             }
-        }
-        finally
-        {
-            _db.ChangeTracker.AutoDetectChangesEnabled = true;
+
+            var countryEntity = _countryResolver.Resolve(row.Country, countriesByName);
+            if (countryEntity == null)
+            {
+                throw new Exception($"Country '{row.Country}' could not be resolved.");
+            }
+
+            var normalizedBrandName = _nameNormalizer.Normalize(row.BrandName);
+            var brandId = EnsureBrandId(normalizedBrandName, unknownCompany, brandIdsByName);
+
+            var normalizedPerfumeName = _nameNormalizer.Normalize(row.PerfumeName);
+            var perfumeKey = $"{normalizedBrandName}||{normalizedPerfumeName}";
+
+            if (perfumeKeySet.Contains(perfumeKey))
+            {
+                continue;
+            }
+
+            var perfume = new Perfume
+            {
+                Name = normalizedPerfumeName,
+                BrandId = brandId,
+                CountryCode = countryEntity.Code,
+                LaunchYear = ParseYear(row.YearRaw),
+                Description = null
+            };
+
+            _db.Perfumes.Add(perfume);
+
+            perfumeKeySet.Add(perfumeKey);
+
+            AddNotes(perfume, row.TopNotesRaw, "Top", noteIdsByName, noteTypesByName);
+            AddNotes(perfume, row.MiddleNotesRaw, "Middle", noteIdsByName, noteTypesByName);
+            AddNotes(perfume, row.BaseNotesRaw, "Base", noteIdsByName, noteTypesByName);
+
+            foreach (var rawAccord in row.GetAccords())
+            {
+                var normalized = _nameNormalizer.Normalize(rawAccord);
+
+                if (!groupsByName.TryGetValue(normalized, out var group))
+                {
+                    group = new Group { Name = normalized };
+                    _db.Groups.Add(group);
+                    groupsByName[normalized] = group;
+                }
+
+                perfume.Groups ??= new List<Group>();
+                perfume.Groups.Add(group);
+            }
+
+            var ratingCount = ParseInt(row.RatingCountRaw);
+            var ratingValue = ParseDouble(row.RatingValueRaw);
+
+            if (ratingCount > 0 && ratingValue > 0)
+            {
+                await GenerateReviewsAsync(perfume, ratingValue, ratingCount, importerUsers[0], cancellationToken);
+                await GenerateGenderVotesAsync(perfume, row.Gender, ratingCount, importerUsers, gendersByName, cancellationToken);
+            }
+
+            await _db.SaveChangesAsync(cancellationToken);
         }
         Console.WriteLine($"Import finished. Processed {processed} rows.");
     }
