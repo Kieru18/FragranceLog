@@ -33,6 +33,7 @@ public class Program
                         connectionString,
                         sql =>
                         {
+                            sql.CommandTimeout(180);
                             sql.EnableRetryOnFailure(
                                 maxRetryCount: 2,
                                 maxRetryDelay: TimeSpan.FromSeconds(100),
