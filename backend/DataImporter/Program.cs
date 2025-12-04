@@ -1,5 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
-using DataImporter.Model;
+﻿using System.Threading.Tasks;
+using DataImporter.Configuration;
+using DataImporter.Importers;
+using DataImporter.Services;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace DataImporter;
 
@@ -7,20 +14,34 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile("appsettings.Development.json", optional: true)
+        var host = Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                config.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+            })
+            .ConfigureServices((context, services) =>
+            {
+                var connectionString = context.Configuration.GetConnectionString("FragranceLog")
+                                      ?? throw new InvalidOperationException("Connection string 'FragranceLog' not found.");
+
+                services.Configure<ImportOptions>(context.Configuration.GetSection("Import"));
+
+                services.AddDbContext<FragranceLogContext>(options =>
+                    options.UseSqlServer(connectionString));
+
+                services.AddSingleton<CsvReaderService>();
+                services.AddSingleton<CountryAliasResolver>();
+                services.AddSingleton<SyntheticDataService>();
+
+                services.AddTransient<KaggleImporter>();
+            })
             .Build();
-            
-        var settings = config.GetSection("ImporterSettings").Get<ImporterSettings>();
-        
-        Console.WriteLine($"=== DATA IMPORTER ===");
-        Console.WriteLine($"Running: {settings.ActiveImporter} Importer");
-        
-        var overseer = new ImportOverseer(settings);
-        await overseer.RunActiveImporter();
-        
-        Console.WriteLine("Import completed!");
+
+        using (host)
+        {
+            var importer = host.Services.GetRequiredService<KaggleImporter>();
+            await importer.RunAsync();
+        }
     }
 }
