@@ -38,6 +38,9 @@
         </None>
         <None Update="appsettings.Development.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\fra_cleaned.csv">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>   
     </ItemGroup>
 </Project>
