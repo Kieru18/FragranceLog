@@ -6,7 +6,7 @@ namespace DataImporter.Services;
 public class SyntheticDataService
 {
     /// <summary>
-    /// Build deterministic list of ratings (1–5) such that avg ≈ targetAvg.
+    /// Builds deterministic list of ratings (1–5) such that avg ≈ targetAvg.
     /// </summary>
     public IReadOnlyList<int> BuildRatings(double targetAvg, int count)
     {
@@ -46,6 +46,74 @@ public class SyntheticDataService
 
         return result;
     }
+
+    public Dictionary<string, int> BuildGenderDistribution(
+        string? rawGender,
+        int maxVotes
+    )
+    {
+        if (maxVotes <= 0)
+            return new();
+
+        var normalized = rawGender?.Trim().ToLowerInvariant();
+
+        Dictionary<string, double> ratio = normalized switch
+        {
+            "men" or "male" => new()
+            {
+                ["Male"] = 0.9,
+                ["Unisex"] = 0.1
+            },
+            "women" or "female" => new()
+            {
+                ["Female"] = 0.9,
+                ["Unisex"] = 0.1
+            },
+            "unisex" => new()
+            {
+                ["Unisex"] = 0.8,
+                ["Male"] = 0.1,
+                ["Female"] = 0.1
+            },
+            _ => new()
+            {
+                ["Unisex"] = 0.8,
+                ["Male"] = 0.1,
+                ["Female"] = 0.1
+            }
+        };
+
+        var result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var assigned = 0;
+
+        foreach (var kvp in ratio)
+        {
+            var votes = (int)Math.Round(kvp.Value * maxVotes);
+            if (votes > 0)
+            {
+                result[kvp.Key] = votes;
+                assigned += votes;
+            }
+        }
+
+        while (assigned > maxVotes)
+        {
+            var key = result.Keys.First();
+            result[key]--;
+            assigned--;
+        }
+
+        while (assigned < maxVotes)
+        {
+            var key = result.Keys.First();
+            result[key]++;
+            assigned++;
+        }
+
+        return result;
+    }
+
+
 
     /// <summary>
     /// Map CSV gender string to logical Gender.Name in DB.
