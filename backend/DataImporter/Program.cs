@@ -28,11 +28,23 @@ public class Program
                 services.Configure<ImportOptions>(context.Configuration.GetSection("Import"));
 
                 services.AddDbContext<FragranceLogContext>(options =>
-                    options.UseSqlServer(connectionString));
+                {
+                    options.UseSqlServer(
+                        connectionString,
+                        sql =>
+                        {
+                            sql.EnableRetryOnFailure(
+                                maxRetryCount: 2,
+                                maxRetryDelay: TimeSpan.FromSeconds(100),
+                                errorNumbersToAdd: null);
+                        });
+                });
+
 
                 services.AddSingleton<CsvReaderService>();
                 services.AddSingleton<CountryAliasResolver>();
                 services.AddSingleton<SyntheticDataService>();
+                services.AddSingleton<NameNormalizer>();
 
                 services.AddTransient<KaggleImporter>();
             })
