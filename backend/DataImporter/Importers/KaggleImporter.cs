@@ -146,12 +146,12 @@ public class KaggleImporter
                 perfume.Groups.Add(group);
             }
 
-            var ratingCount = ParseInt(row.RatingCountRaw);
+            var ratingCount = importerUsers.Count;
             var ratingValue = ParseDouble(row.RatingValueRaw);
 
             if (ratingCount > 0 && ratingValue > 0)
             {
-                await GenerateReviewsAsync(perfume, ratingValue, ratingCount, importerUsers[0], cancellationToken);
+                await GenerateReviewsAsync(perfume, ratingValue, ratingCount, importerUsers, cancellationToken);
                 await GenerateGenderVotesAsync(perfume, row.Gender, ratingCount, importerUsers, gendersByName, cancellationToken);
             }
 
@@ -323,7 +323,7 @@ public class KaggleImporter
         Perfume perfume,
         double ratingValue,
         int ratingCount,
-        User importerUser,
+        List<User> importerUsers,
         CancellationToken ct
     )
     {
@@ -331,14 +331,13 @@ public class KaggleImporter
         if (ratings.Count == 0)
             return;
 
-        foreach (var r in ratings)
+        for (int i = 0; i < ratings.Count; i++)
         {
             var review = new Review
             {
-                UserId = importerUser.UserId,
+                UserId = importerUsers[i].UserId,
                 Perfume = perfume,
-                Rating = r,
-                Comment = null,
+                Rating = ratings[i],
                 ReviewDate = DateTime.UtcNow
             };
 
