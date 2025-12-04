@@ -51,7 +51,7 @@ CREATE TABLE Users (
 
 CREATE TABLE Perfumes (
     PerfumeId INT IDENTITY NOT NULL,
-    Name NVARCHAR(50) NOT NULL,
+    Name NVARCHAR(150) NOT NULL,
     Description NVARCHAR(2000),
     LaunchYear INT,
     BrandId INT NOT NULL,
