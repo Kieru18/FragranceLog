@@ -16,7 +16,6 @@ public class CountryAliasResolver
         { "Turkey", "Türkiye" },
         { "UAE", "United Arab Emirates" },
         { "UK", "United Kingdom of Great Britain and Northern Ireland" },
-        { "UAE", "United Arab Emirates" },
         { "USA", "United States of America" }
     };
 
