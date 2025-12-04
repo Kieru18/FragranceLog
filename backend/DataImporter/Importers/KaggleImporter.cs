@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Core.Entities;
+﻿using Core.Entities;
 using DataImporter.Configuration;
-using DataImporter.Models;
 using DataImporter.Services;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -18,20 +12,24 @@ public class KaggleImporter
     private readonly FragranceLogContext _db;
     private readonly CsvReaderService _csvReader;
     private readonly CountryAliasResolver _countryResolver;
-    private readonly SyntheticDataService _synthetic;
+    private readonly SyntheticDataService _syntheticService;
+    private readonly NameNormalizer _nameNormalizer;
     private readonly ImportOptions _options;
 
     public KaggleImporter(
         FragranceLogContext db,
         CsvReaderService csvReader,
         CountryAliasResolver countryResolver,
-        SyntheticDataService synthetic,
-        IOptions<ImportOptions> options)
+        SyntheticDataService syntheticService,
+        NameNormalizer nameNormalizer,
+        IOptions<ImportOptions> options
+    )
     {
         _db = db;
         _csvReader = csvReader;
         _countryResolver = countryResolver;
-        _synthetic = synthetic;
+        _syntheticService = syntheticService;
+        _nameNormalizer = nameNormalizer;
         _options = options.Value;
     }
 
@@ -46,7 +44,7 @@ public class KaggleImporter
         Console.WriteLine($"Loaded {rows.Count} rows.");
 
         var unknownCompany = await EnsureUnknownCompanyAsync(cancellationToken);
-        var importerUser = await EnsureImporterUserAsync(cancellationToken);
+        var importerUsers = await EnsureFakeUsersAsync(cancellationToken);
 
         var countriesByName = await _db.Countries
             .ToDictionaryAsync(c => c.Name, c => c, StringComparer.OrdinalIgnoreCase, cancellationToken);
@@ -79,8 +77,6 @@ public class KaggleImporter
 
         var processed = 0;
 
-        using var transaction = _db.Database.BeginTransaction();
-
         foreach (var row in rows)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -94,14 +90,14 @@ public class KaggleImporter
             var countryEntity = _countryResolver.Resolve(row.Country, countriesByName);
             if (countryEntity == null)
             {
-                transaction.Rollback();
                 throw new Exception($"Country '{row.Country}' could not be resolved.");
             }
 
             var brand = EnsureBrand(row.BrandName, unknownCompany, brandsByName);
 
-            var perfumeNameTrimmed = row.PerfumeName.Trim();
-            var perfumeKey = $"{brand.Name}||{perfumeNameTrimmed}";
+            var normalizedPerfumeName = _nameNormalizer.Normalize(row.PerfumeName);
+            var perfumeKey = $"{brand.Name}||{normalizedPerfumeName}";
+
             if (perfumeKeySet.Contains(perfumeKey))
             {
                 continue;
@@ -109,7 +105,7 @@ public class KaggleImporter
 
             var perfume = new Perfume
             {
-                Name = perfumeNameTrimmed,
+                Name = normalizedPerfumeName,
                 BrandId = brand.BrandId,
                 CountryCode = countryEntity.Code,
                 LaunchYear = ParseYear(row.YearRaw),
@@ -125,14 +121,16 @@ public class KaggleImporter
             AddNotes(perfume, row.MiddleNotesRaw, "Middle", notesByName, noteTypesByName);
             AddNotes(perfume, row.BaseNotesRaw, "Base", notesByName, noteTypesByName);
 
-            foreach (var accord in row.GetAccords())
+            foreach (var rawAccord in row.GetAccords())
             {
-                if (!groupsByName.TryGetValue(accord, out var group))
+                var normalizedAccord = _nameNormalizer.Normalize(rawAccord);
+
+                if (!groupsByName.TryGetValue(normalizedAccord, out var group))
                 {
-                    group = new Group { Name = accord };
+                    group = new Group { Name = normalizedAccord };
                     _db.Groups.Add(group);
                     await _db.SaveChangesAsync(cancellationToken);
-                    groupsByName[accord] = group;
+                    groupsByName[normalizedAccord] = group;
                 }
 
                 perfume.Groups ??= new List<Group>();
@@ -149,12 +147,11 @@ public class KaggleImporter
 
             if (ratingCount > 0 && ratingValue > 0)
             {
-                await GenerateReviewsAsync(perfume, ratingValue, ratingCount, importerUser, cancellationToken);
-                await GenerateGenderVoteAsync(perfume, row.Gender, importerUser, gendersByName, cancellationToken);
+                await GenerateReviewsAsync(perfume, ratingValue, ratingCount, importerUsers[0], cancellationToken);
+                await GenerateGenderVotesAsync(perfume, row.Gender, ratingCount, importerUsers, gendersByName, cancellationToken);
             }
         }
 
-        transaction.Commit();
         Console.WriteLine($"Import finished. Processed {processed} rows.");
     }
 
@@ -165,55 +162,77 @@ public class KaggleImporter
 
         if (company == null)
         {
-            throw new ArgumentNullException("Unknown Company does not exist.");
+            company = new Company
+            {
+                Name = "Unknown"
+            };
+
+            _db.Companies.Add(company);
+            await _db.SaveChangesAsync(ct);
         }
 
         return company;
     }
 
-    private async Task<User> EnsureImporterUserAsync(CancellationToken ct)
+    private async Task<List<User>> EnsureFakeUsersAsync(CancellationToken ct)
     {
-        var user = await _db.Users
-            .FirstOrDefaultAsync(u => u.Username == "DataImporter", ct);
+        if (_options.FakeUserCount <= 0)
+            throw new InvalidOperationException("FakeUserCount must be > 0");
 
-        if (user == null)
+        var users = await _db.Users
+            .Where(u => u.Username.StartsWith("SystemUser_"))
+            .OrderBy(u => u.UserId)
+            .ToListAsync(ct);
+
+        var result = new List<User>(users);
+
+        var index = result.Count + 1;
+        while (result.Count < _options.FakeUserCount)
         {
-            user = new User
+            var username = $"SystemUser_{index:D3}";
+
+            var user = new User
             {
-                Username = "DataImporter",
-                Email = "importer@fragrance.log",
+                Username = username,
+                Email = $"{username}@fragrance.log",
                 Password = _options.ImporterUser.Password
             };
 
             _db.Users.Add(user);
             await _db.SaveChangesAsync(ct);
+
+            result.Add(user);
+            index++;
         }
 
-        return user;
+        return result;
     }
 
     private Brand EnsureBrand(
         string rawBrandName,
         Company unknownCompany,
-        Dictionary<string, Brand> brandsByName)
+        Dictionary<string, Brand> brandsByName
+    )
     {
-        var name = rawBrandName.Trim();
+        var normalized = _nameNormalizer.Normalize(rawBrandName);
 
-        if (!brandsByName.TryGetValue(name, out var brand))
+        if (!brandsByName.TryGetValue(normalized, out var brand))
         {
             brand = new Brand
             {
-                Name = name,
+                Name = normalized,
                 CompanyId = unknownCompany.CompanyId
             };
 
             _db.Brands.Add(brand);
             _db.SaveChanges();
-            brandsByName[name] = brand;
+
+            brandsByName[normalized] = brand;
         }
 
         return brand;
     }
+
 
     private int? ParseYear(string? raw)
     {
@@ -259,7 +278,8 @@ public class KaggleImporter
         string? notesRaw,
         string noteTypeName,
         Dictionary<string, Note> notesByName,
-        Dictionary<string, NoteType> noteTypesByName)
+        Dictionary<string, NoteType> noteTypesByName
+    )
     {
         if (string.IsNullOrWhiteSpace(notesRaw))
             return;
@@ -273,17 +293,19 @@ public class KaggleImporter
             .Where(n => n.Length > 0)
             .Distinct(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var n in split)
+        foreach (var rawNote in split)
         {
-            if (!notesByName.TryGetValue(n, out var note))
+            var normalizedNote = _nameNormalizer.Normalize(rawNote);
+
+            if (!notesByName.TryGetValue(normalizedNote, out var note))
             {
                 note = new Note
                 {
-                    Name = n
+                    Name = normalizedNote
                 };
                 _db.Notes.Add(note);
                 _db.SaveChanges();
-                notesByName[n] = note;
+                notesByName[normalizedNote] = note;
             }
 
             var perfumeNote = new PerfumeNote
@@ -302,9 +324,10 @@ public class KaggleImporter
         double ratingValue,
         int ratingCount,
         User importerUser,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
-        var ratings = _synthetic.BuildRatings(ratingValue, ratingCount);
+        var ratings = _syntheticService.BuildRatings(ratingValue, ratingCount);
         if (ratings.Count == 0)
             return;
 
@@ -325,36 +348,47 @@ public class KaggleImporter
         await _db.SaveChangesAsync(ct);
     }
 
-    private async Task GenerateGenderVoteAsync(
+    private async Task GenerateGenderVotesAsync(
         Perfume perfume,
         string? rawGender,
-        User importerUser,
+        int ratingCount,
+        List<User> fakeUsers,
         Dictionary<string, Gender> gendersByName,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
-        var genderName = _synthetic.MapGenderName(rawGender);
-        if (!gendersByName.TryGetValue(genderName, out var gender))
-        {
-            Console.WriteLine($"[WARN] Gender '{genderName}' not found in Genders table. Skipping gender vote.");
+        var maxVotes = fakeUsers.Count;
+        if (maxVotes <= 0)
             return;
+
+        var distribution = _syntheticService.BuildGenderDistribution(rawGender, maxVotes);
+        if (distribution.Count == 0)
+            return;
+
+        var userIndex = 0;
+
+        foreach (var kvp in distribution)
+        {
+            if (!gendersByName.TryGetValue(kvp.Key, out var gender))
+                continue;
+
+            for (int i = 0; i < kvp.Value; i++)
+            {
+                var user = fakeUsers[userIndex];
+                userIndex++;
+
+                var vote = new PerfumeGenderVote
+                {
+                    PerfumeId = perfume.PerfumeId,
+                    UserId = user.UserId,
+                    GenderId = gender.GenderId,
+                    VoteDate = DateTime.UtcNow
+                };
+
+                _db.PerfumeGenderVotes.Add(vote);
+            }
         }
 
-        // PK (PerfumeId, UserId) ⇒ only ONE vote allowed
-        var existingVote = await _db.PerfumeGenderVotes
-            .FindAsync(new object[] { perfume.PerfumeId, importerUser.UserId }, ct);
-
-        if (existingVote != null)
-            return;
-
-        var vote = new PerfumeGenderVote
-        {
-            PerfumeId = perfume.PerfumeId,
-            UserId = importerUser.UserId,
-            GenderId = gender.GenderId,
-            VoteDate = DateTime.UtcNow
-        };
-
-        _db.PerfumeGenderVotes.Add(vote);
         await _db.SaveChangesAsync(ct);
     }
 }
