@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.Entities;
 
+[Index("NoteId", Name = "UQ_NotePhotos_Note", IsUnique = true)]
 public partial class NotePhoto
 {
     [Key]
@@ -23,6 +24,6 @@ public partial class NotePhoto
     public int NoteId { get; set; }
 
     [ForeignKey("NoteId")]
-    [InverseProperty("NotePhotos")]
+    [InverseProperty("NotePhoto")]
     public virtual Note Note { get; set; } = null!;
 }

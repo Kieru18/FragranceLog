@@ -15,6 +15,7 @@ public partial class Group
     [StringLength(30)]
     public string Name { get; set; } = null!;
 
-    [InverseProperty("Group")]
+    [ForeignKey("GroupId")]
+    [InverseProperty("Groups")]
     public virtual ICollection<Perfume> Perfumes { get; set; } = new List<Perfume>();
 }

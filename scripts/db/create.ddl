@@ -55,11 +55,7 @@ CREATE TABLE Perfumes (
     Description NVARCHAR(2000),
     LaunchYear INT,
     BrandId INT NOT NULL,
-    CountryCode NVARCHAR(3) NOT NULL,
-    GroupId INT NOT NULL,
-    GenderId INT NOT NULL,
-    LongevityId INT NOT NULL,
-    SillageId INT NOT NULL
+    CountryCode NVARCHAR(3) NOT NULL
 );
 
 CREATE TABLE Notes (
@@ -71,6 +67,11 @@ CREATE TABLE Notes (
 CREATE TABLE PerfumeNote (
     PerfumeId INT NOT NULL,
     NoteId INT NOT NULL
+);
+
+CREATE TABLE PerfumeGroup (
+    PerfumeId INT NOT NULL,
+    GroupId INT NOT NULL
 );
 
 CREATE TABLE Reviews (
@@ -164,6 +165,7 @@ ALTER TABLE Users ADD CONSTRAINT PK_Users PRIMARY KEY (UserId);
 ALTER TABLE Perfumes ADD CONSTRAINT PK_Perfumes PRIMARY KEY (PerfumeId);
 ALTER TABLE Notes ADD CONSTRAINT PK_Notes PRIMARY KEY (NoteId);
 ALTER TABLE PerfumeNote ADD CONSTRAINT PK_PerfumeNote PRIMARY KEY (PerfumeId, NoteId);
+ALTER TABLE PerfumeGroup ADD CONSTRAINT PK_PerfumeGroup PRIMARY KEY (PerfumeId, GroupId);
 ALTER TABLE Reviews ADD CONSTRAINT PK_Reviews PRIMARY KEY (ReviewId);
 ALTER TABLE PerfumePhotos ADD CONSTRAINT PK_PerfumePhotos PRIMARY KEY (PhotoId);
 ALTER TABLE NotePhotos ADD CONSTRAINT PK_NotePhotos PRIMARY KEY (PhotoId);
@@ -190,37 +192,38 @@ ALTER TABLE Users ADD CONSTRAINT UQ_Users_Email UNIQUE (Email);
 ALTER TABLE Notes ADD CONSTRAINT UQ_Notes_Name UNIQUE (Name);
 ALTER TABLE Seasons ADD CONSTRAINT UQ_Seasons_Name UNIQUE (Name);
 ALTER TABLE Daytimes ADD CONSTRAINT UQ_Daytimes_Name UNIQUE (Name);
+ALTER TABLE PerfumePhotos ADD CONSTRAINT UQ_PerfumePhotos_Perfume UNIQUE (PerfumeId);
+ALTER TABLE NotePhotos ADD CONSTRAINT UQ_NotePhotos_Note UNIQUE (NoteId);
+ALTER TABLE ReviewPhotos ADD CONSTRAINT UQ_ReviewPhotos_Review UNIQUE (ReviewId);
 
 -- Foreign Keys
 ALTER TABLE Brands ADD CONSTRAINT FK_Brands_Company FOREIGN KEY (CompanyId) REFERENCES Companies(CompanyId);
 ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Brand FOREIGN KEY (BrandId) REFERENCES Brands(BrandId);
 ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Country FOREIGN KEY (CountryCode) REFERENCES Countries(Code);
-ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Group FOREIGN KEY (GroupId) REFERENCES Groups(GroupId);
-ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Gender FOREIGN KEY (GenderId) REFERENCES Genders(GenderId);
-ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Longevity FOREIGN KEY (LongevityId) REFERENCES Longevity(LongevityId);
-ALTER TABLE Perfumes ADD CONSTRAINT FK_Perfumes_Sillage FOREIGN KEY (SillageId) REFERENCES Sillage(SillageId);
 ALTER TABLE Notes ADD CONSTRAINT FK_Notes_NoteType FOREIGN KEY (NoteTypeId) REFERENCES NoteTypes(NoteTypeId);
 ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId) ON DELETE CASCADE;
 ALTER TABLE PerfumeNote ADD CONSTRAINT FK_PerfumeNote_Note FOREIGN KEY (NoteId) REFERENCES Notes(NoteId) ON DELETE CASCADE;
+ALTER TABLE PerfumeGroup ADD CONSTRAINT FK_PerfumeGroup_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
+ALTER TABLE PerfumeGroup ADD CONSTRAINT FK_PerfumeGroup_Group FOREIGN KEY (GroupId) REFERENCES Groups(GroupId);
 ALTER TABLE Reviews ADD CONSTRAINT FK_Reviews_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
 ALTER TABLE Reviews ADD CONSTRAINT FK_Reviews_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
 ALTER TABLE PerfumePhotos ADD CONSTRAINT FK_PerfumePhotos_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId) ON DELETE CASCADE;
 ALTER TABLE NotePhotos ADD CONSTRAINT FK_NotePhotos_Note FOREIGN KEY (NoteId) REFERENCES Notes(NoteId) ON DELETE CASCADE;
 ALTER TABLE ReviewPhotos ADD CONSTRAINT FK_ReviewPhotos_Review FOREIGN KEY (ReviewId) REFERENCES Reviews(ReviewId) ON DELETE SET NULL;
 ALTER TABLE PerfumeSillageVotes ADD CONSTRAINT FK_SillageVotes_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
-ALTER TABLE PerfumeSillageVotes ADD CONSTRAINT FK_SillageVotes_User    FOREIGN KEY (UserId)    REFERENCES Users(UserId);
+ALTER TABLE PerfumeSillageVotes ADD CONSTRAINT FK_SillageVotes_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
 ALTER TABLE PerfumeSillageVotes ADD CONSTRAINT FK_SillageVotes_Sillage FOREIGN KEY (SillageId) REFERENCES Sillage(SillageId);
-ALTER TABLE PerfumeLongevityVotes ADD CONSTRAINT FK_LongevityVotes_Perfume  FOREIGN KEY (PerfumeId)   REFERENCES Perfumes(PerfumeId);
-ALTER TABLE PerfumeLongevityVotes ADD CONSTRAINT FK_LongevityVotes_User     FOREIGN KEY (UserId)      REFERENCES Users(UserId);
+ALTER TABLE PerfumeLongevityVotes ADD CONSTRAINT FK_LongevityVotes_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
+ALTER TABLE PerfumeLongevityVotes ADD CONSTRAINT FK_LongevityVotes_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
 ALTER TABLE PerfumeLongevityVotes ADD CONSTRAINT FK_LongevityVotes_Longevity FOREIGN KEY (LongevityId) REFERENCES Longevity(LongevityId);
 ALTER TABLE PerfumeGenderVotes ADD CONSTRAINT FK_GenderVotes_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
-ALTER TABLE PerfumeGenderVotes ADD CONSTRAINT FK_GenderVotes_User    FOREIGN KEY (UserId)    REFERENCES Users(UserId);
-ALTER TABLE PerfumeGenderVotes ADD CONSTRAINT FK_GenderVotes_Gender  FOREIGN KEY (GenderId)  REFERENCES Genders(GenderId);
+ALTER TABLE PerfumeGenderVotes ADD CONSTRAINT FK_GenderVotes_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
+ALTER TABLE PerfumeGenderVotes ADD CONSTRAINT FK_GenderVotes_Gender FOREIGN KEY (GenderId) REFERENCES Genders(GenderId);
 ALTER TABLE PerfumeSeasonVotes ADD CONSTRAINT FK_SeasonVotes_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
-ALTER TABLE PerfumeSeasonVotes ADD CONSTRAINT FK_SeasonVotes_User    FOREIGN KEY (UserId)    REFERENCES Users(UserId);
-ALTER TABLE PerfumeSeasonVotes ADD CONSTRAINT FK_SeasonVotes_Season  FOREIGN KEY (SeasonId)  REFERENCES Seasons(SeasonId);
+ALTER TABLE PerfumeSeasonVotes ADD CONSTRAINT FK_SeasonVotes_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
+ALTER TABLE PerfumeSeasonVotes ADD CONSTRAINT FK_SeasonVotes_Season FOREIGN KEY (SeasonId) REFERENCES Seasons(SeasonId);
 ALTER TABLE PerfumeDaytimeVotes ADD CONSTRAINT FK_DaytimeVotes_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
-ALTER TABLE PerfumeDaytimeVotes ADD CONSTRAINT FK_DaytimeVotes_User    FOREIGN KEY (UserId)    REFERENCES Users(UserId);
+ALTER TABLE PerfumeDaytimeVotes ADD CONSTRAINT FK_DaytimeVotes_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
 ALTER TABLE PerfumeDaytimeVotes ADD CONSTRAINT FK_DaytimeVotes_Daytime FOREIGN KEY (DaytimeId) REFERENCES Daytimes(DaytimeId);
 
 -- Check Constraints
@@ -239,6 +242,6 @@ ALTER TABLE Perfumes ADD CONSTRAINT CHK_Perfumes_LaunchYear CHECK (LaunchYear IS
 ALTER TABLE Notes ADD CONSTRAINT CHK_Notes_Name CHECK (LEN(Name) > 0);
 ALTER TABLE Reviews ADD CONSTRAINT CHK_Reviews_Rating CHECK (Rating BETWEEN 1 AND 5);
 ALTER TABLE Reviews ADD CONSTRAINT CHK_Reviews_Comment CHECK (Comment IS NULL OR LEN(Comment) <= 2000);
-ALTER TABLE PerfumePhotos ADD CONSTRAINT CHK_PerfumePhotos_Path CHECK (LEN(Path) > 0 AND (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg'));
-ALTER TABLE NotePhotos ADD CONSTRAINT CHK_NotePhotos_Path CHECK (LEN(Path) > 0 AND (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg'));
-ALTER TABLE ReviewPhotos ADD CONSTRAINT CHK_ReviewPhotos_Path CHECK (LEN(Path) > 0 AND (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg'));
+ALTER TABLE PerfumePhotos ADD CONSTRAINT CHK_PerfumePhotos_Path CHECK (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg');
+ALTER TABLE NotePhotos ADD CONSTRAINT CHK_NotePhotos_Path CHECK (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg');
+ALTER TABLE ReviewPhotos ADD CONSTRAINT CHK_ReviewPhotos_Path CHECK (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg');

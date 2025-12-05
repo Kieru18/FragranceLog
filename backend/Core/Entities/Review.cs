@@ -28,7 +28,7 @@ public partial class Review
     public virtual Perfume Perfume { get; set; } = null!;
 
     [InverseProperty("Review")]
-    public virtual ICollection<ReviewPhoto> ReviewPhotos { get; set; } = new List<ReviewPhoto>();
+    public virtual ReviewPhoto? ReviewPhoto { get; set; }
 
     [ForeignKey("UserId")]
     [InverseProperty("Reviews")]

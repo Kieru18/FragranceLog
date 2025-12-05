@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.Entities;
 
+[Index("ReviewId", Name = "UQ_ReviewPhotos_Review", IsUnique = true)]
 public partial class ReviewPhoto
 {
     [Key]
@@ -23,6 +24,6 @@ public partial class ReviewPhoto
     public int? ReviewId { get; set; }
 
     [ForeignKey("ReviewId")]
-    [InverseProperty("ReviewPhotos")]
+    [InverseProperty("ReviewPhoto")]
     public virtual Review? Review { get; set; }
 }

@@ -18,7 +18,4 @@ public partial class Sillage
 
     [InverseProperty("Sillage")]
     public virtual ICollection<PerfumeSillageVote> PerfumeSillageVotes { get; set; } = new List<PerfumeSillageVote>();
-
-    [InverseProperty("Sillage")]
-    public virtual ICollection<Perfume> Perfumes { get; set; } = new List<Perfume>();
 }

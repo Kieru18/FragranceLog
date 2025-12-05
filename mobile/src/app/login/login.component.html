@@ -1,0 +1,73 @@
+<GridLayout rows="*" class="ns-dark bg-dark">
+  <ScrollView row="0" class="bg-dark mt-16">
+    <StackLayout class="px-6 pb-8">
+
+      <Label text="Welcome back"
+             class="text-2xl font-semibold text-text-primary mb-1"></Label>
+
+      <Label text="Log in to your FragranceLog account"
+             class="text-sm text-text-secondary mb-6"></Label>
+
+      <StackLayout [formGroup]="form">
+
+        <StackLayout class="mb-4">
+          <Label text="Email or username"
+                 class="text-xs text-text-secondary mb-1"></Label>
+
+          <TextField formControlName="usernameOrEmail"
+                     class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
+                     hint="your@email.com"></TextField>
+        </StackLayout>
+
+        <StackLayout class="mb-4">
+          <Label text="Password"
+                 class="text-xs text-text-secondary mb-1"></Label>
+
+          <TextField formControlName="password"
+                     secure="true"
+                     class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
+                     hint="Enter your password"></TextField>
+        </StackLayout>
+
+      </StackLayout>
+
+      <GridLayout class="mt-6 bg-brand-gold rounded-2xl"
+                  [class.opacity-50]="form.invalid || loading"
+                  [isEnabled]="!loading"
+                  (tap)="!loading && onSubmit()">
+
+        <Label text="Log in"
+               class="text-bg-dark font-semibold uppercase py-3"
+               horizontalAlignment="center"
+               verticalAlignment="center"
+               [opacity]="loading ? 0 : 1"></Label>
+
+        <ActivityIndicator [busy]="loading"
+                           color="#0D0D0D"
+                           [opacity]="loading ? 1 : 0"
+                           horizontalAlignment="center"></ActivityIndicator>
+      </GridLayout>
+
+      <Label *ngIf="error"
+             [text]="error"
+             class="mt-3 text-xs text-red-500"></Label>
+
+      <GridLayout columns="*, *" class="mt-10">
+        <StackLayout col="0" class="items-start" verticalAlignment="bottom">
+          <Label text="Don’t have an account?"
+                 class="text-xs text-text-secondary mb-1"></Label>
+          <Label text="Register"
+                 class="text-sm text-highlight font-semibold"
+                 (tap)="goToRegister()"></Label>
+        </StackLayout>
+
+        <Label col="1" text="Forgot password?"
+               class="text-sm text-highlight font-semibold"
+               horizontalAlignment="right"
+               verticalAlignment="bottom"
+               (tap)="goToForgotPassword()"></Label>
+      </GridLayout>
+
+    </StackLayout>
+  </ScrollView>
+</GridLayout>

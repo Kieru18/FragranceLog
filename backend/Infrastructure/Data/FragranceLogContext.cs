@@ -1,4 +1,6 @@
-﻿using Core.Entities;
+﻿using System;
+using System.Collections.Generic;
+using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -58,7 +60,6 @@ public partial class FragranceLogContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AI");
@@ -96,7 +97,7 @@ public partial class FragranceLogContext : DbContext
         {
             entity.Property(e => e.UploadDate).HasDefaultValueSql("(getdate())");
 
-            entity.HasOne(d => d.Note).WithMany(p => p.NotePhotos).HasConstraintName("FK_NotePhotos_Note");
+            entity.HasOne(d => d.Note).WithOne(p => p.NotePhoto).HasConstraintName("FK_NotePhotos_Note");
         });
 
         modelBuilder.Entity<NoteType>(entity =>
@@ -114,21 +115,22 @@ public partial class FragranceLogContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Perfumes_Country");
 
-            entity.HasOne(d => d.Gender).WithMany(p => p.Perfumes)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Perfumes_Gender");
-
-            entity.HasOne(d => d.Group).WithMany(p => p.Perfumes)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Perfumes_Group");
-
-            entity.HasOne(d => d.Longevity).WithMany(p => p.Perfumes)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Perfumes_Longevity");
-
-            entity.HasOne(d => d.Sillage).WithMany(p => p.Perfumes)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Perfumes_Sillage");
+            entity.HasMany(d => d.Groups).WithMany(p => p.Perfumes)
+                .UsingEntity<Dictionary<string, object>>(
+                    "PerfumeGroup",
+                    r => r.HasOne<Group>().WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_PerfumeGroup_Group"),
+                    l => l.HasOne<Perfume>().WithMany()
+                        .HasForeignKey("PerfumeId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_PerfumeGroup_Perfume"),
+                    j =>
+                    {
+                        j.HasKey("PerfumeId", "GroupId");
+                        j.ToTable("PerfumeGroup");
+                    });
 
             entity.HasMany(d => d.Notes).WithMany(p => p.Perfumes)
                 .UsingEntity<Dictionary<string, object>>(
@@ -207,7 +209,7 @@ public partial class FragranceLogContext : DbContext
         {
             entity.Property(e => e.UploadDate).HasDefaultValueSql("(getdate())");
 
-            entity.HasOne(d => d.Perfume).WithMany(p => p.PerfumePhotos).HasConstraintName("FK_PerfumePhotos_Perfume");
+            entity.HasOne(d => d.Perfume).WithOne(p => p.PerfumePhoto).HasConstraintName("FK_PerfumePhotos_Perfume");
         });
 
         modelBuilder.Entity<PerfumeSeasonVote>(entity =>
@@ -265,7 +267,7 @@ public partial class FragranceLogContext : DbContext
         {
             entity.Property(e => e.UploadDate).HasDefaultValueSql("(getdate())");
 
-            entity.HasOne(d => d.Review).WithMany(p => p.ReviewPhotos)
+            entity.HasOne(d => d.Review).WithOne(p => p.ReviewPhoto)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_ReviewPhotos_Review");
         });

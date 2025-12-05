@@ -46,9 +46,21 @@ namespace Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<PasswordHasher>();
             builder.Services.AddScoped<JwtService>();
-
+            
             builder.Services.AddDbContext<FragranceLogContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("FragranceLog")));
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("FragranceLog"),
+                    sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 3,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null
+                        );
+                    }
+                )
+            );
+
 
             var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 

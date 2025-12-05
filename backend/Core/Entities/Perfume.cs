@@ -24,14 +24,6 @@ public partial class Perfume
     [StringLength(3)]
     public string CountryCode { get; set; } = null!;
 
-    public int GroupId { get; set; }
-
-    public int GenderId { get; set; }
-
-    public int LongevityId { get; set; }
-
-    public int SillageId { get; set; }
-
     [ForeignKey("BrandId")]
     [InverseProperty("Perfumes")]
     public virtual Brand Brand { get; set; } = null!;
@@ -39,18 +31,6 @@ public partial class Perfume
     [ForeignKey("CountryCode")]
     [InverseProperty("Perfumes")]
     public virtual Country CountryCodeNavigation { get; set; } = null!;
-
-    [ForeignKey("GenderId")]
-    [InverseProperty("Perfumes")]
-    public virtual Gender Gender { get; set; } = null!;
-
-    [ForeignKey("GroupId")]
-    [InverseProperty("Perfumes")]
-    public virtual Group Group { get; set; } = null!;
-
-    [ForeignKey("LongevityId")]
-    [InverseProperty("Perfumes")]
-    public virtual Longevity Longevity { get; set; } = null!;
 
     [InverseProperty("Perfume")]
     public virtual ICollection<PerfumeDaytimeVote> PerfumeDaytimeVotes { get; set; } = new List<PerfumeDaytimeVote>();
@@ -62,7 +42,7 @@ public partial class Perfume
     public virtual ICollection<PerfumeLongevityVote> PerfumeLongevityVotes { get; set; } = new List<PerfumeLongevityVote>();
 
     [InverseProperty("Perfume")]
-    public virtual ICollection<PerfumePhoto> PerfumePhotos { get; set; } = new List<PerfumePhoto>();
+    public virtual PerfumePhoto? PerfumePhoto { get; set; }
 
     [InverseProperty("Perfume")]
     public virtual ICollection<PerfumeSeasonVote> PerfumeSeasonVotes { get; set; } = new List<PerfumeSeasonVote>();
@@ -73,9 +53,9 @@ public partial class Perfume
     [InverseProperty("Perfume")]
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
-    [ForeignKey("SillageId")]
+    [ForeignKey("PerfumeId")]
     [InverseProperty("Perfumes")]
-    public virtual Sillage Sillage { get; set; } = null!;
+    public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
 
     [ForeignKey("PerfumeId")]
     [InverseProperty("Perfumes")]

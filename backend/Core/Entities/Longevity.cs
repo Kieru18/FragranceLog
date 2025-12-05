@@ -18,7 +18,4 @@ public partial class Longevity
 
     [InverseProperty("Longevity")]
     public virtual ICollection<PerfumeLongevityVote> PerfumeLongevityVotes { get; set; } = new List<PerfumeLongevityVote>();
-
-    [InverseProperty("Longevity")]
-    public virtual ICollection<Perfume> Perfumes { get; set; } = new List<Perfume>();
 }

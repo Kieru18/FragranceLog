@@ -18,7 +18,7 @@ public partial class Note
     public int NoteTypeId { get; set; }
 
     [InverseProperty("Note")]
-    public virtual ICollection<NotePhoto> NotePhotos { get; set; } = new List<NotePhoto>();
+    public virtual NotePhoto? NotePhoto { get; set; }
 
     [ForeignKey("NoteTypeId")]
     [InverseProperty("Notes")]

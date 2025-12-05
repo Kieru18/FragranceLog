@@ -1,17 +1,16 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { registerElement } from '@nativescript/angular';
-import { RouterLink } from '@angular/router';
 import { Image, Page } from '@nativescript/core';
-import { NgForOf, NgIf } from '@angular/common';
+import { NgForOf } from '@angular/common';
 
 registerElement('Image', () => Image);
 
 @Component({
   standalone: true,
-  selector: 'ns-home',
+  selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  imports: [RouterLink, NgForOf, NgIf],
+  imports: [NgForOf],
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class HomeComponent {

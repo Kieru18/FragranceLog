@@ -17,7 +17,4 @@ public partial class Gender
 
     [InverseProperty("Gender")]
     public virtual ICollection<PerfumeGenderVote> PerfumeGenderVotes { get; set; } = new List<PerfumeGenderVote>();
-
-    [InverseProperty("Gender")]
-    public virtual ICollection<Perfume> Perfumes { get; set; } = new List<Perfume>();
 }

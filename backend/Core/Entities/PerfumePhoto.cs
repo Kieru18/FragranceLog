@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.Entities;
 
+[Index("PerfumeId", Name = "UQ_PerfumePhotos_Perfume", IsUnique = true)]
 public partial class PerfumePhoto
 {
     [Key]
@@ -23,6 +24,6 @@ public partial class PerfumePhoto
     public int PerfumeId { get; set; }
 
     [ForeignKey("PerfumeId")]
-    [InverseProperty("PerfumePhotos")]
+    [InverseProperty("PerfumePhoto")]
     public virtual Perfume Perfume { get; set; } = null!;
 }
