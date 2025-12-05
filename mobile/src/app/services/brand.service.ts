@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { BrandLookupItemDto } from '../models/brandlookupitem.dto';
+import { BrandDictionaryItemDto } from '../models/branddictionaryitem.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class BrandService {
 
   constructor(private http: HttpClient) {}
 
-  getBrands(): Observable<BrandLookupItemDto[]> {
-    return this.http.get<BrandLookupItemDto[]>(`${this.baseUrl}/brands/minimal`);
+  getBrandsDictionary(): Observable<BrandDictionaryItemDto[]> {
+    return this.http.get<BrandDictionaryItemDto[]>(`${this.baseUrl}/dictionary`);
   }
 }
