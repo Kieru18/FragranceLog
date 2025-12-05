@@ -1,8 +1,8 @@
-import { PerfumeSearchItemDto } from "./perfumesearchitem.dto";
+import { PerfumeSearchResultDto } from "./perfumesearchresult.dto";
 
 export interface PerfumeSearchResponseDto {
   totalCount: number;
   page: number;
   pageSize: number;
-  items: PerfumeSearchItemDto[];
+  items: PerfumeSearchResultDto[];
 }

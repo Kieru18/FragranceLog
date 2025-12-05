@@ -1,4 +1,4 @@
-export interface PerfumeSearchItemDto {
+export interface PerfumeSearchResultDto {
   perfumeId: number;
   name: string;
   brandName: string;

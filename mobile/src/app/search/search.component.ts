@@ -10,7 +10,7 @@ import { BehaviorSubject, Subject, takeUntil,
          debounceTime, distinctUntilChanged,
          switchMap, of, tap, catchError } from 'rxjs';
 import { Page } from '@nativescript/core';
-import { PerfumeSearchItemDto } from '../models/perfumesearchitem.dto';
+import { PerfumeSearchResultDto } from '../models/perfumesearchresult.dto';
 import { BrandLookupItemDto } from '../models/brandlookupitem.dto';
 import { GroupLookupItemDto } from '../models/grouplookupitem.dto';
 import { PerfumeSearchRequestDto } from '../models/perfumesearchrequest.dto';
@@ -30,7 +30,7 @@ import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 })
 export class SearchComponent implements OnInit, OnDestroy {
   loading = false;
-  results: PerfumeSearchItemDto[] = [];
+  results: PerfumeSearchResultDto[] = [];
   totalCount = 0;
 
   private page = 1;
@@ -225,7 +225,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     return this.selectedGroupIds.includes(group.id);
   }
 
-  formatRating(item: PerfumeSearchItemDto): string {
+  formatRating(item: PerfumeSearchResultDto): string {
     if (item.averageRating == null || item.reviewsCount === 0) {
       return 'No rating';
     }
