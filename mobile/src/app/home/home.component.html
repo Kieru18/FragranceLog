@@ -72,7 +72,7 @@
 
     <GridLayout row="2" columns="*,*,*,*,*" class="py-3 px-4 bg-dark-secondary border-t border-gray-800">
         <Button col="0" text="🏠" [nsRouterLink]="['/home']" class="text-text-secondary text-sm bg-transparent border-0"></Button>
-        <Button col="1" text="🔍" [nsRouterLink]="['/explore']" class="text-text-secondary text-sm bg-transparent border-0"></Button>
+        <Button col="1" text="🔍" (tap)="goToSearch()" class="text-text-secondary text-sm bg-transparent border-0"></Button>
         <Button col="2" text="➕" [nsRouterLink]="['/add']" class="h-12 w-12 rounded-full bg-brand-gold text-bg-dark font-bold"></Button>
         <Button col="3" text="📚" [nsRouterLink]="['/collection']" class="text-text-secondary text-sm bg-transparent border-0"></Button>
         <Button col="4" text="👤" [nsRouterLink]="['/profile']" class="text-text-secondary text-sm bg-transparent border-0"></Button>
