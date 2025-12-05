@@ -15,6 +15,7 @@ import { BrandLookupItemDto } from '../models/brandlookupitem.dto';
 import { GroupLookupItemDto } from '../models/grouplookupitem.dto';
 import { PerfumeSearchRequestDto } from '../models/perfumesearchrequest.dto';
 import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
+import { CommonService } from '../services/common.service';
 
 @Component({
   standalone: true,
@@ -32,6 +33,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   loading = false;
   results: PerfumeSearchResultDto[] = [];
   totalCount = 0;
+  errorMessage: string | null = null;
 
   private page = 1;
   private readonly pageSize = 25;
@@ -56,7 +58,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     private readonly brandService: BrandService,
     private readonly groupService: GroupService,
     private readonly router: Router,
-    private pageCore: Page
+    private pageCore: Page,
+    private common: CommonService
   ) {
     this.pageCore.actionBarHidden = true;
   }
@@ -92,8 +95,9 @@ export class SearchComponent implements OnInit, OnDestroy {
           return this.perfumeService.searchPerfumes(req).pipe(
             tap(() => (this.loading = false)),
             catchError(err => {
-              console.error('Search error', err);
+              console.error('Search error', err); // @DELETE ME
               this.loading = false;
+              this.errorMessage = this.common.getErrorMessage(err, 'Search resulted in application error.');
               return of<PerfumeSearchResponseDto>({
                 totalCount: 0,
                 page: this.page,
@@ -144,6 +148,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.page = 1;
     this.results = [];
     this.hasMore = true;
+    this.errorMessage = null;
     this.refresh$.next();
   }
 

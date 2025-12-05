@@ -13,7 +13,7 @@
       <TextField col="0"
                  [formControl]="searchControl"
                  class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-2 mr-2"
-                 hint="Type perfume name..."
+                 hint="Find your perfume here..."
                  returnKeyType="search" />
 
       <StackLayout col="1"
@@ -29,7 +29,11 @@
     <Label *ngIf="!loading && !results.length"
            text="No perfumes found."
            class="mt-6 text-sm text-text-secondary"></Label>
-
+    <Label
+      *ngIf="!loading && results.length"
+      [text]="'Found ' + totalCount + ' perfumes matching the criteria.'"
+      class="mt-4 text-xs text-text-secondary"
+    ></Label>
     <ListView [items]="results"
               class="mt-2"
               (itemTap)="onPerfumeTap($event)"
@@ -41,12 +45,12 @@
           <StackLayout width="56" height="56"
                        class="mr-3 rounded-2xl bg-dark border border-dark-secondary" />
 
-          <StackLayout>
+          <StackLayout bg-dark-secondary rounded-2xl px-4 py-3 mb-3>
             <Label [text]="item.name"
                    class="text-text-primary font-semibold text-base mb-0.5"
                    textWrap="true"></Label>
 
-            <Label [text]="item.brandName"
+            <Label [text]="item.brand"
                    class="text-text-secondary text-xs mb-1"></Label>
 
             <GridLayout columns="auto, auto"
@@ -63,9 +67,14 @@
       </ng-template>
     </ListView>
 
-    <ActivityIndicator [busy]="loading"
-                       class="mt-3"
-                       horizontalAlignment="center" />
+    <ActivityIndicator
+      *ngIf="loading"
+      busy="true"
+      class="mt-4"
+      color="#D3A54A"
+      horizontalAlignment="center"
+    ></ActivityIndicator>
+
   </StackLayout>
 
   <GridLayout *ngIf="showFilters"
