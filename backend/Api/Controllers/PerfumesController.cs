@@ -20,7 +20,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("search")]
-        public async Task<ActionResult<IReadOnlyList<PerfumeSearchResultDto>>> Search(
+        public async Task<ActionResult<PerfumeSearchResponseDto>> Search(
             [FromBody] PerfumeSearchRequestDto req,
         CancellationToken ct)
         {
@@ -54,6 +54,8 @@ namespace Api.Controllers
             if (req.MinRating != null && req.BrandId != 0)
                 query = query.Where(x => x.AvgRating >= req.MinRating);
 
+            var totalCount = await query.CountAsync(ct);
+
             var result = await query
                 .OrderByDescending(x =>
                     q != null && x.Perfume.Name.ToLower().StartsWith(q) ? 3 :
@@ -72,7 +74,13 @@ namespace Api.Controllers
                 })
                 .ToListAsync(ct);
 
-            return Ok(result);
+            return Ok(new PerfumeSearchResponseDto
+            {
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize,
+                Items = result
+            });
         }
     }
 }
