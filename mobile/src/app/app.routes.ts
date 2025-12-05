@@ -21,6 +21,10 @@ export const routes: Routes = [
   {
     path: 'forgot-password',
     loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent)
-  }
-
+  },
+  {
+    path: 'search',
+    loadComponent: () => import('./search/search.component').then(m => m.SearchComponent)
+  },
+  // { path: 'perfume/:id', loadComponent: () => import('./perfume/perfume.component').then(m => m.PerfumeComponent) }
 ];
