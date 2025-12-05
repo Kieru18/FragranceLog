@@ -1,11 +1,8 @@
-import { PerfumeSortBy, PerfumeSortDir } from "./types";
-
 export interface PerfumeSearchRequestDto {
   query?: string | null;
+  brandId?: number | null;
+  countryCode?: string | null;
+  minRating?: number | null;
   page: number;
   pageSize: number;
-  brandId?: number | null;
-  groupIds?: number[];
-  sortBy: PerfumeSortBy;
-  sortDir: PerfumeSortDir;
 }

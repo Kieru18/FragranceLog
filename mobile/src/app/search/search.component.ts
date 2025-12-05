@@ -84,9 +84,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             page: this.page,
             pageSize: this.pageSize,
             brandId: this.selectedBrandId,
-            groupIds: this.selectedGroupIds.length ? this.selectedGroupIds : undefined,
-            sortBy: 'relevance',
-            sortDir: 'desc'
+            // groupIds: this.selectedGroupIds.length ? this.selectedGroupIds : undefined,
           };
 
           this.loading = true;
