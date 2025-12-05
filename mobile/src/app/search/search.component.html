@@ -1,0 +1,163 @@
+<GridLayout rows="auto, *"
+            class="ns-dark bg-dark">
+
+  <StackLayout row="0"
+               class="px-6 pt-10 pb-3 bg-dark">
+    <Label text="Search perfumes"
+           class="text-2xl font-semibold text-text-primary mb-1"></Label>
+
+    <Label [text]="filtersSummary"
+           class="text-xs text-text-secondary mb-3"></Label>
+
+    <GridLayout columns="*, auto" class="items-center">
+      <TextField col="0"
+                 [formControl]="searchControl"
+                 class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-2 mr-2"
+                 hint="Type perfume name..."
+                 returnKeyType="search" />
+
+      <StackLayout col="1"
+                   class="bg-dark-secondary rounded-2xl px-4 py-2 items-center justify-center"
+                   (tap)="toggleFilters()">
+        <Label text="Filters"
+               class="text-xs text-text-primary"></Label>
+      </StackLayout>
+    </GridLayout>
+  </StackLayout>
+
+  <StackLayout row="1" class="px-6 pb-6">
+    <Label *ngIf="!loading && !results.length"
+           text="No perfumes found."
+           class="mt-6 text-sm text-text-secondary"></Label>
+
+    <ListView [items]="results"
+              class="mt-2"
+              (itemTap)="onPerfumeTap($event)"
+              (loadMoreItems)="onLoadMore()">
+      <ng-template let-item="item">
+        <GridLayout columns="auto, *"
+                    class="mb-3 bg-dark-secondary rounded-2xl px-4 py-3">
+
+          <StackLayout width="56" height="56"
+                       class="mr-3 rounded-2xl bg-dark border border-dark-secondary" />
+
+          <StackLayout>
+            <Label [text]="item.name"
+                   class="text-text-primary font-semibold text-base mb-0.5"
+                   textWrap="true"></Label>
+
+            <Label [text]="item.brandName"
+                   class="text-text-secondary text-xs mb-1"></Label>
+
+            <GridLayout columns="auto, auto"
+                        class="items-center">
+              <Label text="★"
+                     col="0"
+                     class="text-brand-gold text-xs mr-1"></Label>
+              <Label [text]="formatRating(item)"
+                     col="1"
+                     class="text-text-secondary text-xs"></Label>
+            </GridLayout>
+          </StackLayout>
+        </GridLayout>
+      </ng-template>
+    </ListView>
+
+    <ActivityIndicator [busy]="loading"
+                       class="mt-3"
+                       horizontalAlignment="center" />
+  </StackLayout>
+
+  <GridLayout *ngIf="showFilters"
+              rows="*, auto"
+              rowSpan="2">
+
+    <StackLayout row="0"
+                 class="bg-black opacity-60"
+                 (tap)="toggleFilters()"></StackLayout>
+
+    <StackLayout row="1"
+                 class="bg-dark-secondary rounded-t-3xl px-6 pt-4 pb-6"
+                 height="75%">
+      <Label text="Filters"
+             class="text-lg font-semibold text-text-primary mb-4"></Label>
+
+      <StackLayout class="mb-4">
+        <Label text="Brand"
+               class="text-xs text-text-secondary mb-1"></Label>
+
+        <TextField [(ngModel)]="brandSearchText"
+                   class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
+                   hint="Search brands..." />
+
+        <ScrollView height="120" class="bg-dark rounded-2xl">
+          <StackLayout>
+            <StackLayout class="px-4 py-2"
+                         (tap)="selectBrand(null)">
+              <Label text="Any brand"
+                     [class.text-highlight]="selectedBrandId === null"
+                     class="text-xs text-text-primary"></Label>
+            </StackLayout>
+
+            <StackLayout *ngFor="let b of filteredBrands"
+                         class="px-4 py-2 border-t border-dark-secondary"
+                         (tap)="selectBrand(b)">
+              <GridLayout columns="*, auto">
+                <Label [text]="b.name"
+                       class="text-xs text-text-primary"></Label>
+
+                <Label *ngIf="isBrandSelected(b)"
+                       text="●"
+                       col="1"
+                       class="text-brand-gold text-xs"></Label>
+              </GridLayout>
+            </StackLayout>
+          </StackLayout>
+        </ScrollView>
+      </StackLayout>
+
+      <StackLayout class="mb-4">
+        <Label text="Groups"
+               class="text-xs text-text-secondary mb-1"></Label>
+
+        <TextField [(ngModel)]="groupSearchText"
+                   class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
+                   hint="Search groups..." />
+
+        <ScrollView height="140" class="bg-dark rounded-2xl">
+          <StackLayout>
+            <StackLayout *ngFor="let g of filteredGroups"
+                         class="px-4 py-2 border-t border-dark-secondary"
+                         (tap)="toggleGroup(g)">
+              <GridLayout columns="*, auto">
+                <Label [text]="g.name"
+                       class="text-xs text-text-primary"></Label>
+
+                <Label *ngIf="isGroupSelected(g)"
+                       text="✓"
+                       col="1"
+                       class="text-brand-gold text-xs"></Label>
+              </GridLayout>
+            </StackLayout>
+          </StackLayout>
+        </ScrollView>
+      </StackLayout>
+
+      <GridLayout columns="*, *" class="mt-4">
+        <StackLayout col="0"
+                     class="mr-2 bg-dark rounded-2xl px-4 py-3 items-center"
+                     (tap)="clearFilters()">
+          <Label text="Clear"
+                 class="text-sm text-text-secondary"></Label>
+        </StackLayout>
+
+        <StackLayout col="1"
+                     class="ml-2 bg-brand-gold rounded-2xl px-4 py-3 items-center"
+                     (tap)="applyFilters()">
+          <Label text="Apply"
+                 class="text-sm text-dark font-semibold"></Label>
+        </StackLayout>
+      </GridLayout>
+    </StackLayout>
+  </GridLayout>
+</GridLayout>
