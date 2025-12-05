@@ -19,7 +19,7 @@ namespace Infrastructure.Services
                 JwtService jwt
             )
         {
-            //_context = context;
+            _context = context;
             _hasher = hasher;
             _jwt = jwt;
         }
@@ -57,7 +57,7 @@ namespace Infrastructure.Services
             var user = await _context.Users
                 .FirstOrDefaultAsync(u =>
                     u.Username == dto.UsernameOrEmail ||
-                    u.Email == dto.UsernameOrEmail) ?? throw new UnauthorizedException("Invalid credentials.");
+                    u.Email == dto.UsernameOrEmail) ?? throw new UnauthorizedException("User does not exist.");
 
             if (!_hasher.Verify(dto.Password, user.Password))
                 throw new UnauthorizedException("Invalid credentials.");
