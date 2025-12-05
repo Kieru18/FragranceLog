@@ -19,9 +19,9 @@ namespace Api.Controllers
             _context = context;
         }
 
-        [HttpGet("search")]
+        [HttpPost("search")]
         public async Task<ActionResult<IReadOnlyList<PerfumeSearchResultDto>>> Search(
-        [FromQuery] PerfumeSearchRequestDto req,
+            [FromBody] PerfumeSearchRequestDto req,
         CancellationToken ct)
         {
             var page = req.Page <= 0 ? 1 : req.Page;
@@ -45,13 +45,13 @@ namespace Api.Controllers
                     x.Perfume.Name.ToLower().Contains(q));
             }
 
-            if (req.BrandId != null)
+            if (req.BrandId != null && req.BrandId != 0)
                 query = query.Where(x => x.Perfume.BrandId == req.BrandId);
 
             if (!string.IsNullOrWhiteSpace(req.CountryCode))
                 query = query.Where(x => x.Perfume.CountryCode == req.CountryCode);
 
-            if (req.MinRating != null)
+            if (req.MinRating != null && req.BrandId != 0)
                 query = query.Where(x => x.AvgRating >= req.MinRating);
 
             var result = await query
