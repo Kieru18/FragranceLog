@@ -11,8 +11,8 @@ import { BehaviorSubject, Subject, takeUntil,
          switchMap, of, tap, catchError } from 'rxjs';
 import { Page } from '@nativescript/core';
 import { PerfumeSearchResultDto } from '../models/perfumesearchresult.dto';
-import { BrandLookupItemDto } from '../models/brandlookupitem.dto';
-import { GroupLookupItemDto } from '../models/grouplookupitem.dto';
+import { BrandDictionaryItemDto } from '../models/branddictionaryitem.dto';
+import { GroupDictionaryItemDto } from '../models/groupdictionaryitem.dto';
 import { PerfumeSearchRequestDto } from '../models/perfumesearchrequest.dto';
 import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
@@ -44,8 +44,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   selectedBrandId: number | null = null;
   selectedGroupIds: number[] = [];
 
-  brands: BrandLookupItemDto[] = [];
-  groups: GroupLookupItemDto[] = [];
+  brands: BrandDictionaryItemDto[] = [];
+  groups: GroupDictionaryItemDto[] = [];
 
   showFilters = false;
   brandSearchText = '';
@@ -136,12 +136,12 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private loadLookups(): void {
     this.brandService
-      .getBrands()
+      .getBrandsDictionary()
       .pipe(takeUntil(this.destroy$))
       .subscribe(br => (this.brands = br));
 
     this.groupService
-      .getGroups()
+      .getGroupsDictionary()
       .pipe(takeUntil(this.destroy$))
       .subscribe(gr => (this.groups = gr));
   }
@@ -203,7 +203,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.resetAndSearch();
   }
 
-  get filteredBrands(): BrandLookupItemDto[] {
+  get filteredBrands(): BrandDictionaryItemDto[] {
     const term = this.brandSearchText?.trim().toLowerCase();
     if (!term) return this.brands;
     return this.brands.filter(b =>
@@ -211,15 +211,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     );
   }
 
-  selectBrand(brand: BrandLookupItemDto | null): void {
+  selectBrand(brand: BrandDictionaryItemDto | null): void {
     this.selectedBrandId = brand ? brand.id : null;
   }
 
-  isBrandSelected(brand: BrandLookupItemDto): boolean {
+  isBrandSelected(brand: BrandDictionaryItemDto): boolean {
     return this.selectedBrandId === brand.id;
   }
 
-  get filteredGroups(): GroupLookupItemDto[] {
+  get filteredGroups(): GroupDictionaryItemDto[] {
     const term = this.groupSearchText?.trim().toLowerCase();
     if (!term) return this.groups;
     return this.groups.filter(g =>
@@ -227,7 +227,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     );
   }
 
-  toggleGroup(group: GroupLookupItemDto): void {
+  toggleGroup(group: GroupDictionaryItemDto): void {
     const idx = this.selectedGroupIds.indexOf(group.id);
     if (idx >= 0) {
       this.selectedGroupIds.splice(idx, 1);
@@ -237,7 +237,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  isGroupSelected(group: GroupLookupItemDto): boolean {
+  isGroupSelected(group: GroupDictionaryItemDto): boolean {
     return this.selectedGroupIds.includes(group.id);
   }
 
