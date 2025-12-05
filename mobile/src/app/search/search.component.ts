@@ -226,11 +226,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   formatRating(item: PerfumeSearchResultDto): string {
-    if (item.averageRating == null || item.reviewsCount === 0) {
+    if (item.rating == null || item.ratingCount === 0) {
       return 'No rating';
     }
 
-    return `${item.averageRating.toFixed(1)} · ${item.reviewsCount} reviews`;
+    return `${item.rating.toFixed(1)} · ${item.ratingCount} reviews`;
   }
 
   get filtersSummary(): string {
