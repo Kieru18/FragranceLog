@@ -19,7 +19,7 @@ namespace Infrastructure.Services
                 JwtService jwt
             )
         {
-            _context = context;
+            //_context = context;
             _hasher = hasher;
             _jwt = jwt;
         }
@@ -64,7 +64,7 @@ namespace Infrastructure.Services
 
             var access = _jwt.GenerateAccessToken(user);
             var refresh = _jwt.GenerateRefreshToken(user.UserId);
-
+            
             return new AuthResponseDto
             {
                 AccessToken = access,
@@ -87,6 +87,7 @@ namespace Infrastructure.Services
             var user = await _context.Users.FindAsync(userId) ?? throw new UnauthorizedException("User not found.");
             var newAccess = _jwt.GenerateAccessToken(user);
             var newRefresh = _jwt.GenerateRefreshToken(user.UserId);
+
 
             return new AuthResponseDto
             {

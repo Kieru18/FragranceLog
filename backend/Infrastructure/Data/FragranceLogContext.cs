@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Core.Entities;
+﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
@@ -44,6 +42,8 @@ public partial class FragranceLogContext : DbContext
 
     public virtual DbSet<PerfumeLongevityVote> PerfumeLongevityVotes { get; set; }
 
+    public virtual DbSet<PerfumeNote> PerfumeNotes { get; set; }
+
     public virtual DbSet<PerfumePhoto> PerfumePhotos { get; set; }
 
     public virtual DbSet<PerfumeSeasonVote> PerfumeSeasonVotes { get; set; }
@@ -59,7 +59,7 @@ public partial class FragranceLogContext : DbContext
     public virtual DbSet<Sillage> Sillages { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AI");
@@ -84,13 +84,6 @@ public partial class FragranceLogContext : DbContext
         modelBuilder.Entity<Longevity>(entity =>
         {
             entity.Property(e => e.LongevityId).ValueGeneratedNever();
-        });
-
-        modelBuilder.Entity<Note>(entity =>
-        {
-            entity.HasOne(d => d.NoteType).WithMany(p => p.Notes)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Notes_NoteType");
         });
 
         modelBuilder.Entity<NotePhoto>(entity =>
@@ -130,21 +123,6 @@ public partial class FragranceLogContext : DbContext
                     {
                         j.HasKey("PerfumeId", "GroupId");
                         j.ToTable("PerfumeGroup");
-                    });
-
-            entity.HasMany(d => d.Notes).WithMany(p => p.Perfumes)
-                .UsingEntity<Dictionary<string, object>>(
-                    "PerfumeNote",
-                    r => r.HasOne<Note>().WithMany()
-                        .HasForeignKey("NoteId")
-                        .HasConstraintName("FK_PerfumeNote_Note"),
-                    l => l.HasOne<Perfume>().WithMany()
-                        .HasForeignKey("PerfumeId")
-                        .HasConstraintName("FK_PerfumeNote_Perfume"),
-                    j =>
-                    {
-                        j.HasKey("PerfumeId", "NoteId");
-                        j.ToTable("PerfumeNote");
                     });
         });
 
@@ -203,6 +181,17 @@ public partial class FragranceLogContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.PerfumeLongevityVotes)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LongevityVotes_User");
+        });
+
+        modelBuilder.Entity<PerfumeNote>(entity =>
+        {
+            entity.HasOne(d => d.Note).WithMany(p => p.PerfumeNotes).HasConstraintName("FK_PerfumeNote_Note");
+
+            entity.HasOne(d => d.NoteType).WithMany(p => p.PerfumeNotes)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PerfumeNote_NoteType");
+
+            entity.HasOne(d => d.Perfume).WithMany(p => p.PerfumeNotes).HasConstraintName("FK_PerfumeNote_Perfume");
         });
 
         modelBuilder.Entity<PerfumePhoto>(entity =>

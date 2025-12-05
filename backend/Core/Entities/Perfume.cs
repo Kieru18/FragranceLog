@@ -42,6 +42,9 @@ public partial class Perfume
     public virtual ICollection<PerfumeLongevityVote> PerfumeLongevityVotes { get; set; } = new List<PerfumeLongevityVote>();
 
     [InverseProperty("Perfume")]
+    public virtual ICollection<PerfumeNote> PerfumeNotes { get; set; } = new List<PerfumeNote>();
+
+    [InverseProperty("Perfume")]
     public virtual PerfumePhoto? PerfumePhoto { get; set; }
 
     [InverseProperty("Perfume")]
@@ -56,8 +59,4 @@ public partial class Perfume
     [ForeignKey("PerfumeId")]
     [InverseProperty("Perfumes")]
     public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
-
-    [ForeignKey("PerfumeId")]
-    [InverseProperty("Perfumes")]
-    public virtual ICollection<Note> Notes { get; set; } = new List<Note>();
 }

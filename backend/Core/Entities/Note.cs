@@ -15,16 +15,9 @@ public partial class Note
     [StringLength(40)]
     public string Name { get; set; } = null!;
 
-    public int NoteTypeId { get; set; }
-
     [InverseProperty("Note")]
     public virtual NotePhoto? NotePhoto { get; set; }
 
-    [ForeignKey("NoteTypeId")]
-    [InverseProperty("Notes")]
-    public virtual NoteType NoteType { get; set; } = null!;
-
-    [ForeignKey("NoteId")]
-    [InverseProperty("Notes")]
-    public virtual ICollection<Perfume> Perfumes { get; set; } = new List<Perfume>();
+    [InverseProperty("Note")]
+    public virtual ICollection<PerfumeNote> PerfumeNotes { get; set; } = new List<PerfumeNote>();
 }

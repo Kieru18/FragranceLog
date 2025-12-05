@@ -16,5 +16,5 @@ public partial class NoteType
     public string Name { get; set; } = null!;
 
     [InverseProperty("NoteType")]
-    public virtual ICollection<Note> Notes { get; set; } = new List<Note>();
+    public virtual ICollection<PerfumeNote> PerfumeNotes { get; set; } = new List<PerfumeNote>();
 }
