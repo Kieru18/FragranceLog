@@ -40,39 +40,57 @@
       class="mt-3 text-xs text-red-500"
     ></Label>
 
-    <ListView [items]="results"
-              class="mt-2"
-              (itemTap)="onPerfumeTap($event)"
-              (loadMoreItems)="onLoadMore()">
-      <ng-template let-item="item">
-        <GridLayout columns="auto, *"
-                    class="mb-5 bg-dark-secondary rounded-2xl px-4 py-3">
+    <ListView
+      [items]="results"
+      [itemTemplateSelector]="selectTemplate"
+      (loadMoreItems)="onLoadMore()"
+      class="mt-2"
+      (itemTap)="onPerfumeTap($event)">
 
-          <StackLayout width="56"
-                      height="56"
-                      class="mr-3 rounded-2xl bg-dark border border-dark-secondary" />
+      <ng-template nsTemplateKey="item" let-row="item">
+        <StackLayout>
 
-          <StackLayout>
-            <Label [text]="item.name"
-                  class="text-text-primary font-semibold text-base"
-                  textWrap="true"></Label>
+          <GridLayout
+            columns="auto,*"
+            class="bg-dark-secondary rounded-2xl px-4 py-3">
 
-            <Label [text]="item.brand"
-                  class="text-text-secondary text-xs mt-0.5"></Label>
+            <StackLayout
+              width="56"
+              height="56"
+              class="mr-3 rounded-2xl bg-dark border border-dark-secondary" />
 
-            <GridLayout columns="auto, auto"
-                        class="items-center mt-1">
-              <Label text="★"
-                    col="0"
-                    class="text-brand-gold text-xs mr-1"></Label>
+            <StackLayout>
+              <Label [text]="row.data.name"
+                    class="text-text-primary font-semibold text-base"
+                    textWrap="true"></Label>
 
-              <Label [text]="formatRating(item)"
-                    col="1"
-                    class="text-text-secondary text-xs"></Label>
-            </GridLayout>
-          </StackLayout>
+              <Label [text]="row.data.brand"
+                    class="text-text-secondary text-xs mt-0.5"></Label>
 
-        </GridLayout>
+              <GridLayout columns="auto, auto"
+                          class="items-center mt-1">
+                <Label text="★"
+                      col="0"
+                      class="text-brand-gold text-xs mr-1"></Label>
+
+                <Label [text]="formatRating(row.data)"
+                      col="1"
+                      class="text-text-secondary text-xs"></Label>
+              </GridLayout>
+            </StackLayout>
+
+          </GridLayout>
+
+          <StackLayout height="12"></StackLayout>
+
+        </StackLayout>
+      </ng-template>
+
+      <ng-template nsTemplateKey="spinner">
+        <StackLayout class="py-6 items-center">
+          <ActivityIndicator busy="true"
+                            color="#D3A54A" />
+        </StackLayout>
       </ng-template>
     </ListView>
 

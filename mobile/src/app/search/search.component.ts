@@ -16,6 +16,7 @@ import { GroupLookupItemDto } from '../models/grouplookupitem.dto';
 import { PerfumeSearchRequestDto } from '../models/perfumesearchrequest.dto';
 import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
+import { PerfumeSearchRow } from '../models/types';
 
 @Component({
   standalone: true,
@@ -31,7 +32,7 @@ import { CommonService } from '../services/common.service';
 })
 export class SearchComponent implements OnInit, OnDestroy {
   loading = false;
-  results: PerfumeSearchResultDto[] = [];
+  results: PerfumeSearchRow[] = [];
   totalCount = 0;
   errorMessage: string | null = null;
 
@@ -109,15 +110,20 @@ export class SearchComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(res => {
+        const cleaned = this.results.filter(r => r.type !== 'spinner');
+
+        const newItems = res.items.map(i => ({
+          type: 'item' as const,
+          data: i
+        }));
+
+        this.results = this.page === 1
+          ? newItems
+          : [...cleaned, ...newItems];
+
         this.totalCount = res.totalCount;
-
-        if (this.page === 1) {
-          this.results = res.items;
-        } else {
-          this.results = [...this.results, ...res.items];
-        }
-
         this.hasMore = res.items.length === this.pageSize;
+        this.loading = false;
       });
 
     this.resetAndSearch();
@@ -157,6 +163,10 @@ export class SearchComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.loading = true;
+
+    this.results = [...this.results, { type: 'spinner' }];
+
     this.page++;
     this.refresh$.next();
   }
@@ -164,11 +174,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   onPerfumeTap(event: any): void {
     const index = event?.index as number;
     const item = this.results[index];
-    if (!item) return;
+    if (!item || item.type === 'spinner') return;
 
-    this.router.navigate(['/perfume', item.perfumeId]);
+    this.router.navigate(['/perfume', item.data.perfumeId]);
   }
 
+  selectTemplate(item: PerfumeSearchRow): string {
+    return item.type;
+  }
 
   toggleFilters(): void {
     this.showFilters = !this.showFilters;
