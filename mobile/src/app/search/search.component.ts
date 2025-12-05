@@ -97,7 +97,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             catchError(err => {
               console.error('Search error', err); // @DELETE ME
               this.loading = false;
-              this.errorMessage = this.common.getErrorMessage(err, 'Search resulted in application error.');
+              this.errorMessage = `${err.Status} ${err.StatusText}`;
               return of<PerfumeSearchResponseDto>({
                 totalCount: 0,
                 page: this.page,
