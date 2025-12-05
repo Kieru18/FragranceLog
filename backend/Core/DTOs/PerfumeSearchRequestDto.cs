@@ -2,10 +2,11 @@
 {
     public sealed class PerfumeSearchRequestDto
     {
-        public string Query { get; init; } = "";
+        public string? Query { get; init; }
 
         public int? BrandId { get; init; }
         public string? CountryCode { get; init; }
+
         public double? MinRating { get; init; }
 
         public int Page { get; init; } = 1;
