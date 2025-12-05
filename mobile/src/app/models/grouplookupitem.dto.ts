@@ -1,4 +1,4 @@
-export interface GroupLookupItem {
+export interface GroupLookupItemDto {
   id: number;
   name: string;
 }

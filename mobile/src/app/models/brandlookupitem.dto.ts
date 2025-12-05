@@ -1,4 +1,4 @@
-export interface BrandLookupItem {
+export interface BrandLookupItemDto {
   id: number;
   name: string;
 }
