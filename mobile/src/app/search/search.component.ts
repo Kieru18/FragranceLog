@@ -10,7 +10,6 @@ import { BehaviorSubject, Subject, takeUntil,
          debounceTime, distinctUntilChanged,
          switchMap, of, tap, catchError, 
          forkJoin} from 'rxjs';
-import { Page } from '@nativescript/core';
 import { PerfumeSearchResultDto } from '../models/perfumesearchresult.dto';
 import { BrandDictionaryItemDto } from '../models/branddictionaryitem.dto';
 import { GroupDictionaryItemDto } from '../models/groupdictionaryitem.dto';
@@ -19,8 +18,8 @@ import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
 import { PerfumeSearchRow } from '../models/types';
 import { ElementRef, ViewChild } from '@angular/core';
-import { View } from '@nativescript/core';
-import { Screen } from '@nativescript/core';
+import { EventData, View, Screen, Page } from '@nativescript/core';
+
 
 
 @Component({
@@ -35,7 +34,7 @@ import { Screen } from '@nativescript/core';
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
-export class SearchComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class SearchComponent implements OnInit, OnDestroy {
   loading = false;
   results: PerfumeSearchRow[] = [];
   totalCount = 0;
@@ -62,8 +61,9 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewChecked {
   private refresh$ = new BehaviorSubject<void>(undefined);
   private destroy$ = new Subject<void>();
 
-  @ViewChild('filterSheet') filterSheetRef!: ElementRef<View>;
-  @ViewChild('backdrop') backdropRef!: ElementRef<View>;
+  private sheetView!: View;
+  private backdropView!: View;
+  private readonly screenHeight = Screen.mainScreen.heightDIPs;
 
   constructor(
     private readonly perfumeService: PerfumeService,
@@ -139,36 +139,6 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     this.resetAndSearch();
   }
-
-  ngAfterViewChecked(): void {
-    if (!this.showFilters) return;
-    if (!this.filterSheetRef || !this.backdropRef) return;
-
-    const sheet = this.filterSheetRef.nativeElement;
-    const backdrop = this.backdropRef.nativeElement;
-
-    if ((sheet as any).__animated) return;
-    (sheet as any).__animated = true;
-
-    const height = Screen.mainScreen.heightDIPs;
-
-    sheet.translateY = height;
-    backdrop.opacity = 0;
-
-    sheet.once('layoutChanged', () => {
-      backdrop.animate({
-        opacity: 0.6,
-        duration: 240
-      });
-
-      sheet.animate({
-        translate: { x: 0, y: 0 },
-        duration: 240,
-        curve: 'easeOut'
-      });
-    });
-  }
-
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -289,29 +259,45 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  onFilterSheetLoaded(args: EventData): void {
+    this.sheetView = args.object as View;
+    const parent = this.sheetView.parent as View;
+    this.backdropView = parent.getViewById('backdrop') as View;
+
+    this.sheetView.translateY = this.screenHeight;
+    this.backdropView.opacity = 0;
+  }
+
   openFilters(): void {
     if (this.showFilters || !this.filtersReady) return;
+
     this.showFilters = true;
+
+    this.sheetView.translateY = this.screenHeight;
+    this.backdropView.opacity = 0;
+
+    this.backdropView.animate({
+      opacity: 0.6,
+      duration: 240
+    });
+
+    this.sheetView.animate({
+      translate: { x: 0, y: 0 },
+      duration: 240,
+      curve: 'easeOut'
+    });
   }
 
   closeFilters(): void {
-    if (!this.filterSheetRef || !this.backdropRef) {
-      this.showFilters = false;
-      return;
-    }
+    if (!this.showFilters) return;
 
-    const sheet = this.filterSheetRef.nativeElement;
-    const backdrop = this.backdropRef.nativeElement;
-
-    const height = require('@nativescript/core').Screen.mainScreen.heightDIPs;
-
-    sheet.animate({
-      translate: { x: 0, y: height },
+    this.sheetView.animate({
+      translate: { x: 0, y: this.screenHeight },
       duration: 180,
       curve: 'easeIn'
     });
 
-    backdrop.animate({
+    this.backdropView.animate({
       opacity: 0,
       duration: 150
     }).then(() => {
