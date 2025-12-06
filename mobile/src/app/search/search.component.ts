@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, NO_ERRORS_SCHEMA, OnDestroy, OnInit } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, OnDestroy, OnInit } from '@angular/core';
 import { NativeScriptCommonModule } from '@nativescript/angular';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { NativeScriptFormsModule } from '@nativescript/angular';
@@ -17,8 +17,7 @@ import { PerfumeSearchRequestDto } from '../models/perfumesearchrequest.dto';
 import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
 import { PerfumeSearchRow } from '../models/types';
-import { ElementRef, ViewChild } from '@angular/core';
-import { EventData, View, Screen, Page } from '@nativescript/core';
+import { EventData, View, Screen, Page, Utils } from '@nativescript/core';
 
 
 
@@ -205,14 +204,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     return item.type;
   }
 
-  toggleFilters(): void {
-    this.showFilters = !this.showFilters;
-    if (this.showFilters) {
-      this.brandSearchText = '';
-      this.groupSearchText = '';
-    }
-  }
-
   applyFilters(): void {
     this.closeFilters();
     this.resetAndSearch();
@@ -270,7 +261,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   openFilters(): void {
     if (this.showFilters || !this.filtersReady) return;
-
+    Utils.dismissSoftInput();
     this.showFilters = true;
 
     this.sheetView.translateY = this.screenHeight;
@@ -290,7 +281,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   closeFilters(): void {
     if (!this.showFilters) return;
-
+    Utils.dismissSoftInput();
     this.sheetView.animate({
       translate: { x: 0, y: this.screenHeight },
       duration: 180,
