@@ -18,6 +18,7 @@ import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
 import { PerfumeSearchRow } from '../models/types';
 import { EventData, View, Screen, Page, Utils } from '@nativescript/core';
+import { GenderEnum } from '../models/gender.enum';
 
 
 
@@ -53,6 +54,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   showFilters = false;
   brandSearchText = '';
   groupSearchText = '';
+  selectedGender: GenderEnum | null = null;
+  selectedMinRating: number | null = null;
+  readonly GenderEnum = GenderEnum;
 
   filtersReady = false;
   filtersLoading = false;
@@ -99,6 +103,8 @@ export class SearchComponent implements OnInit, OnDestroy {
             pageSize: this.pageSize,
             brandId: this.selectedBrandId,
             groupIds: this.selectedGroupIds.length ? this.selectedGroupIds : undefined,
+            gender: this.selectedGender,
+            minRating: this.selectedMinRating
           };
 
           this.loading = true;
@@ -106,7 +112,6 @@ export class SearchComponent implements OnInit, OnDestroy {
           return this.perfumeService.searchPerfumes(req).pipe(
             tap(() => (this.loading = false)),
             catchError(err => {
-              console.error('Search error', err); // @DELETE ME
               this.loading = false;
               this.errorMessage = `${err.Status} ${err.StatusText}`;
               return of<PerfumeSearchResponseDto>({
@@ -212,6 +217,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   clearFilters(): void {
     this.selectedBrandId = null;
     this.selectedGroupIds = [];
+    this.selectedGender = null;
+    this.selectedMinRating = null;
     this.closeFilters();
     this.resetAndSearch();
   }
@@ -226,6 +233,14 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   selectBrand(brand: BrandDictionaryItemDto | null): void {
     this.selectedBrandId = brand ? brand.id : null;
+  }
+
+  selectGender(value: GenderEnum | null): void {
+    this.selectedGender = value;
+  }
+
+  setMinRating(value: number | null): void {
+    this.selectedMinRating = value;
   }
 
   isBrandSelected(brand: BrandDictionaryItemDto): boolean {

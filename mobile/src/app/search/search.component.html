@@ -218,6 +218,60 @@
                     </StackLayout>
                 </ScrollView>
             </StackLayout>
+
+            <StackLayout class="mb-4">
+              <Label text="Gender"
+                    class="text-xs text-text-secondary mb-2"></Label>
+
+              <FlexboxLayout justifyContent="space-between">
+                <Label text="Any"
+                      class="filter-chip"
+                      [class.selected]="selectedGender === null"
+                      (tap)="selectGender(null)"></Label>
+
+                <Label text="Male"
+                      class="filter-chip"
+                      [class.selected]="selectedGender === GenderEnum.Male"
+                      (tap)="selectGender(GenderEnum.Male)"></Label>
+
+                <Label text="Female"
+                      class="filter-chip"
+                      [class.selected]="selectedGender === GenderEnum.Female"
+                      (tap)="selectGender(GenderEnum.Female)"></Label>
+
+                <Label text="Unisex"
+                      class="filter-chip"
+                      [class.selected]="selectedGender === GenderEnum.Unisex"
+                      (tap)="selectGender(GenderEnum.Unisex)"></Label>
+              </FlexboxLayout>
+            </StackLayout>
+
+            <StackLayout class="mb-4">
+              <Label text="Minimum rating"
+                    class="text-xs text-text-secondary mb-2"></Label>
+
+              <FlexboxLayout justifyContent="space-between">
+                <Label text="Any"
+                      class="filter-chip"
+                      [class.selected]="selectedMinRating === null"
+                      (tap)="setMinRating(null)"></Label>
+
+                <Label text="4+"
+                      class="filter-chip"
+                      [class.selected]="selectedMinRating === 4"
+                      (tap)="setMinRating(4)"></Label>
+
+                <Label text="3+"
+                      class="filter-chip"
+                      [class.selected]="selectedMinRating === 3"
+                      (tap)="setMinRating(3)"></Label>
+
+                <Label text="2+"
+                      class="filter-chip"
+                      [class.selected]="selectedMinRating === 2"
+                      (tap)="setMinRating(2)"></Label>
+              </FlexboxLayout>
+            </StackLayout>
         </StackLayout>
 
         <FlexboxLayout row="1"
