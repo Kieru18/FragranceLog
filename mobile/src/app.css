@@ -25,3 +25,27 @@ Page {
     font-family: Font Awesome 5 Free, fa-solid-900;
     font-weight: 900;
 }
+
+.filter-chip {
+  background-color: #1E1E1E;
+  color: #A8A8A8;
+
+  padding: 8 14;
+  border-radius: 999;
+  
+  font-size: 12;
+  text-align: center;
+  
+  android-ripple: true;
+}
+
+.filter-chip.small {
+  padding: 6 12;
+  font-size: 11;
+}
+
+.filter-chip.selected {
+  background-color: #D3A54A;
+  color: #000000;
+}
+
