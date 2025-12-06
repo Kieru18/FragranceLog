@@ -27,25 +27,24 @@ Page {
 }
 
 .filter-chip {
-  background-color: #1E1E1E;
-  color: #A8A8A8;
-
-  padding: 8 14;
-  border-radius: 999;
-  
+  padding: 10 14;
+  border-radius: 16;
+  background-color: #111111;
+  color: #E5E5E5;
+  border-width: 1;
+  border-color: #1F1F1F; 
   font-size: 12;
   text-align: center;
-  
   android-ripple: true;
 }
 
 .filter-chip.small {
-  padding: 6 12;
+  padding: 8 12;
   font-size: 11;
 }
 
 .filter-chip.selected {
   background-color: #D3A54A;
-  color: #000000;
+  color: #0B0B0B;
+  border-color: #D3A54A;
 }
-
