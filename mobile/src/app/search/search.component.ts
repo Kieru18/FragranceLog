@@ -1,7 +1,6 @@
 import { Component, NO_ERRORS_SCHEMA, OnDestroy, OnInit } from '@angular/core';
-import { NativeScriptCommonModule } from '@nativescript/angular';
+import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { NativeScriptFormsModule } from '@nativescript/angular';
 import { RouterModule, Router } from '@angular/router';
 import { PerfumeService } from '../services/perfume.service';
 import { BrandService } from '../services/brand.service';
@@ -17,7 +16,7 @@ import { PerfumeSearchRequestDto } from '../models/perfumesearchrequest.dto';
 import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
 import { PerfumeSearchRow } from '../models/types';
-import { EventData, View, Screen, Page, Utils } from '@nativescript/core';
+import { EventData, View, Screen, Page, Utils, PanGestureEventData } from '@nativescript/core';
 import { GenderEnum } from '../models/gender.enum';
 
 
@@ -64,6 +63,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   private refresh$ = new BehaviorSubject<void>(undefined);
   private destroy$ = new Subject<void>();
 
+  private panStartY = 0;
+
   private sheetView!: View;
   private backdropView!: View;
   private readonly screenHeight = Screen.mainScreen.heightDIPs;
@@ -74,7 +75,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private readonly groupService: GroupService,
     private readonly router: Router,
     private pageCore: Page,
-    private common: CommonService
+    private readonly common: CommonService
   ) {
     this.pageCore.actionBarHidden = true;
   }
@@ -262,6 +263,37 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.selectedGroupIds = [...this.selectedGroupIds];
     } else {
       this.selectedGroupIds = [...this.selectedGroupIds, group.id];
+    }
+  }
+
+  onSheetPan(args: PanGestureEventData): void {
+    const sheet = this.pageCore.getViewById<View>('filterSheet');
+    if (!sheet) return;
+
+    const screenHeight = Screen.mainScreen.heightDIPs;
+
+    switch (args.state) {
+      case 1:
+        this.panStartY = sheet.translateY || 0;
+        break;
+
+      case 2:
+        const newY = Math.max(0, this.panStartY + args.deltaY);
+        sheet.translateY = newY;
+        break;
+
+      case 3:
+      case 4:
+        if (sheet.translateY > screenHeight * 0.3) {
+          this.closeFilters();
+        } else {
+          sheet.animate({
+            translate: { x: 0, y: 0 },
+            duration: 200,
+            curve: 'easeOut'
+          });
+        }
+        break;
     }
   }
 

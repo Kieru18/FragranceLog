@@ -150,11 +150,18 @@
     <GridLayout
       id="filterSheet"
       row="1"
-      rows="*, auto"
+      rows="auto, *, auto"
       class="bg-dark-secondary rounded-t-3xl px-6 pt-4 pb-6"
       height="90%"
-      (loaded)="onFilterSheetLoaded($event)">     
-        <StackLayout row="0">
+      (loaded)="onFilterSheetLoaded($event)"
+      (pan)="onSheetPan($event)">
+        <StackLayout
+          row="0"
+          width="40"
+          height="4"
+          class="bg-dark border border-dark-secondary rounded-full">
+        </StackLayout>   
+        <StackLayout row="1">
             <Label text="Filters"
                    class="text-lg font-semibold text-text-primary mb-4"></Label>
 
@@ -274,7 +281,7 @@
             </StackLayout>
         </StackLayout>
 
-        <FlexboxLayout row="1"
+        <FlexboxLayout row="2"
                        justifyContent="space-between" 
                        class="mt-4">
             <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48 mr-2 items-center justify-center"
