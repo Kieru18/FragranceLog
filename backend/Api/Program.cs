@@ -46,7 +46,8 @@ namespace Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<PasswordHasher>();
             builder.Services.AddScoped<JwtService>();
-            
+            builder.Services.AddScoped<IPerfumeService, PerfumeService>();
+
             builder.Services.AddDbContext<FragranceLogContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("FragranceLog"),
