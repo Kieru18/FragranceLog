@@ -57,6 +57,17 @@ namespace Infrastructure.Services
                         x.Perfume.Groups.Any(g => g.GroupId == groupId)));
             }
 
+            if (req.Gender != null)
+            {
+                query = query.Where(x =>
+                    x.Perfume.PerfumeGenderVotes
+                        .GroupBy(v => v.GenderId)
+                        .OrderByDescending(g => g.Count())
+                        .Select(g => g.Key)
+                        .FirstOrDefault() == (int)req.Gender
+                );
+            }
+
             var totalCount = await query.CountAsync(ct);
 
             var result = await query
