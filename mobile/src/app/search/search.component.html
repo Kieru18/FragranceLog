@@ -9,23 +9,23 @@
     <Label [text]="filtersSummary"
            class="text-xs text-text-secondary mb-3"></Label>
 
-    <GridLayout columns="*, auto" class="items-center">
-      <TextField col="0"
-                 [formControl]="searchControl"
-                 class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-2 mr-2"
-                 hint="Find your perfume here..."
-                 returnKeyType="search" />
-
-      <StackLayout col="1"
-                   class="bg-dark-secondary rounded-2xl px-4 py-2 items-center justify-center"
-                   (tap)="toggleFilters()">
+    <GridLayout columns="*, auto"
+                rows="auto"
+                class="items-center">
+      <TextField
+        col="0"
+        verticalAlignment="stretch"
+        [formControl]="searchControl"
+        class="bg-dark-secondary text-text-primary rounded-2xl px-4 mr-2"
+        hint="Find your perfume here..." />
 
       <Label
-        text="&#xf002;"
-        class="fas text-text-primary text-lg">
-      </Label>
-
-      </StackLayout>
+        col="1"
+        text="&#xf0b0;"
+        class="fas text-text-primary text-lg bg-dark-secondary rounded-2xl px-4 py-4"
+        horizontalAlignment="center"
+        verticalAlignment="center"
+        (tap)="toggleFilters()"></Label>
     </GridLayout>
   </StackLayout>
 
