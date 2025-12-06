@@ -1,4 +1,4 @@
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -6,6 +6,7 @@ import { CommonService } from '../services/common.service';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { LoginDto } from '../models/login.dto';
 import { Page, Utils } from '@nativescript/core';
+import { take } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -19,7 +20,7 @@ import { Page, Utils } from '@nativescript/core';
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   form: FormGroup;
   loading = false;
   error: string | null = null;
@@ -36,6 +37,16 @@ export class LoginComponent {
       usernameOrEmail: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+  }
+
+  ngOnInit() {
+    this.auth.isAuthenticated()
+      .pipe(take(1))
+      .subscribe(isAuth => {
+        if (isAuth) {
+          this.router.navigate(['/search']);
+        }
+      });
   }
 
   onSubmit() {
