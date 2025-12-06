@@ -110,95 +110,99 @@
   </StackLayout>
 
   <GridLayout *ngIf="showFilters"
-              rows="*, auto"
-              rowSpan="2">
+            rows="*, auto"
+            rowSpan="2">
 
     <StackLayout row="0"
                  class="bg-black opacity-60"
                  (tap)="toggleFilters()"></StackLayout>
 
-    <StackLayout row="1"
-                 class="bg-dark-secondary rounded-t-3xl px-6 pt-4 pb-6"
-                 height="75%">
-      <Label text="Filters"
-             class="text-lg font-semibold text-text-primary mb-4"></Label>
+    <GridLayout row="1"
+                rows="*, auto"
+                class="bg-dark-secondary rounded-t-3xl px-6 pt-4 pb-6"
+                height="90%">
+        
+        <StackLayout row="0">
+            <Label text="Filters"
+                   class="text-lg font-semibold text-text-primary mb-4"></Label>
 
-      <StackLayout class="mb-4">
-        <Label text="Brand"
-               class="text-xs text-text-secondary mb-1"></Label>
+            <StackLayout class="mb-4">
+                <Label text="Brand"
+                       class="text-xs text-text-secondary mb-1"></Label>
 
-        <TextField [(ngModel)]="brandSearchText"
-                   class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
-                   hint="Search brands..." />
+                <TextField [(ngModel)]="brandSearchText"
+                           class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
+                           hint="Search brands..." />
 
-        <ScrollView height="120" class="bg-dark rounded-2xl">
-          <StackLayout>
-            <StackLayout class="px-4 py-2"
-                         (tap)="selectBrand(null)">
-              <Label text="Any brand"
-                     [class.text-highlight]="selectedBrandId === null"
-                     class="text-xs text-text-primary"></Label>
+                <ScrollView height="120" class="bg-dark rounded-2xl">
+                    <StackLayout>
+                        <StackLayout class="px-4 py-2"
+                                     (tap)="selectBrand(null)">
+                            <Label text="Any brand"
+                                   [class.text-highlight]="selectedBrandId === null"
+                                   class="text-xs text-text-primary"></Label>
+                        </StackLayout>
+
+                        <StackLayout *ngFor="let b of filteredBrands"
+                                     class="px-4 py-2 border-t border-dark-secondary"
+                                     (tap)="selectBrand(b)">
+                            <GridLayout columns="*, auto">
+                                <Label [text]="b.name"
+                                       class="text-xs text-text-primary"></Label>
+
+                                <Label *ngIf="isBrandSelected(b)"
+                                       text="●"
+                                       col="1"
+                                       class="text-brand-gold text-xs"></Label>
+                            </GridLayout>
+                        </StackLayout>
+                    </StackLayout>
+                </ScrollView>
             </StackLayout>
 
-            <StackLayout *ngFor="let b of filteredBrands"
-                         class="px-4 py-2 border-t border-dark-secondary"
-                         (tap)="selectBrand(b)">
-              <GridLayout columns="*, auto">
-                <Label [text]="b.name"
-                       class="text-xs text-text-primary"></Label>
+            <StackLayout class="mb-4">
+                <Label text="Groups"
+                       class="text-xs text-text-secondary mb-1"></Label>
 
-                <Label *ngIf="isBrandSelected(b)"
-                       text="●"
-                       col="1"
-                       class="text-brand-gold text-xs"></Label>
-              </GridLayout>
+                <TextField [(ngModel)]="groupSearchText"
+                           class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
+                           hint="Search groups..." />
+
+                <ScrollView height="140" class="bg-dark rounded-2xl">
+                    <StackLayout>
+                        <StackLayout *ngFor="let g of filteredGroups"
+                                     class="px-4 py-2 border-t border-dark-secondary"
+                                     (tap)="toggleGroup(g)">
+                            <GridLayout columns="*, auto">
+                                <Label [text]="g.name"
+                                       class="text-xs text-text-primary"></Label>
+
+                                <Label *ngIf="isGroupSelected(g)"
+                                       text="✓"
+                                       col="1"
+                                       class="text-brand-gold text-xs"></Label>
+                            </GridLayout>
+                        </StackLayout>
+                    </StackLayout>
+                </ScrollView>
             </StackLayout>
-          </StackLayout>
-        </ScrollView>
-      </StackLayout>
-
-      <StackLayout class="mb-4">
-        <Label text="Groups"
-               class="text-xs text-text-secondary mb-1"></Label>
-
-        <TextField [(ngModel)]="groupSearchText"
-                   class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
-                   hint="Search groups..." />
-
-        <ScrollView height="140" class="bg-dark rounded-2xl">
-          <StackLayout>
-            <StackLayout *ngFor="let g of filteredGroups"
-                         class="px-4 py-2 border-t border-dark-secondary"
-                         (tap)="toggleGroup(g)">
-              <GridLayout columns="*, auto">
-                <Label [text]="g.name"
-                       class="text-xs text-text-primary"></Label>
-
-                <Label *ngIf="isGroupSelected(g)"
-                       text="✓"
-                       col="1"
-                       class="text-brand-gold text-xs"></Label>
-              </GridLayout>
-            </StackLayout>
-          </StackLayout>
-        </ScrollView>
-      </StackLayout>
-
-      <GridLayout columns="*, *" class="mt-4">
-        <StackLayout col="0"
-                     class="mr-2 bg-dark rounded-2xl px-4 py-3 items-center"
-                     (tap)="clearFilters()">
-          <Label text="Clear"
-                 class="text-sm text-text-secondary"></Label>
         </StackLayout>
 
-        <StackLayout col="1"
-                     class="ml-2 bg-brand-gold rounded-2xl px-4 py-3 items-center"
-                     (tap)="applyFilters()">
-          <Label text="Apply"
-                 class="text-sm text-dark font-semibold"></Label>
-        </StackLayout>
-      </GridLayout>
-    </StackLayout>
+        <FlexboxLayout row="1"
+                       justifyContent="space-between" 
+                       class="mt-4">
+            <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48 mr-2 items-center justify-center"
+                         (tap)="clearFilters()">
+                <Label text="Clear"
+                       class="text-sm text-text-secondary text-center"></Label>
+            </StackLayout>
+            
+            <StackLayout class="bg-brand-gold rounded-2xl px-4 py-3 ml-2 w-48 items-center justify-center"
+                         (tap)="applyFilters()">
+                <Label text="Apply"
+                       class="text-sm text-dark font-semibold text-center"></Label>
+            </StackLayout>
+        </FlexboxLayout>
+    </GridLayout>
   </GridLayout>
 </GridLayout>
