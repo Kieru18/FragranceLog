@@ -46,21 +46,32 @@ namespace Api
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<PasswordHasher>();
             builder.Services.AddScoped<JwtService>();
-            
-            builder.Services.AddDbContext<FragranceLogContext>(options =>
-                options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("FragranceLog"),
-                    sqlOptions =>
-                    {
-                        sqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 3,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorNumbersToAdd: null
-                        );
-                    }
-                )
-            );
+            builder.Services.AddScoped<IPerfumeService, PerfumeService>();
 
+            if (!builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddDbContext<FragranceLogContext>(options =>
+                    options.UseSqlServer(
+                        builder.Configuration.GetConnectionString("FragranceLog"),
+                        sqlOptions =>
+                        {
+                            sqlOptions.EnableRetryOnFailure(
+                                maxRetryCount: 3,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }
+                    )
+                );
+            }
+            else
+            {
+                builder.Services.AddDbContext<FragranceLogContext>(options =>
+                    options.UseSqlServer(
+                        builder.Configuration.GetConnectionString("FragranceLogLocal")
+                    )
+                );
+            }
 
             var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 

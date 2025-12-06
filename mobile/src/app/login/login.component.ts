@@ -2,6 +2,7 @@ import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { CommonService } from '../services/common.service';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { LoginDto } from '../models/login.dto';
 import { Page, Utils } from '@nativescript/core';
@@ -27,7 +28,8 @@ export class LoginComponent {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private page: Page
+    private page: Page,
+    private common: CommonService
   ) {
     this.page.actionBarHidden = true;
     this.form = this.fb.group({
@@ -54,7 +56,7 @@ export class LoginComponent {
       },
       error: err => {
         this.loading = false;
-        this.error = err?.error?.message || 'Login failed';
+        this.error = this.common.getErrorMessage(err, 'Login failed');
       }
     });
   }

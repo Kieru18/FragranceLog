@@ -245,3 +245,15 @@ ALTER TABLE Reviews ADD CONSTRAINT CHK_Reviews_Comment CHECK (Comment IS NULL OR
 ALTER TABLE PerfumePhotos ADD CONSTRAINT CHK_PerfumePhotos_Path CHECK (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg');
 ALTER TABLE NotePhotos ADD CONSTRAINT CHK_NotePhotos_Path CHECK (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg');
 ALTER TABLE ReviewPhotos ADD CONSTRAINT CHK_ReviewPhotos_Path CHECK (Path LIKE '%.jpg' OR Path LIKE '%.png' OR Path LIKE '%.jpeg');
+
+
+-- Indexes
+CREATE INDEX IX_Perfumes_Name ON Perfumes(Name);
+CREATE INDEX IX_Perfumes_BrandId ON Perfumes(BrandId);
+CREATE INDEX IX_Perfumes_CountryCode ON Perfumes(CountryCode);
+CREATE INDEX IX_Reviews_PerfumeId ON Reviews(PerfumeId);
+
+CREATE INDEX IX_PerfumeGroup_PerfumeId ON PerfumeGroup(PerfumeId);
+CREATE INDEX IX_PerfumeGroup_GroupId ON PerfumeGroup(GroupId);
+
+

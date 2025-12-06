@@ -1,7 +1,7 @@
-using Infrastructure.Data;
+using Core.DTOs;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
 {
@@ -10,21 +10,20 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class PerfumesController : ControllerBase
     {
-        private readonly FragranceLogContext _context;
+        private readonly IPerfumeService _perfumeService;
 
-        public PerfumesController(FragranceLogContext context)
+        public PerfumesController(IPerfumeService perfumeService)
         {
-            _context = context;
+            _perfumeService = perfumeService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPerfumes()
+        [HttpPost("search")]
+        public async Task<ActionResult<PerfumeSearchResponseDto>> Search(
+            [FromBody] PerfumeSearchRequestDto req,
+            CancellationToken ct)
         {
-            var perfumes = await _context.Perfumes
-                .Take(20)
-                .ToListAsync();
-
-            return Ok(perfumes);
+            var result = await _perfumeService.SearchAsync(req, ct);
+            return Ok(result);
         }
     }
 }

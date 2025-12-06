@@ -10,3 +10,41 @@ Page {
   placeholder-color: #B8B8B8;
   font-family: 'Inter', sans-serif;
 }
+
+.far {
+    font-family: Font Awesome 5 Free, fa-regular-400;
+    font-weight: 400;
+}
+
+.fab {
+    font-family: Font Awesome 5 Brands, fa-brands-400;
+    font-weight: 400;
+}
+
+.fas {
+    font-family: Font Awesome 5 Free, fa-solid-900;
+    font-weight: 900;
+}
+
+.filter-chip {
+  padding: 10 14;
+  border-radius: 16;
+  background-color: #111111;
+  color: #E5E5E5;
+  border-width: 1;
+  border-color: #1F1F1F; 
+  font-size: 12;
+  text-align: center;
+  android-ripple: true;
+}
+
+.filter-chip.small {
+  padding: 8 12;
+  font-size: 11;
+}
+
+.filter-chip.selected {
+  background-color: #D3A54A;
+  color: #0B0B0B;
+  border-color: #D3A54A;
+}
