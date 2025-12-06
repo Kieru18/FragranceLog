@@ -19,13 +19,33 @@
         class="bg-dark-secondary text-text-primary rounded-2xl px-4 mr-2"
         hint="Find your perfume here..." />
 
-      <Label
+      <GridLayout
         col="1"
-        text="&#xf0b0;"
-        class="fas text-text-primary text-lg bg-dark-secondary rounded-2xl px-4 py-4"
+        rows="auto"
+        class="bg-dark-secondary rounded-2xl px-4 py-4"
         horizontalAlignment="center"
-        verticalAlignment="center"
-        (tap)="toggleFilters()"></Label>
+        verticalAlignment="center">
+
+        <Label
+          *ngIf="filtersReady"
+          text="&#xf0b0;"
+          class="fas text-text-primary text-lg"
+          horizontalAlignment="center"
+          verticalAlignment="center"
+          (tap)="openFilters()">
+        </Label>
+
+        <ActivityIndicator
+          *ngIf="!filtersReady"
+          busy="true"
+          width="20"
+          height="20"
+          color="#D3A54A"
+          horizontalAlignment="center"
+          verticalAlignment="center">
+        </ActivityIndicator>
+
+      </GridLayout>
     </GridLayout>
   </StackLayout>
 
@@ -113,15 +133,19 @@
             rows="*, auto"
             rowSpan="2">
 
-    <StackLayout row="0"
-                 class="bg-black opacity-60"
-                 (tap)="toggleFilters()"></StackLayout>
+    <StackLayout
+      #backdrop
+      row="0"
+      class="bg-black"
+      (tap)="closeFilters()">
+    </StackLayout>
 
-    <GridLayout row="1"
-                rows="*, auto"
-                class="bg-dark-secondary rounded-t-3xl px-6 pt-4 pb-6"
-                height="90%">
-        
+    <GridLayout
+      #filterSheet
+      row="1"
+      rows="*, auto"
+      class="bg-dark-secondary rounded-t-3xl px-6 pt-4 pb-6"
+      height="90%">     
         <StackLayout row="0">
             <Label text="Filters"
                    class="text-lg font-semibold text-text-primary mb-4"></Label>

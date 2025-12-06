@@ -1,4 +1,4 @@
-import { Component, NO_ERRORS_SCHEMA, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, NO_ERRORS_SCHEMA, OnDestroy, OnInit } from '@angular/core';
 import { NativeScriptCommonModule } from '@nativescript/angular';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { NativeScriptFormsModule } from '@nativescript/angular';
@@ -8,7 +8,8 @@ import { BrandService } from '../services/brand.service';
 import { GroupService } from '../services/group.service';
 import { BehaviorSubject, Subject, takeUntil,
          debounceTime, distinctUntilChanged,
-         switchMap, of, tap, catchError } from 'rxjs';
+         switchMap, of, tap, catchError, 
+         forkJoin} from 'rxjs';
 import { Page } from '@nativescript/core';
 import { PerfumeSearchResultDto } from '../models/perfumesearchresult.dto';
 import { BrandDictionaryItemDto } from '../models/branddictionaryitem.dto';
@@ -17,6 +18,10 @@ import { PerfumeSearchRequestDto } from '../models/perfumesearchrequest.dto';
 import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
 import { PerfumeSearchRow } from '../models/types';
+import { ElementRef, ViewChild } from '@angular/core';
+import { View } from '@nativescript/core';
+import { Screen } from '@nativescript/core';
+
 
 @Component({
   standalone: true,
@@ -30,7 +35,7 @@ import { PerfumeSearchRow } from '../models/types';
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
-export class SearchComponent implements OnInit, OnDestroy {
+export class SearchComponent implements OnInit, OnDestroy, AfterViewChecked {
   loading = false;
   results: PerfumeSearchRow[] = [];
   totalCount = 0;
@@ -51,8 +56,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   brandSearchText = '';
   groupSearchText = '';
 
+  filtersReady = false;
+  filtersLoading = false;
+
   private refresh$ = new BehaviorSubject<void>(undefined);
   private destroy$ = new Subject<void>();
+
+  @ViewChild('filterSheet') filterSheetRef!: ElementRef<View>;
+  @ViewChild('backdrop') backdropRef!: ElementRef<View>;
 
   constructor(
     private readonly perfumeService: PerfumeService,
@@ -66,7 +77,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadLookups();
+    this.preloadFilters();
 
     this.searchControl.valueChanges
       .pipe(
@@ -129,21 +140,62 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.resetAndSearch();
   }
 
+  ngAfterViewChecked(): void {
+    if (!this.showFilters) return;
+    if (!this.filterSheetRef || !this.backdropRef) return;
+
+    const sheet = this.filterSheetRef.nativeElement;
+    const backdrop = this.backdropRef.nativeElement;
+
+    if ((sheet as any).__animated) return;
+    (sheet as any).__animated = true;
+
+    const height = Screen.mainScreen.heightDIPs;
+
+    sheet.translateY = height;
+    backdrop.opacity = 0;
+
+    sheet.once('layoutChanged', () => {
+      backdrop.animate({
+        opacity: 0.6,
+        duration: 240
+      });
+
+      sheet.animate({
+        translate: { x: 0, y: 0 },
+        duration: 240,
+        curve: 'easeOut'
+      });
+    });
+  }
+
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  private loadLookups(): void {
-    this.brandService
-      .getBrandsDictionary()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(br => (this.brands = br));
+  private preloadFilters(): void {
+    if (this.filtersReady || this.filtersLoading) return;
 
-    this.groupService
-      .getGroupsDictionary()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(gr => (this.groups = gr));
+    this.filtersLoading = true;
+
+    forkJoin({
+      brands: this.brandService.getBrandsDictionary(),
+      groups: this.groupService.getGroupsDictionary()
+    })
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: ({ brands, groups }) => {
+        this.brands = brands;
+        this.groups = groups;
+        this.filtersReady = true;
+        this.filtersLoading = false;
+      },
+      error: () => {
+        this.filtersLoading = false;
+      }
+    });
   }
 
   private buildQuery(): string | null {
@@ -192,14 +244,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
-    this.showFilters = false;
+    this.closeFilters();
     this.resetAndSearch();
   }
 
   clearFilters(): void {
     this.selectedBrandId = null;
     this.selectedGroupIds = [];
-    this.showFilters = false;
+    this.closeFilters();
     this.resetAndSearch();
   }
 
@@ -235,6 +287,36 @@ export class SearchComponent implements OnInit, OnDestroy {
     } else {
       this.selectedGroupIds = [...this.selectedGroupIds, group.id];
     }
+  }
+
+  openFilters(): void {
+    if (this.showFilters || !this.filtersReady) return;
+    this.showFilters = true;
+  }
+
+  closeFilters(): void {
+    if (!this.filterSheetRef || !this.backdropRef) {
+      this.showFilters = false;
+      return;
+    }
+
+    const sheet = this.filterSheetRef.nativeElement;
+    const backdrop = this.backdropRef.nativeElement;
+
+    const height = require('@nativescript/core').Screen.mainScreen.heightDIPs;
+
+    sheet.animate({
+      translate: { x: 0, y: height },
+      duration: 180,
+      curve: 'easeIn'
+    });
+
+    backdrop.animate({
+      opacity: 0,
+      duration: 150
+    }).then(() => {
+      this.showFilters = false;
+    });
   }
 
   isGroupSelected(group: GroupDictionaryItemDto): boolean {
