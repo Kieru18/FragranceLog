@@ -3,6 +3,7 @@ export interface PerfumeSearchRequestDto {
   brandId?: number | null;
   countryCode?: string | null;
   minRating?: number | null;
+  groupIds?: number[];
   page: number;
   pageSize: number;
 }
