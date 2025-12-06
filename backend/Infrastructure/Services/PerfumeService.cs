@@ -1,6 +1,4 @@
 ﻿using Core.DTOs;
-using Core.Entities;
-using Core.Exceptions;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +49,13 @@ namespace Infrastructure.Services
 
             if (req.MinRating != null && req.MinRating != 0)
                 query = query.Where(x => x.AvgRating >= req.MinRating);
+
+            if (req.GroupIds is { Count: > 0 })
+            {
+                query = query.Where(x =>
+                    req.GroupIds.All(groupId =>
+                        x.Perfume.Groups.Any(g => g.GroupId == groupId)));
+            }
 
             var totalCount = await query.CountAsync(ct);
 
