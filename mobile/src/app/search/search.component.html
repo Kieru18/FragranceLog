@@ -24,15 +24,15 @@
         rows="auto"
         class="bg-dark-secondary rounded-2xl px-4 py-4"
         horizontalAlignment="center"
-        verticalAlignment="center">
+        verticalAlignment="center"
+        (tap)="openFilters()">
 
         <Label
           *ngIf="filtersReady"
           text="&#xf0b0;"
           class="fas text-text-primary text-lg"
           horizontalAlignment="center"
-          verticalAlignment="center"
-          (tap)="openFilters()">
+          verticalAlignment="center">
         </Label>
 
         <ActivityIndicator
