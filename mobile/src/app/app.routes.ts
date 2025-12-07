@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './services/auth.guard'
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/login',
+    redirectTo: '/home',
     pathMatch: 'full'
   },
   {
@@ -16,6 +17,7 @@ export const routes: Routes = [
   },
   {
     path: 'home',
+    canActivate: [AuthGuard],
     loadComponent: () => import('./home/home.component').then(m => m.HomeComponent)
   },
   {
@@ -24,7 +26,9 @@ export const routes: Routes = [
   },
   {
     path: 'search',
+    canActivate: [AuthGuard],
     loadComponent: () => import('./search/search.component').then(m => m.SearchComponent)
   },
   // { path: 'perfume/:id', loadComponent: () => import('./perfume/perfume.component').then(m => m.PerfumeComponent) }
 ];
+

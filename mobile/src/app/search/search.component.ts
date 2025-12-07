@@ -81,7 +81,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.preloadFilters();
+    setTimeout(() => {
+        this.preloadFilters();
+    }, 500);
 
     this.searchControl.valueChanges
       .pipe(
