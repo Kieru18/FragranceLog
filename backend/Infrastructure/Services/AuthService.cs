@@ -4,6 +4,8 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Infrastructure.Services
 {
@@ -79,7 +81,7 @@ namespace Infrastructure.Services
 
             var principal = _jwt.ValidateRefreshToken(refreshToken) ?? throw new UnauthorizedException("Invalid refresh token.");
 
-            var claim = principal.Claims.FirstOrDefault(c => c.Type == "sub") ?? throw new UnauthorizedException("Invalid refresh token.");
+            var claim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == JwtRegisteredClaimNames.Sub) ?? throw new UnauthorizedException("Invalid refresh token.");
 
             if (!int.TryParse(claim.Value, out var userId))
                 throw new UnauthorizedException("Invalid refresh token.");
@@ -87,7 +89,6 @@ namespace Infrastructure.Services
             var user = await _context.Users.FindAsync(userId) ?? throw new UnauthorizedException("User not found.");
             var newAccess = _jwt.GenerateAccessToken(user);
             var newRefresh = _jwt.GenerateRefreshToken(user.UserId);
-
 
             return new AuthResponseDto
             {
