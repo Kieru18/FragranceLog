@@ -1,0 +1,39 @@
+<GridLayout row="2"
+            columns="*,*,*,*,*"
+            class="py-3 px-4 bg-dark-secondary border-t border-gray-800">
+
+    <Label col="0"
+        text="&#xf015;"
+        class="fas text-text-secondary text-lg text-center"
+        (tap)="goToHome()"></Label>
+
+    <Label col="1"
+        text="&#xf002;"
+        class="fas text-text-secondary text-lg text-center"
+        (tap)="goToSearch()"></Label>
+
+    <GridLayout col="2"
+        class="h-12 w-12 rounded-full bg-brand-gold"
+        horizontalAlignment="center"
+        verticalAlignment="center">
+
+        <Label
+            text="&#xf067;"
+            class="fas text-bg-dark text-xl text-center"
+            horizontalAlignment="center"
+            verticalAlignment="center"
+            [nsRouterLink]="['/add']">
+        </Label>
+    </GridLayout>
+
+    <Label col="3"
+        text="&#xf03a;"
+        class="fas text-text-secondary text-lg text-center"
+        [nsRouterLink]="['/collection']"></Label>
+
+    <Label col="4"
+        text="&#xf007;"
+        class="fas text-text-secondary text-lg text-center"
+        [nsRouterLink]="['/profile']"></Label>
+
+</GridLayout>
