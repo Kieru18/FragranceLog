@@ -18,6 +18,7 @@ import { CommonService } from '../services/common.service';
 import { PerfumeSearchRow } from '../models/types';
 import { EventData, View, Screen, Page, Utils, PanGestureEventData } from '@nativescript/core';
 import { GenderEnum } from '../models/gender.enum';
+import { FooterComponent } from '../footer/footer.component';
 
 
 
@@ -29,7 +30,8 @@ import { GenderEnum } from '../models/gender.enum';
     NativeScriptCommonModule,
     NativeScriptFormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    FooterComponent
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

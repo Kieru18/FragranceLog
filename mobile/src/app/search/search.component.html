@@ -1,4 +1,4 @@
-<GridLayout rows="auto, *"
+<GridLayout rows="auto, *, auto"
             class="ns-dark bg-dark">
 
   <StackLayout row="0"
@@ -138,7 +138,7 @@
   <GridLayout 
     [visibility]="showFilters ? 'visible' : 'collapsed'"
     rows="*, auto"
-    rowSpan="2">
+    rowSpan="3">
 
     <StackLayout
       id="backdrop"
@@ -298,4 +298,5 @@
         </FlexboxLayout>
     </GridLayout>
   </GridLayout>
+  <app-footer row="2"></app-footer>
 </GridLayout>

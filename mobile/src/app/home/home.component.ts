@@ -2,7 +2,7 @@ import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { registerElement } from '@nativescript/angular';
 import { Image, Page } from '@nativescript/core';
 import { NgForOf } from '@angular/common';
-import { RouterExtensions } from '@nativescript/angular';
+import { FooterComponent } from '../footer/footer.component'
 
 registerElement('Image', () => Image);
 
@@ -10,8 +10,7 @@ registerElement('Image', () => Image);
   standalone: true,
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
-  imports: [NgForOf],
+  imports: [NgForOf, FooterComponent],
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class HomeComponent {
@@ -40,15 +39,11 @@ export class HomeComponent {
     users: 4_200,
   };
 
-  constructor(private page: Page, private routerExtensions: RouterExtensions) {
+  constructor(private page: Page) {
     this.page.actionBarHidden = true;
   }
 
   toFixedRating(r: number) {
     return r.toFixed(1);
-  }
-
-  goToSearch() {
-    this.routerExtensions.navigate(['/search']);
   }
 }
