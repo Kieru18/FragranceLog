@@ -1,4 +1,4 @@
-import { PerfumeNoteDto } from './perfumenote.dto';
+import { PerfumeNoteGroupDto } from './perfumenotegroup.dto';
 import { ReviewDto } from './review.dto';
 
 export interface PerfumeDetailsDto {
@@ -23,6 +23,6 @@ export interface PerfumeDetailsDto {
   mySillageVote?: string | null;
 
   groups: string[];
-  notes: PerfumeNoteDto[];
+  noteGroups: PerfumeNoteGroupDto[];
   reviews: ReviewDto[];
 }
