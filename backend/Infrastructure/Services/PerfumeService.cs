@@ -125,16 +125,22 @@ namespace Infrastructure.Services
                         .Select(g => g.Name)
                         .ToList(),
 
-                    Notes = p.PerfumeNotes
-                        .Select(pn => new PerfumeNoteDto
+                    NoteGroups = p.PerfumeNotes
+                        .GroupBy(pn => pn.NoteTypeId)
+                        .OrderBy(g => g.Key)
+                        .Select(g => new PerfumeNoteGroupDto
                         {
-                            NoteId = pn.NoteId,
-                            Name = pn.Note.Name,
-                            Type = (NoteTypeEnum)pn.NoteTypeId
-                        })
-                        .ToList(),
+                            Type = (NoteTypeEnum)g.Key,
+                            Notes = g.Select(pn => new PerfumeNoteDto
+                            {
+                                NoteId = pn.NoteId,
+                                Name = pn.Note.Name,
+                                Type = (NoteTypeEnum)pn.NoteTypeId
+                            }).ToList()
+                        }).ToList(),
 
                     Reviews = p.Reviews
+                        .Where(r => !string.IsNullOrWhiteSpace(r.Comment))
                         .OrderByDescending(r => r.ReviewDate)
                         .Take(20)
                         .Select(r => new ReviewDto

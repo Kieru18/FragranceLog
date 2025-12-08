@@ -24,7 +24,7 @@
         public string? MySillageVote { get; init; }
 
         public IReadOnlyList<string> Groups { get; init; } = [];
-        public IReadOnlyList<PerfumeNoteDto> Notes { get; init; } = [];
+        public IReadOnlyList<PerfumeNoteGroupDto> NoteGroups { get; init; } = [];
 
         public IReadOnlyList<ReviewDto> Reviews { get; init; } = [];
     }
