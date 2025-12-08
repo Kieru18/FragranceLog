@@ -1,0 +1,79 @@
+<GridLayout rows="*, auto" class="ns-dark bg-dark h-full">
+  <ScrollView row="0">
+    <StackLayout class="px-6 pb-6">
+
+      <Label *ngIf="loading"
+             text="Loading perfume..."
+             class="text-text-secondary mt-6"></Label>
+
+      <Label *ngIf="!loading && error"
+             [text]="error"
+             class="text-red-500 mt-6"></Label>
+
+      <StackLayout *ngIf="!loading && !error && perfume">
+
+        <StackLayout class="mt-6 mb-4">
+          <Label [text]="perfume.name"
+                 class="text-text-primary text-2xl font-semibold mb-1"></Label>
+          <Label [text]="perfume.brand"
+                 class="text-text-secondary text-sm mb-2"></Label>
+
+          <Image *ngIf="perfume.imageUrl"
+                 [src]="perfume.imageUrl"
+                 stretch="aspectFill"
+                 class="h-56 w-full rounded-2xl mb-4"></Image>
+
+          <StackLayout orientation="horizontal" class="items-center">
+            <Label [text]="'★ ' + perfume.avgRating.toFixed(1)"
+                   class="text-brand-gold text-lg font-semibold mr-2"></Label>
+            <Label [text]="perfume.ratingCount + ' reviews'"
+                   class="text-text-secondary text-xs"></Label>
+          </StackLayout>
+        </StackLayout>
+
+        <StackLayout *ngIf="perfume.groups?.length"
+                     class="mb-4">
+          <Label text="Olfactory groups"
+                 class="text-text-secondary text-xs mb-2"></Label>
+          <WrapLayout>
+            <Label *ngFor="let g of perfume.groups"
+                   [text]="g"
+                   class="filter-chip"></Label>
+          </WrapLayout>
+        </StackLayout>
+
+        <StackLayout *ngIf="perfume.notes?.length"
+                     class="mb-4">
+          <Label text="Notes"
+                 class="text-text-secondary text-xs mb-2"></Label>
+          <StackLayout *ngFor="let n of perfume.notes">
+            <Label [text]="n.name + ' · ' + n.type"
+                   class="text-text-primary text-sm"></Label>
+          </StackLayout>
+        </StackLayout>
+
+        <StackLayout *ngIf="perfume.reviews?.length"
+                     class="mb-6">
+          <Label text="Recent reviews"
+                 class="text-text-secondary text-sm font-semibold mb-3"></Label>
+
+          <StackLayout *ngFor="let r of perfume.reviews"
+                       class="mb-3 rounded-lg p-3 bg-dark-secondary">
+            <Label [text]="r.author"
+                   class="text-text-primary text-sm font-semibold mb-1"></Label>
+            <Label [text]="'★ ' + r.rating"
+                   class="text-brand-gold text-xs mb-1"></Label>
+            <Label *ngIf="r.text"
+                   [text]="r.text"
+                   class="text-text-secondary text-xs"
+                   textWrap="true"></Label>
+          </StackLayout>
+        </StackLayout>
+
+      </StackLayout>
+
+    </StackLayout>
+  </ScrollView>
+
+  <app-footer row="1"></app-footer>
+</GridLayout>
