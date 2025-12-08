@@ -1,79 +1,103 @@
-<GridLayout rows="*, auto" class="ns-dark bg-dark h-full">
-  <ScrollView row="0">
-    <StackLayout class="px-6 pb-6">
+<GridLayout rows="auto, *, auto"
+            class="ns-dark bg-dark h-full">
 
-      <Label *ngIf="loading"
-             text="Loading perfume..."
-             class="text-text-secondary mt-6"></Label>
+  <StackLayout row="0" class="px-6 pt-8 pb-4">
+    <Label *ngIf="details"
+           [text]="details.name"
+           class="text-2xl font-semibold text-text-primary mb-1"></Label>
 
-      <Label *ngIf="!loading && error"
-             [text]="error"
-             class="text-red-500 mt-6"></Label>
+    <Label *ngIf="details"
+           [text]="details.brand"
+           class="text-sm text-text-secondary"></Label>
+  </StackLayout>
 
-      <StackLayout *ngIf="!loading && !error && perfume">
+  <ScrollView row="1">
+    <StackLayout class="px-6 pb-10">
 
-        <StackLayout class="mt-6 mb-4">
-          <Label [text]="perfume.name"
-                 class="text-text-primary text-2xl font-semibold mb-1"></Label>
-          <Label [text]="perfume.brand"
-                 class="text-text-secondary text-sm mb-2"></Label>
-
-          <Image *ngIf="perfume.imageUrl"
-                 [src]="perfume.imageUrl"
-                 stretch="aspectFill"
-                 class="h-56 w-full rounded-2xl mb-4"></Image>
-
-          <StackLayout orientation="horizontal" class="items-center">
-            <Label [text]="'★ ' + perfume.avgRating.toFixed(1)"
-                   class="text-brand-gold text-lg font-semibold mr-2"></Label>
-            <Label [text]="perfume.ratingCount + ' reviews'"
-                   class="text-text-secondary text-xs"></Label>
-          </StackLayout>
-        </StackLayout>
-
-        <StackLayout *ngIf="perfume.groups?.length"
-                     class="mb-4">
-          <Label text="Olfactory groups"
-                 class="text-text-secondary text-xs mb-2"></Label>
-          <WrapLayout>
-            <Label *ngFor="let g of perfume.groups"
-                   [text]="g"
-                   class="filter-chip"></Label>
-          </WrapLayout>
-        </StackLayout>
-
-        <StackLayout *ngIf="perfume.notes?.length"
-                     class="mb-4">
-          <Label text="Notes"
-                 class="text-text-secondary text-xs mb-2"></Label>
-          <StackLayout *ngFor="let n of perfume.notes">
-            <Label [text]="n.name + ' · ' + n.type"
-                   class="text-text-primary text-sm"></Label>
-          </StackLayout>
-        </StackLayout>
-
-        <StackLayout *ngIf="perfume.reviews?.length"
-                     class="mb-6">
-          <Label text="Recent reviews"
-                 class="text-text-secondary text-sm font-semibold mb-3"></Label>
-
-          <StackLayout *ngFor="let r of perfume.reviews"
-                       class="mb-3 rounded-lg p-3 bg-dark-secondary">
-            <Label [text]="r.author"
-                   class="text-text-primary text-sm font-semibold mb-1"></Label>
-            <Label [text]="'★ ' + r.rating"
-                   class="text-brand-gold text-xs mb-1"></Label>
-            <Label *ngIf="r.text"
-                   [text]="r.text"
-                   class="text-text-secondary text-xs"
-                   textWrap="true"></Label>
-          </StackLayout>
-        </StackLayout>
-
+      <StackLayout *ngIf="loading"
+                   class="items-center mt-20">
+        <ActivityIndicator busy="true"
+                           color="#D3A54A" />
+        <Label text="Loading perfume..."
+               class="text-xs text-text-secondary mt-3"></Label>
       </StackLayout>
+
+      <ng-container *ngIf="!loading && details">
+
+        <StackLayout class="rounded-3xl bg-dark-secondary h-56 mb-6 items-center justify-center">
+          <Label text="No image yet"
+                 class="text-xs text-text-secondary"></Label>
+        </StackLayout>
+
+        <GridLayout columns="auto, auto"
+                    class="items-center mb-6">
+          <Label text="★"
+                 class="text-brand-gold text-xl mr-2"></Label>
+          <Label [text]="details.avgRating.toFixed(1) + ' · ' + details.ratingCount + ' reviews'"
+                 class="text-text-secondary text-sm"></Label>
+        </GridLayout>
+
+        <FlexboxLayout class="mb-6"
+                       flexWrap="wrap">
+          <Label *ngFor="let g of details.groups"
+                 text="{{ g }}"
+                 class="text-xs text-text-primary border border-dark-secondary rounded-full px-3 py-1 mr-2 mb-2"></Label>
+        </FlexboxLayout>
+
+        <StackLayout class="mb-8">
+          <StackLayout *ngFor="let group of details.noteGroups"
+                       class="mb-4">
+
+            <Label [text]="noteTypeLabel(group.type)"
+                   class="text-xs text-text-secondary mb-2 uppercase tracking-wide"></Label>
+
+            <FlexboxLayout flexWrap="wrap">
+              <StackLayout *ngFor="let n of group.notes"
+                           class="bg-dark-secondary rounded-xl px-3 py-2 mr-2 mb-2">
+                <Label [text]="n.name"
+                       class="text-xs text-text-primary"></Label>
+              </StackLayout>
+            </FlexboxLayout>
+
+          </StackLayout>
+        </StackLayout>
+
+        <StackLayout>
+          <Label text="Reviews"
+                 class="text-lg font-semibold text-text-primary mb-4"></Label>
+
+          <StackLayout *ngFor="let r of details.reviews"
+                       class="mb-4 bg-dark-secondary rounded-2xl px-4 py-3">
+
+            <GridLayout columns="*, auto" class="mb-1">
+              <Label [text]="r.author"
+                     class="text-xs text-text-primary font-semibold"></Label>
+              <Label [text]="'★ ' + r.rating"
+                     class="text-xs text-brand-gold"
+                     col="1"></Label>
+            </GridLayout>
+
+            <Label [text]="r.text"
+                   textWrap="true"
+                   class="text-xs text-text-secondary"></Label>
+
+            <Label [text]="r.createdAt | date:'mediumDate'"
+                   class="text-2xs text-text-secondary mt-2"></Label>
+          </StackLayout>
+
+          <StackLayout class="items-center mt-2">
+            <Label text="See all reviews"
+                   class="text-xs text-brand-gold"
+                   opacity="0.7"></Label>
+          </StackLayout>
+
+        </StackLayout>
+
+      </ng-container>
 
     </StackLayout>
   </ScrollView>
 
-  <app-footer row="1"></app-footer>
+  <app-footer row="2"></app-footer>
+
 </GridLayout>

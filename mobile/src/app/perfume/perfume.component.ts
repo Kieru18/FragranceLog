@@ -1,11 +1,10 @@
-import { Component, NO_ERRORS_SCHEMA, OnDestroy, OnInit } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NativeScriptCommonModule } from '@nativescript/angular';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Page } from '@nativescript/core';
-import { Subscription } from 'rxjs';
 import { PerfumeService } from '../services/perfume.service';
 import { PerfumeDetailsDto } from '../models/perfumedetails.dto';
-import { NgIf, NgForOf } from '@angular/common';
+import { NoteTypeEnum } from '../models/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
 
 @Component({
@@ -14,23 +13,17 @@ import { FooterComponent } from '../footer/footer.component';
   templateUrl: './perfume.component.html',
   imports: [
     NativeScriptCommonModule,
-    RouterModule,
-    NgIf,
-    NgForOf,
     FooterComponent
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
-export class PerfumeComponent implements OnInit, OnDestroy {
-  perfume: PerfumeDetailsDto | null = null;
-  loading = true;
-  error: string | null = null;
+export class PerfumeComponent implements OnInit {
 
-  private sub?: Subscription;
+  loading = true;
+  details: PerfumeDetailsDto | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private perfumeService: PerfumeService,
     private page: Page
   ) {
@@ -38,31 +31,26 @@ export class PerfumeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.params['id'];
-    const id = Number(idParam);
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!id) return;
 
-    if (!id || Number.isNaN(id)) {
-      this.router.navigate(['/home']);
-      return;
-    }
-
-    this.loading = true;
-    this.error = null;
-
-    this.sub = this.perfumeService.getPerfumeDetails(id).subscribe({
-      next: perfume => {
-        this.perfume = perfume;
+    this.perfumeService.getPerfumeDetails(id).subscribe({
+      next: d => {
+        this.details = d;
         this.loading = false;
       },
-      error: err => {
-        console.log('Perfume details error', err);
-        this.error = 'Could not load perfume details.';
+      error: () => {
         this.loading = false;
       }
     });
   }
 
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
+  noteTypeLabel(type: NoteTypeEnum): string {
+    switch (type) {
+      case NoteTypeEnum.Top: return 'Top notes';
+      case NoteTypeEnum.Middle: return 'Heart notes';
+      case NoteTypeEnum.Base: return 'Base notes';
+      default: return '';
+    }
   }
 }
