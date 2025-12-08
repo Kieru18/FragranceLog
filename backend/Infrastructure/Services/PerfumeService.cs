@@ -1,4 +1,6 @@
 ﻿using Core.DTOs;
+using Core.Enums;
+using Core.Exceptions;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -95,6 +97,86 @@ namespace Infrastructure.Services
                 PageSize = pageSize,
                 Items = result
             };
+        }
+
+        public async Task<PerfumeDetailsDto> GetDetailsAsync(
+            int perfumeId,
+            int? userId,
+            CancellationToken ct)
+        {
+            var dto = await _context.Perfumes
+                .AsNoTracking()
+                .Where(p => p.PerfumeId == perfumeId)
+                .Select(p => new PerfumeDetailsDto
+                {
+                    PerfumeId = p.PerfumeId,
+                    Name = p.Name,
+                    Brand = p.Brand.Name,
+                    //ImageUrl = perfume.PerfumePhoto?.PhotoUrl,
+
+                    AvgRating = p.Reviews.Any()
+                        ? Math.Round(p.Reviews.Average(r => (double)r.Rating), 2)
+                        : 0d,
+
+                    RatingCount = p.Reviews.Count(),
+
+                    Groups = p.Groups
+                        .OrderBy(g => g.Name)
+                        .Select(g => g.Name)
+                        .ToList(),
+
+                    Notes = p.PerfumeNotes
+                        .Select(pn => new PerfumeNoteDto
+                        {
+                            NoteId = pn.NoteId,
+                            Name = pn.Note.Name,
+                            Type = (NoteTypeEnum)pn.NoteTypeId
+                        })
+                        .ToList(),
+
+                    Reviews = p.Reviews
+                        .OrderByDescending(r => r.ReviewDate)
+                        .Take(20)
+                        .Select(r => new ReviewDto
+                        {
+                            ReviewId = r.ReviewId,
+                            Author = r.User.Username,
+                            Rating = r.Rating,
+                            Text = r.Comment,
+                            CreatedAt = r.ReviewDate
+                        })
+                        .ToList(),
+
+                    Gender = null,
+                    Longevity = null,
+                    Sillage = null,
+                    Seasons = Array.Empty<string>(),
+                    Daytimes = Array.Empty<string>(),
+
+                    MyRating = userId == null
+                        ? null
+                        : p.Reviews
+                            .Where(r => r.UserId == userId)
+                            .Select(r => (int?)r.Rating)
+                            .FirstOrDefault(),
+
+                    MyReview = userId == null
+                        ? null
+                        : p.Reviews
+                            .Where(r => r.UserId == userId)
+                            .Select(r => r.Comment)
+                            .FirstOrDefault(),
+
+                    MyGenderVote = null,
+                    MyLongevityVote = null,
+                    MySillageVote = null
+                })
+                .SingleOrDefaultAsync(ct);
+
+            if (dto == null)
+                throw new NotFoundException("Perfume not found.");
+
+            return dto;
         }
     }
 }
