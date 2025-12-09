@@ -1,15 +1,6 @@
-<GridLayout rows="auto, *, auto"
-            class="ns-dark bg-dark h-full">
+<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
 
-  <StackLayout row="0" class="px-6 pt-8 pb-4">
-    <Label *ngIf="details"
-           [text]="details.name"
-           class="text-2xl font-semibold text-text-primary mb-1"></Label>
-
-    <Label *ngIf="details"
-           [text]="details.brand"
-           class="text-sm text-text-secondary"></Label>
-  </StackLayout>
+  <StackLayout row="0" height="24"></StackLayout>
 
   <ScrollView row="1">
     <StackLayout class="px-6 pb-10">
@@ -24,65 +15,90 @@
 
       <ng-container *ngIf="!loading && details">
 
+        <StackLayout class="pt-4 mb-4">
+          <Label
+            [text]="details.name"
+            textWrap="true"
+            class="text-2xl font-semibold text-text-primary mb-1"></Label>
+
+          <Label
+            [text]="details.brand"
+            class="text-sm text-text-secondary"></Label>
+        </StackLayout>
+
         <StackLayout class="rounded-3xl bg-dark-secondary h-56 mb-6 items-center justify-center">
           <Label text="No image yet"
                  class="text-xs text-text-secondary"></Label>
         </StackLayout>
 
-        <GridLayout columns="auto, auto"
+        <GridLayout columns="auto, *"
                     class="items-center mb-6">
           <Label text="★"
                  class="text-brand-gold text-xl mr-2"></Label>
-          <Label [text]="details.avgRating.toFixed(1) + ' · ' + details.ratingCount + ' reviews'"
-                 class="text-text-secondary text-sm"></Label>
+          <Label
+            [text]="details.avgRating.toFixed(1) + ' · ' + details.ratingCount + ' reviews'"
+            class="text-text-secondary text-sm"></Label>
         </GridLayout>
 
         <FlexboxLayout class="mb-6"
                        flexWrap="wrap">
           <Label *ngFor="let g of details.groups"
-                 text="{{ g }}"
+                 [text]="g"
                  class="text-xs text-text-primary border border-dark-secondary rounded-full px-3 py-1 mr-2 mb-2"></Label>
         </FlexboxLayout>
 
         <StackLayout class="mb-8">
+
           <StackLayout *ngFor="let group of details.noteGroups"
                        class="mb-4">
 
-            <Label [text]="noteTypeLabel(group.type)"
-                   class="text-xs text-text-secondary mb-2 uppercase tracking-wide"></Label>
+            <Label
+              [text]="noteTypeLabel(group.type)"
+              class="text-xs text-text-secondary mb-2 uppercase tracking-wide"></Label>
 
             <FlexboxLayout flexWrap="wrap">
               <StackLayout *ngFor="let n of group.notes"
                            class="bg-dark-secondary rounded-xl px-3 py-2 mr-2 mb-2">
-                <Label [text]="n.name"
-                       class="text-xs text-text-primary"></Label>
+                <Label
+                  [text]="n.name"
+                  class="text-xs text-text-primary"></Label>
               </StackLayout>
             </FlexboxLayout>
 
           </StackLayout>
+
         </StackLayout>
 
         <StackLayout>
+
           <Label text="Reviews"
                  class="text-lg font-semibold text-text-primary mb-4"></Label>
 
           <StackLayout *ngFor="let r of details.reviews"
                        class="mb-4 bg-dark-secondary rounded-2xl px-4 py-3">
 
-            <GridLayout columns="*, auto" class="mb-1">
-              <Label [text]="r.author"
-                     class="text-xs text-text-primary font-semibold"></Label>
-              <Label [text]="'★ ' + r.rating"
-                     class="text-xs text-brand-gold"
-                     col="1"></Label>
+            <GridLayout columns="*, auto"
+                        class="mb-1">
+              <Label
+                [text]="r.author"
+                class="text-xs text-text-primary font-semibold"></Label>
+
+              <Label
+                [text]="'★ ' + r.rating"
+                col="1"
+                class="text-xs text-brand-gold"></Label>
             </GridLayout>
 
-            <Label [text]="r.text"
-                   textWrap="true"
-                   class="text-xs text-text-secondary"></Label>
+            <Label
+              *ngIf="r.text"
+              [text]="r.text"
+              textWrap="true"
+              class="text-xs text-text-secondary"></Label>
 
-            <Label [text]="r.createdAt | date:'mediumDate'"
-                   class="text-2xs text-text-secondary mt-2"></Label>
+            <Label
+              [text]="r.createdAt | date:'mediumDate'"
+              class="text-2xs text-text-secondary mt-2"></Label>
+
           </StackLayout>
 
           <StackLayout class="items-center mt-2">
