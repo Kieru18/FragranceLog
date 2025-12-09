@@ -92,16 +92,16 @@
               <Label [text]="row.data.brand"
                     class="text-text-secondary text-xs mt-0.5"></Label>
 
-              <GridLayout columns="auto, auto"
-                          class="items-center mt-1">
-                <Label text="★"
-                      col="0"
-                      class="text-brand-gold text-xs mr-1"></Label>
+              <StackLayout orientation="horizontal" class="mt-1 items-center">
+              <Label
+                text="&#xf005;"
+                class="fas text-brand-gold text-xs mr-1"></Label>
 
-                <Label [text]="formatRating(row.data)"
-                      col="1"
-                      class="text-text-secondary text-xs"></Label>
-              </GridLayout>
+              <Label
+                [text]="formatRating(row.data)"
+                class="text-text-secondary text-xs"></Label>
+            </StackLayout>
+
             </StackLayout>
 
             <StackLayout

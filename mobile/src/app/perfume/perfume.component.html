@@ -27,18 +27,19 @@
         </StackLayout>
 
         <StackLayout class="rounded-3xl bg-dark-secondary h-56 mb-6 items-center justify-center">
-          <Label text="No image yet"
+          <Label text=""
                  class="text-xs text-text-secondary"></Label>
         </StackLayout>
 
-        <GridLayout columns="auto, *"
-                    class="items-center mb-6">
-          <Label text="★"
-                 class="text-brand-gold text-xl mr-2"></Label>
+        <StackLayout orientation="horizontal" class="mb-6 items-center">
+          <Label
+            text="&#xf005;"
+            class="fas text-brand-gold text-sm mr-1"></Label>
+
           <Label
             [text]="details.avgRating.toFixed(1) + ' · ' + details.ratingCount + ' reviews'"
             class="text-text-secondary text-sm"></Label>
-        </GridLayout>
+        </StackLayout>
 
         <FlexboxLayout class="mb-6"
                        flexWrap="wrap">
