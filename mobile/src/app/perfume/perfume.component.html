@@ -41,25 +41,21 @@
             class="text-text-secondary text-sm"></Label>
         </StackLayout>
 
-        <FlexboxLayout flexWrap="wrap">
-
-          <StackLayout
-            *ngFor="let g of details.groups"
-            class="rounded-xl px-3 py-1.5 mr-2 mb-2"
-            [style.borderWidth]="1"
-            [style.borderColor]="getGroupColor(g)"
-            [style.backgroundColor]="'transparent'">
-
-            <Label
-              [text]="g"
-              class="text-xs"
-              [style.color]="getGroupColor(g)">
-            </Label>
-
-          </StackLayout>
-
-        </FlexboxLayout>
-
+        <StackLayout class="mb-8">
+          <FlexboxLayout flexWrap="wrap">
+            <StackLayout *ngFor="let g of details.groups"
+                        class="rounded-xl px-3 py-2 mr-2 mb-2"
+                        [style.borderWidth]="1"
+                        [style.borderColor]="getGroupColor(g)"
+                        [style.backgroundColor]="'transparent'">
+              <Label
+                [text]="g"
+                class="text-xs"
+                [style.color]="getGroupColor(g)">
+              </Label>
+            </StackLayout>
+          </FlexboxLayout>
+        </StackLayout>
 
         <StackLayout class="mb-8">
 
