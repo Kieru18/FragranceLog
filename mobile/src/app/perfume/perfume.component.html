@@ -41,12 +41,25 @@
             class="text-text-secondary text-sm"></Label>
         </StackLayout>
 
-        <FlexboxLayout class="mb-6"
-                       flexWrap="wrap">
-          <Label *ngFor="let g of details.groups"
-                 [text]="g"
-                 class="text-xs text-text-primary border border-dark-secondary rounded-full px-3 py-1 mr-2 mb-2"></Label>
+        <FlexboxLayout flexWrap="wrap">
+
+          <StackLayout
+            *ngFor="let g of details.groups"
+            class="rounded-xl px-3 py-1.5 mr-2 mb-2"
+            [style.borderWidth]="1"
+            [style.borderColor]="getGroupColor(g)"
+            [style.backgroundColor]="'transparent'">
+
+            <Label
+              [text]="g"
+              class="text-xs"
+              [style.color]="getGroupColor(g)">
+            </Label>
+
+          </StackLayout>
+
         </FlexboxLayout>
+
 
         <StackLayout class="mb-8">
 
@@ -55,7 +68,7 @@
 
             <Label
               [text]="noteTypeLabel(group.type)"
-              class="text-xs text-text-secondary mb-2 uppercase tracking-wide"></Label>
+              class="text-xs text-text-secondary mb-2"></Label>
 
             <FlexboxLayout flexWrap="wrap">
               <StackLayout *ngFor="let n of group.notes"

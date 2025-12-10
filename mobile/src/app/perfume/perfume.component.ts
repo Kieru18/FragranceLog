@@ -6,6 +6,7 @@ import { PerfumeService } from '../services/perfume.service';
 import { PerfumeDetailsDto } from '../models/perfumedetails.dto';
 import { NoteTypeEnum } from '../models/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
+import { GROUP_COLORS } from '../const/GROUP_COLORS'
 
 @Component({
   standalone: true,
@@ -18,7 +19,6 @@ import { FooterComponent } from '../footer/footer.component';
   schemas: [NO_ERRORS_SCHEMA]
 })
 export class PerfumeComponent implements OnInit {
-
   loading = true;
   details: PerfumeDetailsDto | null = null;
 
@@ -52,5 +52,9 @@ export class PerfumeComponent implements OnInit {
       case NoteTypeEnum.Base: return 'Base notes';
       default: return '';
     }
+  }
+
+  getGroupColor(name: string): string {
+    return GROUP_COLORS[name] ?? '#444444';
   }
 }
