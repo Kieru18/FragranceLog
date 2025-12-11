@@ -2,12 +2,8 @@
 
 public class ImportOptions
 {
-    public string CsvPath { get; set; } = null!;
-    public int FakeUserCount { get; set; } = 50;
-    public ImporterUserOptions ImporterUser { get; set; } = new();
-}
-
-public class ImporterUserOptions
-{
-    public string Password { get; set; } = null!;
+    public string Mode { get; set; } = "Kaggle";
+    public string ConnectionName { get; set; } = "FragranceLog";
+    public KaggleImportOptions Kaggle { get; set; } = new();
+    public ImageImportOptions Images { get; set; } = new();
 }

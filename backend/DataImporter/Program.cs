@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using CsvHelper.Expressions;
 using DataImporter.Configuration;
 using DataImporter.Importers;
 using DataImporter.Services;
@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace DataImporter;
 
@@ -22,10 +23,16 @@ public class Program
             })
             .ConfigureServices((context, services) =>
             {
-                var connectionString = context.Configuration.GetConnectionString("FragranceLog")
-                                      ?? throw new InvalidOperationException("Connection string 'FragranceLog' not found.");
+                var connectionName = context.Configuration["Import:ConnectionName"] ?? "";
 
-                services.Configure<ImportOptions>(context.Configuration.GetSection("Import"));
+                var connectionString = context.Configuration.GetConnectionString(connectionName)
+                                      ?? throw new InvalidOperationException($"Connection string {connectionName} not found.");
+
+                var importSection = context.Configuration.GetSection("Import");
+                var importOptions = importSection.Get<ImportOptions>()
+                                    ?? throw new InvalidOperationException("Import section missing.");
+
+                services.Configure<ImportOptions>(importSection);
 
                 services.AddDbContext<FragranceLogContext>(options =>
                 {
@@ -41,20 +48,41 @@ public class Program
                         });
                 });
 
+                services.AddSingleton<NameNormalizer>();
+                services.AddSingleton<JsonlReader>();
+                services.AddSingleton<PerfumeMatcher>();
+                services.AddSingleton<ReportWriter>();
 
                 services.AddSingleton<CsvReaderService>();
                 services.AddSingleton<CountryAliasResolver>();
                 services.AddSingleton<SyntheticDataService>();
-                services.AddSingleton<NameNormalizer>();
-
                 services.AddTransient<KaggleImporter>();
+
+                services.AddSingleton<ImageFileService>();
+                services.AddSingleton<ImageDbWriterService>();
+                services.AddTransient<ImageImporter>();
+
+                switch (importOptions.Mode.ToLower())
+                {
+                    case "kaggle":
+                        services.AddTransient<IImporter, KaggleImporter>();
+                        break;
+                    case "images":
+                        services.AddTransient<IImporter, ImageImporter>();
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Unknown import mode: {importOptions.Mode}");
+                }
             })
+
             .Build();
 
         using (host)
         {
-            var importer = host.Services.GetRequiredService<KaggleImporter>();
-            await importer.RunAsync();
+            var importer = host.Services.GetRequiredService<IImporter>();
+            var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+
+            await importer.RunAsync(lifetime.ApplicationStopping);
         }
     }
 }
