@@ -9,8 +9,6 @@
                    class="items-center mt-20">
         <ActivityIndicator busy="true"
                            color="#D3A54A" />
-        <Label text="Loading perfume..."
-               class="text-xs text-text-secondary mt-3"></Label>
       </StackLayout>
 
       <ng-container *ngIf="!loading && details">
@@ -41,7 +39,7 @@
             class="text-text-secondary text-sm"></Label>
         </StackLayout>
 
-        <StackLayout class="mb-8">
+        <StackLayout class="mb-4">
           <FlexboxLayout flexWrap="wrap">
             <StackLayout *ngFor="let g of details.groups"
                         class="rounded-xl px-3 py-2 mr-2 mb-2"
@@ -57,10 +55,10 @@
           </FlexboxLayout>
         </StackLayout>
 
-        <StackLayout class="mb-8">
+        <StackLayout class="mb-4">
 
           <StackLayout *ngFor="let group of details.noteGroups"
-                       class="mb-4">
+                       class="mb-2">
 
             <Label
               [text]="noteTypeLabel(group.type)"
