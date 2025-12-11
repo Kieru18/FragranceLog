@@ -23,7 +23,7 @@ backend/**/appsettings.*.json
 backend/**/*.log
 
 # Local images
-backend/ImageImporter/Data/images/
+backend/DataImporter/Data/images/
 
 ##########################################
 # MOBILE (Angular / NativeScript)
