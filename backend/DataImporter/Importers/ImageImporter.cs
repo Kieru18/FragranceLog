@@ -47,9 +47,27 @@ public class ImageImporter : IImporter
         var cfg = _options.Images;
 
         Console.WriteLine("=== Image Importer (EF Core) ===");
-        Console.WriteLine($"JSONL: {cfg.JsonlPath}");
-        Console.WriteLine($"Images src: {cfg.ImagesSourceFolder}");
-        Console.WriteLine($"Webroot dest: {cfg.WebRootPerfumeImagesFolder}");
+
+        var projectRoot = Path.GetFullPath(
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..")
+        );
+
+        cfg.ImagesSourceFolder = Path.GetFullPath(
+            Path.Combine(projectRoot, cfg.ImagesSourceFolder!)
+        );
+
+        cfg.WebRootPerfumeImagesFolder = Path.GetFullPath(
+            Path.Combine(projectRoot, cfg.WebRootPerfumeImagesFolder!)
+        );
+
+        cfg.JsonlPath = Path.GetFullPath(
+            Path.Combine(projectRoot, cfg.JsonlPath!)
+        );
+
+        Console.WriteLine($"JSONL:  {cfg.JsonlPath}");
+        Console.WriteLine($"Images: {cfg.ImagesSourceFolder}");
+        Console.WriteLine($"Dest:   {cfg.WebRootPerfumeImagesFolder}");
+
 
         var dbPerfumes = await _db.Perfumes
             .Include(p => p.Brand)
