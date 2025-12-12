@@ -18,6 +18,7 @@ public class ImageImporter : IImporter
     private readonly ImageFileService _files;
     private readonly ImageDbWriterService _writer;
     private readonly ReportWriter _report;
+    private readonly BrandAliasResolver _brandAlias;
 
     public ImageImporter(
         IOptions<ImportOptions> options,
@@ -27,7 +28,8 @@ public class ImageImporter : IImporter
         PerfumeMatcher matcher,
         ImageFileService files,
         ImageDbWriterService writer,
-        ReportWriter report)
+        ReportWriter report,
+        BrandAliasResolver brandAlias)
     {
         _options = options.Value;
         _db = db;
@@ -37,6 +39,7 @@ public class ImageImporter : IImporter
         _files = files;
         _writer = writer;
         _report = report;
+        _brandAlias = brandAlias;
     }
 
     public async Task RunAsync(CancellationToken ct)
@@ -56,7 +59,7 @@ public class ImageImporter : IImporter
             p.PerfumeId,
             p.Brand.Name,
             p.Name,
-            _normalizer.NormalizeWithDiacritics(p.Brand.Name),
+            _brandAlias.Resolve(p.Brand.Name),
             _normalizer.NormalizeWithDiacritics(p.Name)
         )).ToList();
 
@@ -76,7 +79,7 @@ public class ImageImporter : IImporter
 
         foreach (var rec in datasetRecords)
         {
-            var brandNorm = _normalizer.NormalizeWithDiacritics(rec.Brand);
+            var brandNorm = _brandAlias.Resolve(rec.Brand);
             var nameNorm = _normalizer.NormalizeWithDiacritics(rec.NamePerfume);
 
             if (string.IsNullOrWhiteSpace(brandNorm) || string.IsNullOrWhiteSpace(nameNorm))

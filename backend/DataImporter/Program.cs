@@ -2,11 +2,13 @@
 using DataImporter.Configuration;
 using DataImporter.Importers;
 using DataImporter.Services;
+using DataImporter.Tools;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
 namespace DataImporter;
@@ -58,9 +60,12 @@ public class Program
                 services.AddSingleton<SyntheticDataService>();
                 services.AddTransient<KaggleImporter>();
 
+                services.AddSingleton<BrandAliasResolver>();
                 services.AddSingleton<ImageFileService>();
                 services.AddSingleton<ImageDbWriterService>();
                 services.AddTransient<ImageImporter>();
+
+                services.AddTransient<BrandComparisonTool>();
 
                 switch (importOptions.Mode.ToLower())
                 {
@@ -69,6 +74,8 @@ public class Program
                         break;
                     case "images":
                         services.AddTransient<IImporter, ImageImporter>();
+                        break;
+                    case "brandcomparison":
                         break;
                     default:
                         throw new InvalidOperationException($"Unknown import mode: {importOptions.Mode}");
@@ -79,6 +86,15 @@ public class Program
 
         using (host)
         {
+            var cfg = host.Services.GetRequiredService<IOptions<ImportOptions>>().Value;
+
+            if (cfg.Mode.Equals("brandcomparison", StringComparison.OrdinalIgnoreCase))
+            {
+                var tool = host.Services.GetRequiredService<BrandComparisonTool>();
+                await tool.RunAsync(cfg.Images.JsonlPath!);
+                return;
+            }
+
             var importer = host.Services.GetRequiredService<IImporter>();
             var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
 
