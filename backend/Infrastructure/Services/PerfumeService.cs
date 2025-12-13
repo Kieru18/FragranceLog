@@ -112,7 +112,7 @@ namespace Infrastructure.Services
                     PerfumeId = p.PerfumeId,
                     Name = p.Name,
                     Brand = p.Brand.Name,
-                    //ImageUrl = perfume.PerfumePhoto?.PhotoUrl,
+                    ImageUrl = p.PerfumePhoto == null ? "" : p.PerfumePhoto.Path,
 
                     AvgRating = p.Reviews.Any()
                         ? Math.Round(p.Reviews.Average(r => (double)r.Rating), 2)

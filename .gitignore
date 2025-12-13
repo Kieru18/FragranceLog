@@ -68,3 +68,4 @@ test-results/
 *.trx
 *.coverage
 *.coveragexml
+/backend/Api/wwwroot/perfume-images

@@ -7,6 +7,7 @@ import { PerfumeDetailsDto } from '../models/perfumedetails.dto';
 import { NoteTypeEnum } from '../models/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
 import { GROUP_COLORS } from '../const/GROUP_COLORS'
+import { environment } from '~/environments/environment';
 
 @Component({
   standalone: true,
@@ -21,6 +22,8 @@ import { GROUP_COLORS } from '../const/GROUP_COLORS'
 export class PerfumeComponent implements OnInit {
   loading = true;
   details: PerfumeDetailsDto | null = null;
+
+  private readonly baseUrl = `${environment.contentUrl}`;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,6 +46,21 @@ export class PerfumeComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  get perfumeImageSrc(): string {
+    const path = this.details?.imageUrl;
+
+    if (!path) {
+      return '~/assets/images/perfume-placeholder.png';
+    }
+
+    return `${this.baseUrl}${path}`;
+  }
+
+  onImageLoaded(e: any) {
+    e.object.opacity = 0;
+    e.object.animate({ opacity: 1, duration: 250 });
   }
 
   noteTypeLabel(type: NoteTypeEnum): string {
