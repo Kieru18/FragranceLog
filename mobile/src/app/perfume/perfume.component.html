@@ -31,13 +31,15 @@
             [src]="perfumeImageSrc"
             stretch="aspectFill"
             opacity="0.35"
-            blurRadius="25">
+            blurRadius="25"
+            borderRadius="24">
           </Image>
 
-           <Image
+          <Image
             [src]="perfumeImageSrc"
             stretch="aspectFit"
             loadMode="async"
+            class="rounded-lg"
             (loaded)="onImageLoaded($event)">
           </Image>
 
