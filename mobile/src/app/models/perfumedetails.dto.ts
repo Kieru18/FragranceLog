@@ -9,6 +9,7 @@ export interface PerfumeDetailsDto {
 
   avgRating: number;
   ratingCount: number;
+  commentCount: number;
 
   gender?: string | null;
   longevity?: string | null;

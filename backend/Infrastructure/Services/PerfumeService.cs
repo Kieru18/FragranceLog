@@ -120,6 +120,9 @@ namespace Infrastructure.Services
 
                     RatingCount = p.Reviews.Count(),
 
+                    CommentCount = p.Reviews.Count(r =>
+                        !string.IsNullOrWhiteSpace(r.Comment)),
+
                     Groups = p.Groups
                         .OrderBy(g => g.Name)
                         .Select(g => g.Name)

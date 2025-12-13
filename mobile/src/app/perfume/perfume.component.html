@@ -45,7 +45,7 @@
 
         </GridLayout>
 
-        <StackLayout orientation="horizontal" class="mb-6 items-center">
+        <!-- <StackLayout orientation="horizontal" class="mb-6 items-center">
           <Label
             text="&#xf005;"
             class="fas text-brand-gold text-sm mr-1"></Label>
@@ -53,6 +53,40 @@
           <Label
             [text]="details.avgRating.toFixed(1) + ' · ' + details.ratingCount + ' reviews'"
             class="text-text-secondary text-sm"></Label>
+        </StackLayout> -->
+
+        <StackLayout orientation="horizontal" class="mb-6 items-center">
+          <Label
+            text="&#xf005;"
+            class="fas text-brand-gold text-sm mr-1"></Label>
+
+          <Label
+            [text]="details.avgRating.toFixed(1)"
+            class="text-text-secondary text-sm"></Label>
+
+          <Label
+            text=" · "
+            class="text-text-secondary text-sm"></Label>
+
+          <Label
+            [text]="details.ratingCount + ' votes'"
+            class="text-text-secondary text-sm"></Label>
+
+          <Label
+            *ngIf="details.commentCount > 0"
+            text=" · "
+            class="text-text-secondary text-sm"></Label>
+
+          <Label
+            *ngIf="details.commentCount > 0"
+            text="&#xf075;"
+            class="fas text-text-secondary text-sm mr-1"></Label>
+
+          <Label
+            *ngIf="details.commentCount > 0"
+            [text]="details.commentCount"
+            class="text-text-secondary text-sm"></Label>
+
         </StackLayout>
 
         <StackLayout class="mb-4">

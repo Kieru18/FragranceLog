@@ -10,6 +10,7 @@
 
         public double AvgRating { get; init; }
         public int RatingCount { get; init; }
+        public int CommentCount { get; init; }
 
         public string? Gender { get; init; }
         public string? Longevity { get; init; }
