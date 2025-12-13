@@ -48,6 +48,7 @@ namespace Api
             builder.Services.AddScoped<PasswordHasher>();
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddScoped<IPerfumeService, PerfumeService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
 
             if (!builder.Environment.IsDevelopment())
             {
