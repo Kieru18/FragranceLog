@@ -1,5 +1,4 @@
-﻿using AngleSharp.Dom;
-using DataImporter.Configuration;
+﻿using DataImporter.Configuration;
 using DataImporter.Models;
 using DataImporter.Services;
 using Infrastructure.Data;
@@ -46,40 +45,32 @@ public class ImageImporter : IImporter
     {
         var cfg = _options.Images;
 
-        Console.WriteLine("=== Image Importer (EF Core) ===");
-
         var projectRoot = Path.GetFullPath(
             Path.Combine(AppContext.BaseDirectory, "..", "..", "..")
         );
 
-        cfg.ImagesSourceFolder = Path.GetFullPath(
-            Path.Combine(projectRoot, cfg.ImagesSourceFolder!)
-        );
-
-        cfg.WebRootPerfumeImagesFolder = Path.GetFullPath(
-            Path.Combine(projectRoot, cfg.WebRootPerfumeImagesFolder!)
-        );
-
-        cfg.JsonlPath = Path.GetFullPath(
-            Path.Combine(projectRoot, cfg.JsonlPath!)
-        );
-
-        Console.WriteLine($"JSONL:  {cfg.JsonlPath}");
-        Console.WriteLine($"Images: {cfg.ImagesSourceFolder}");
-        Console.WriteLine($"Dest:   {cfg.WebRootPerfumeImagesFolder}");
-
+        cfg.ImagesSourceFolder = Path.GetFullPath(Path.Combine(projectRoot, cfg.ImagesSourceFolder!));
+        cfg.WebRootPerfumeImagesFolder = Path.GetFullPath(Path.Combine(projectRoot, cfg.WebRootPerfumeImagesFolder!));
+        cfg.JsonlPath = Path.GetFullPath(Path.Combine(projectRoot, cfg.JsonlPath!));
 
         var dbPerfumes = await _db.Perfumes
             .Include(p => p.Brand)
-            .ToListAsync();
+            .ToListAsync(ct);
 
-        var perfumeRows = dbPerfumes.Select(p => new DbPerfumeRow(
-            p.PerfumeId,
-            p.Brand.Name,
-            p.Name,
-            _brandAlias.Resolve(p.Brand.Name),
-            _normalizer.NormalizeWithDiacritics(p.Name)
-        )).ToList();
+        var perfumeRows = dbPerfumes.Select(p =>
+        {
+            var normalized = _normalizer.NormalizeWithDiacritics(p.Name);
+            var canonical = _normalizer.ExtractCanonicalName(normalized);
+
+            return new DbPerfumeRow(
+                p.PerfumeId,
+                p.Brand.Name,
+                p.Name,
+                _brandAlias.Resolve(p.Brand.Name),
+                normalized,
+                canonical
+            );
+        }).ToList();
 
         var brandIndex = perfumeRows
             .GroupBy(p => p.BrandNormalized)
@@ -89,7 +80,7 @@ public class ImageImporter : IImporter
 
         var existingPerfumeIds = (await _db.PerfumePhotos
             .Select(p => p.PerfumeId)
-            .ToListAsync())
+            .ToListAsync(ct))
             .ToHashSet();
 
         var matches = new List<MatchDecision>();
@@ -99,6 +90,7 @@ public class ImageImporter : IImporter
         {
             var brandNorm = _brandAlias.Resolve(rec.Brand);
             var nameNorm = _normalizer.NormalizeWithDiacritics(rec.NamePerfume);
+            var nameCanonical = _normalizer.ExtractCanonicalName(nameNorm);
 
             if (string.IsNullOrWhiteSpace(brandNorm) || string.IsNullOrWhiteSpace(nameNorm))
             {
@@ -119,6 +111,16 @@ public class ImageImporter : IImporter
                 continue;
             }
 
+            var canonicalMatches = candidates
+                .Where(p => p.NameCanonical == nameCanonical)
+                .ToList();
+
+            if (canonicalMatches.Count >= 1)
+            {
+                matches.Add(MatchDecision.Canonical(rec, canonicalMatches));
+                continue;
+            }
+
             var fuzzy = _matcher.FindBestFuzzyMatch(rec, nameNorm, candidates);
             if (fuzzy != null)
             {
@@ -129,66 +131,72 @@ public class ImageImporter : IImporter
             matches.Add(MatchDecision.NoMatch(rec, "No exact or fuzzy match"));
         }
 
-        Console.WriteLine("Matching complete.");
-        Console.WriteLine($"Exact: {matches.Count(m => m.Kind == MatchKind.Exact)}");
-        Console.WriteLine($"Fuzzy: {matches.Count(m => m.Kind == MatchKind.Fuzzy)}");
-        Console.WriteLine($"None: {matches.Count(m => m.Kind == MatchKind.None)}");
-
         _files.EnsureDirectory(cfg.WebRootPerfumeImagesFolder!);
 
         int inserted = 0;
-        int skippedExisting = 0;
-        int skippedNoImage = 0;
 
-        foreach (var m in matches.Where(m => m.Kind != MatchKind.None && m.DbPerfume != null))
+        foreach (var m in matches)
         {
-            var perfumeId = m.DbPerfume!.PerfumeId;
-
-            if (existingPerfumeIds.Contains(perfumeId))
-            {
-                skippedExisting++;
+            if (m.Kind == MatchKind.None)
                 continue;
-            }
 
             if (string.IsNullOrWhiteSpace(m.Dataset.ImageName))
-            {
-                skippedNoImage++;
                 continue;
-            }
 
             var src = Path.Combine(cfg.ImagesSourceFolder!, m.Dataset.ImageName);
             if (!_files.Exists(src))
             {
-                missingImages.Add(m.Dataset.ImageName!);
-                skippedNoImage++;
+                missingImages.Add(m.Dataset.ImageName);
                 continue;
             }
 
-            var ext = Path.GetExtension(src);
-            if (string.IsNullOrWhiteSpace(ext))
-                ext = ".jpg";
-
-            var destName = perfumeId + ext.ToLowerInvariant();
+            var destName = Path.GetFileName(m.Dataset.ImageName);
             var dest = Path.Combine(cfg.WebRootPerfumeImagesFolder!, destName);
 
-            if (cfg.DoNotSave) continue;
+            if (!cfg.DoNotSave && !_files.Exists(dest))
+                _files.Copy(src, dest);
 
-            _files.Copy(src, dest);
+            if (m.Kind == MatchKind.Canonical)
+            {
+                foreach (var db in m.DbPerfumes!)
+                {
+                    if (existingPerfumeIds.Contains(db.PerfumeId))
+                        continue;
 
-            await _writer.AddPhotoAsync(perfumeId, $"{cfg.BasePathForDb}/{destName}");
+                    if (!cfg.DoNotSave)
+                    {
+                        await _writer.AddPhotoAsync(
+                            db.PerfumeId,
+                            $"{cfg.BasePathForDb}/{destName}"
+                        );
+                    }
+
+                    existingPerfumeIds.Add(db.PerfumeId);
+                    inserted++;
+                }
+
+                continue;
+            }
+
+            var perfumeId = m.DbPerfume!.PerfumeId;
+
+            if (existingPerfumeIds.Contains(perfumeId))
+                continue;
+
+            if (!cfg.DoNotSave)
+            {
+                await _writer.AddPhotoAsync(
+                    perfumeId,
+                    $"{cfg.BasePathForDb}/{destName}"
+                );
+            }
 
             existingPerfumeIds.Add(perfumeId);
             inserted++;
         }
 
-        Console.WriteLine($"Inserted: {inserted}");
-        Console.WriteLine($"Skipped existing: {skippedExisting}");
-        Console.WriteLine($"Skipped no image: {skippedNoImage}");
-
         var reportPath = Path.Combine("Output", "image-import-report.html");
         Directory.CreateDirectory("Output");
         await _report.WriteReportAsync(reportPath, matches, missingImages);
-
-        Console.WriteLine($"Report saved to {reportPath}");
     }
 }

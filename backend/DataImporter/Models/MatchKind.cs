@@ -4,5 +4,6 @@ public enum MatchKind
 {
     None,
     Exact,
-    Fuzzy
+    Fuzzy,
+    Canonical
 }

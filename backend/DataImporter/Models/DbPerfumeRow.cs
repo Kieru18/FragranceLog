@@ -5,5 +5,6 @@ public sealed record DbPerfumeRow(
     string BrandName,
     string PerfumeName,
     string BrandNormalized,
-    string NameNormalized
+    string NameNormalized,
+    string NameCanonical
 );
