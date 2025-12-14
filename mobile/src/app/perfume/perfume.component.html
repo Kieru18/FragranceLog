@@ -45,20 +45,10 @@
 
         </GridLayout>
 
-        <!-- <StackLayout orientation="horizontal" class="mb-6 items-center">
-          <Label
-            text="&#xf005;"
-            class="fas text-brand-gold text-sm mr-1"></Label>
-
-          <Label
-            [text]="details.avgRating.toFixed(1) + ' · ' + details.ratingCount + ' reviews'"
-            class="text-text-secondary text-sm"></Label>
-        </StackLayout> -->
-
         <StackLayout orientation="horizontal" class="mb-6 items-center">
           <Label
-            text="&#xf005;"
-            class="fas text-brand-gold text-sm mr-1"></Label>
+            text="★"
+            class="text-brand-gold text-sm mr-1"></Label>
 
           <Label
             [text]="details.avgRating.toFixed(1)"
@@ -72,21 +62,19 @@
             [text]="details.ratingCount + ' votes'"
             class="text-text-secondary text-sm"></Label>
 
-          <Label
-            *ngIf="details.commentCount > 0"
-            text=" · "
-            class="text-text-secondary text-sm"></Label>
+          <ng-container *ngIf="details.commentCount > 0">
+            <Label
+              text=" · "
+              class="text-text-secondary text-sm"></Label>
 
-          <Label
-            *ngIf="details.commentCount > 0"
-            text="&#xf075;"
-            class="fas text-text-secondary text-sm mr-1"></Label>
+            <Label
+              text="&#xf075;"
+              class="fas text-text-secondary text-sm mr-1"></Label>
 
-          <Label
-            *ngIf="details.commentCount > 0"
-            [text]="details.commentCount"
-            class="text-text-secondary text-sm"></Label>
-
+            <Label
+              [text]="details.commentCount"
+              class="text-text-secondary text-sm"></Label>
+          </ng-container>
         </StackLayout>
 
         <StackLayout class="mb-4">
@@ -99,16 +87,15 @@
               <Label
                 [text]="g"
                 class="text-xs"
-                [style.color]="getGroupColor(g)">
-              </Label>
+                [style.color]="getGroupColor(g)"></Label>
             </StackLayout>
           </FlexboxLayout>
         </StackLayout>
 
-        <StackLayout class="mb-4">
+        <StackLayout class="mb-6">
 
           <StackLayout *ngFor="let group of details.noteGroups"
-                       class="mb-2">
+                       class="mb-3">
 
             <Label
               [text]="noteTypeLabel(group.type)"
@@ -127,10 +114,65 @@
 
         </StackLayout>
 
+        <StackLayout class="mb-6 bg-dark-secondary rounded-2xl p-4">
+
+          <Label
+            text="Your Rating"
+            class="text-sm font-semibold text-text-primary mb-3">
+          </Label>
+
+          <StackLayout orientation="horizontal" class="mb-4">
+            <Label
+              *ngFor="let star of [1,2,3,4,5]; let i = index"
+              [text]="star <= (userRating || 0) ? '★' : '☆'"
+              class="text-3xl mr-2"
+              [class.text-brand-gold]="star <= (userRating || 0)"
+              [class.text-text-secondary]="!(star <= (userRating || 0))"
+              [class.opacity-100]="star <= (userRating || 0)"
+              [class.opacity-60]="!(star <= (userRating || 0))"
+              (tap)="rate(star)">
+            </Label>
+            
+            <Label *ngIf="userRating"
+                   [text]="' ' + userRating + '/5'"
+                   class="text-brand-gold text-lg ml-2 font-semibold">
+            </Label>
+          </StackLayout>
+
+          <TextView
+            [(ngModel)]="reviewText"
+            (ngModelChange)="isDirty = true"
+            hint="Write a review (optional)..."
+            hintColor="#888888"
+            returnKeyType="done"
+            rows="4"
+            maxLength="500"
+            autocorrect="true"
+            class="bg-dark rounded-xl p-4 text-text-primary text-sm"
+            style="border-width: 1; border-color: #333333; min-height: 120;">
+          </TextView>
+          
+          <Label *ngIf="reviewText"
+                 [text]="reviewText.length + '/500'"
+                 class="text-right text-2xs text-text-secondary mt-1">
+          </Label>
+
+          <Button
+            text="{{ isSubmitting ? 'Saving...' : 'Save Review' }}"
+            [class]="isDirty && userRating && !isSubmitting ? 'bg-brand-gold text-black' : 'bg-gray-700 text-gray-400'"
+            class="rounded-xl font-semibold py-3 mt-4"
+            [isUserInteractionEnabled]="isDirty && !!userRating && !isSubmitting"
+            (tap)="submitReview()">
+          </Button>
+
+        </StackLayout>
+
         <StackLayout>
 
-          <Label text="Reviews"
-                 class="text-lg font-semibold text-text-primary mb-4"></Label>
+          <Label
+            text="Reviews"
+            class="text-lg font-semibold text-text-primary mb-4">
+          </Label>
 
           <StackLayout *ngFor="let r of details.reviews"
                        class="mb-4 bg-dark-secondary rounded-2xl px-4 py-3">
@@ -139,30 +181,41 @@
                         class="mb-1">
               <Label
                 [text]="r.author"
-                class="text-xs text-text-primary font-semibold"></Label>
+                class="text-xs text-text-primary font-semibold">
+              </Label>
 
-              <Label
-                [text]="'★ ' + r.rating"
-                col="1"
-                class="text-xs text-brand-gold"></Label>
+              <StackLayout col="1" orientation="horizontal">
+                <Label
+                  text="★ "
+                  class="text-xs text-brand-gold">
+                </Label>
+                <Label
+                  [text]="r.rating"
+                  class="text-xs text-brand-gold">
+                </Label>
+              </StackLayout>
             </GridLayout>
 
             <Label
               *ngIf="r.text"
               [text]="r.text"
               textWrap="true"
-              class="text-xs text-text-secondary"></Label>
+              class="text-xs text-text-secondary mt-2">
+            </Label>
 
             <Label
               [text]="r.createdAt | date:'mediumDate'"
-              class="text-2xs text-text-secondary mt-2"></Label>
+              class="text-2xs text-text-secondary mt-2">
+            </Label>
 
           </StackLayout>
 
           <StackLayout class="items-center mt-2">
-            <Label text="See all reviews"
-                   class="text-xs text-brand-gold"
-                   opacity="0.7"></Label>
+            <Label
+              text="See all reviews"
+              class="text-xs text-brand-gold underline"
+              opacity="0.7">
+            </Label>
           </StackLayout>
 
         </StackLayout>
