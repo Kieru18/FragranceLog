@@ -134,60 +134,67 @@
             </Label>
           </StackLayout>
 
-          <GridLayout rows="*, auto" class="mb-1">
-            
-            <TextView
-              row="0"
-              [(ngModel)]="reviewText"
-              (ngModelChange)="isDirty = true"
-              hint="Write a review (optional) ..."
-              returnKeyType="done"
-              rows="4"
-              maxLength="2000"
-              autocorrect="true"
-              class="bg-dark rounded-xl text-text-primary text-sm"
-              style="padding: 16; padding-right: 56; border-width: 1; border-color: #333333; min-height: 120; placeholder-color: #B8B8B8; line-height: 8;">
-            </TextView>
-            
-            <GridLayout
-              row="0"
-              rowSpan="2"
-              horizontalAlignment="right"
-              verticalAlignment="bottom"
-              marginRight="8"
-              marginBottom="8"
-              width="44"
-              height="44"
-              [class.opacity-50]="!(isDirty && userRating && !isSubmitting)"
-              [isUserInteractionEnabled]="isDirty && !!userRating && !isSubmitting"
-              (tap)="submitReview()"
-              class="rounded-full bg-brand-gold">
-              
-              <StackLayout verticalAlignment="center" horizontalAlignment="center">
+          <GridLayout rows="auto, auto" class="mb-1">
+
+            <GridLayout row="0">
+
+              <TextView
+                [(ngModel)]="reviewText"
+                (ngModelChange)="isDirty = true"
+                hint="Write a review (optional) ..."
+                returnKeyType="done"
+                maxLength="2000"
+                autocorrect="true"
+                class="bg-dark rounded-xl text-text-primary text-sm"
+                style="
+                  padding: 16;
+                  padding-right: 56;
+                  border-width: 1;
+                  border-color: #333333;
+                  min-height: 120;
+                  placeholder-color: #B8B8B8;
+                ">
+              </TextView>
+
+              <GridLayout
+                horizontalAlignment="right"
+                verticalAlignment="bottom"
+                marginRight="8"
+                marginBottom="8"
+                width="44"
+                height="44"
+                [class.opacity-50]="!(isDirty && userRating && !isSubmitting)"
+                [isUserInteractionEnabled]="isDirty && !!userRating && !isSubmitting"
+                (tap)="submitReview()"
+                class="rounded-full bg-brand-gold">
+
+                <StackLayout verticalAlignment="center" horizontalAlignment="center">
                   <Label
-                      *ngIf="!isSubmitting"
-                      text="&#xf0c7;"
-                      class="fas text-black text-lg">
+                    *ngIf="!isSubmitting"
+                    text="&#xf0c7;"
+                    class="fas text-black text-lg">
                   </Label>
-                  
+
                   <ActivityIndicator
-                      *ngIf="isSubmitting"
-                      busy="true"
-                      color="#000000"
-                      width="20"
-                      height="20"
-                      verticalAlignment="center"
-                      horizontalAlignment="center">
+                    *ngIf="isSubmitting"
+                    busy="true"
+                    color="#000000"
+                    width="20"
+                    height="20">
                   </ActivityIndicator>
-              </StackLayout>
+                </StackLayout>
+
+              </GridLayout>
+
             </GridLayout>
-            
-            <Label row="1"
-                   *ngIf="reviewText"
-                   [text]="reviewText.length + '/2000'"
-                   class="text-right text-2xs text-text-secondary mt-1">
+
+            <Label
+              row="1"
+              *ngIf="reviewText"
+              [text]="reviewText.length + '/2000'"
+              class="text-right text-2xs text-text-secondary mt-1">
             </Label>
-            
+
           </GridLayout>
 
         </StackLayout>
