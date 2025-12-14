@@ -9,6 +9,7 @@ import { NoteTypeEnum } from '../models/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
 import { GROUP_COLORS } from '../const/GROUP_COLORS'
 import { environment } from '~/environments/environment';
+import { DatePipe } from '@angular/common';
 
 @Component({
   standalone: true,
@@ -17,7 +18,8 @@ import { environment } from '~/environments/environment';
   imports: [
     NativeScriptCommonModule,
     NativeScriptFormsModule,
-    FooterComponent
+    FooterComponent,
+    DatePipe
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

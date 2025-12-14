@@ -199,47 +199,48 @@
 
         </StackLayout>
 
-        <StackLayout>
 
-          <Label
-            text="Reviews"
-            class="text-lg font-semibold text-text-primary mb-4">
-          </Label>
+        <StackLayout *ngFor="let r of details.reviews"
+            class="mb-4 bg-dark-secondary rounded-2xl px-4 py-4">
 
-          <StackLayout *ngFor="let r of details.reviews"
-                       class="mb-4 bg-dark-secondary rounded-2xl px-4 py-3">
+          <GridLayout columns="*, auto" class="mb-2">
 
-            <GridLayout columns="*, auto"
-                        class="mb-1">
+            <StackLayout>
               <Label
                 [text]="r.author"
-                class="text-xs text-text-primary font-semibold">
+                class="text-sm text-text-primary font-semibold">
               </Label>
+            </StackLayout>
 
-              <StackLayout col="1" orientation="horizontal">
-                <Label
-                  text="★ "
-                  class="text-xs text-brand-gold">
-                </Label>
-                <Label
-                  [text]="r.rating"
-                  class="text-xs text-brand-gold">
-                </Label>
-              </StackLayout>
-            </GridLayout>
+            <StackLayout col="1" orientation="horizontal" class="items-center">
+              <Label
+                text="&#xf005;"
+                class="fas text-brand-gold text-xs mr-1">
+              </Label>
+              <Label
+                [text]="r.rating"
+                class="text-xs text-brand-gold">
+              </Label>
+            </StackLayout>
 
+          </GridLayout>
+
+          <Label
+            *ngIf="r.text"
+            [text]="r.text"
+            textWrap="true"
+            class="text-sm text-text-secondary mb-3">
+          </Label>
+
+          <StackLayout orientation="horizontal" class="items-center opacity-70">
             <Label
-              *ngIf="r.text"
-              [text]="r.text"
-              textWrap="true"
-              class="text-xs text-text-secondary mt-2">
+              text="&#xf017;"
+              class="far text-text-secondary text-2xs mr-1">
             </Label>
-
             <Label
-              [text]="r.createdAt | date:'mediumDate'"
-              class="text-2xs text-text-secondary mt-2">
+              [text]="r.createdAt | date:'dd.MM.yyyy'"
+              class="text-2xs text-text-secondary">
             </Label>
-
           </StackLayout>
 
         </StackLayout>
