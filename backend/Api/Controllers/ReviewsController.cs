@@ -1,19 +1,19 @@
 using Core.DTOs;
 using Core.Extensions;
-using Infrastructure.Services;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("api/reviews")]
     [Authorize]
-    public sealed class ReviewsController : ControllerBase
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ReviewsController : ControllerBase
     {
-        private readonly ReviewService _reviewService;
+        private readonly IReviewService _reviewService;
 
-        public ReviewsController(ReviewService reviewService)
+        public ReviewsController(IReviewService reviewService)
         {
             _reviewService = reviewService;
         }
