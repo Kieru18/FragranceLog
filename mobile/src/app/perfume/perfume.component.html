@@ -118,14 +118,16 @@
 
           <Label
             text="Your Rating"
-            class="text-sm font-semibold text-text-primary mb-1">
+            class="text-sm font-semibold text-text-primary mb-2.5">
           </Label>
 
           <StackLayout orientation="horizontal" class="mb-4">
             <Label
               *ngFor="let star of [1,2,3,4,5]; let i = index"
-              [text]="star <= (userRating || 0) ? '★' : '☆'"
-              class="text-3xl mr-1"
+              text="&#xf005;"
+              class="text-3xl mr-1.5"
+              [class.far]="star > (userRating || 0)"
+              [class.fas]="star <= (userRating || 0)"
               [class.text-brand-gold]="star <= (userRating || 0)"
               [class.text-text-secondary]="!(star <= (userRating || 0))"
               [class.opacity-100]="star <= (userRating || 0)"
