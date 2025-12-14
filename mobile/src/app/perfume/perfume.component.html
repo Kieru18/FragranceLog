@@ -118,52 +118,50 @@
 
           <Label
             text="Your Rating"
-            class="text-sm font-semibold text-text-primary mb-3">
+            class="text-sm font-semibold text-text-primary mb-1">
           </Label>
 
-          <StackLayout orientation="horizontal" class="mb-4">
-            <Label
-              *ngFor="let star of [1,2,3,4,5]; let i = index"
-              [text]="star <= (userRating || 0) ? '★' : '☆'"
-              class="text-3xl mr-2"
-              [class.text-brand-gold]="star <= (userRating || 0)"
-              [class.text-text-secondary]="!(star <= (userRating || 0))"
-              [class.opacity-100]="star <= (userRating || 0)"
-              [class.opacity-60]="!(star <= (userRating || 0))"
-              (tap)="rate(star)">
-            </Label>
+          <GridLayout columns="*, auto" class="mb-4">
+            <StackLayout col="0" orientation="horizontal">
+              <Label
+                *ngFor="let star of [1,2,3,4,5]; let i = index"
+                [text]="star <= (userRating || 0) ? '★' : '☆'"
+                class="text-3xl mr-1"
+                [class.text-brand-gold]="star <= (userRating || 0)"
+                [class.text-text-secondary]="!(star <= (userRating || 0))"
+                [class.opacity-100]="star <= (userRating || 0)"
+                [class.opacity-50]="!(star <= (userRating || 0))"
+                (tap)="rate(star)">
+              </Label>
+            </StackLayout>
             
-            <Label *ngIf="userRating"
-                   [text]="' ' + userRating + '/5'"
-                   class="text-brand-gold text-lg ml-2 font-semibold">
-            </Label>
-          </StackLayout>
+            <Button
+              col="1"
+              text="{{ isSubmitting ? 'Saving...' : 'Save' }}"
+              [class.opacity-50]="!(isDirty && userRating && !isSubmitting)"
+              class="bg-brand-gold text-black rounded-xl font-semibold text-sm px-4 py-1.5"
+              style="height: 32;"
+              [isUserInteractionEnabled]="isDirty && !!userRating && !isSubmitting"
+              (tap)="submitReview()">
+            </Button>
+          </GridLayout>
 
           <TextView
             [(ngModel)]="reviewText"
             (ngModelChange)="isDirty = true"
             hint="Write a review (optional)..."
-            hintColor="#888888"
             returnKeyType="done"
             rows="4"
             maxLength="500"
             autocorrect="true"
-            class="bg-dark rounded-xl p-4 text-text-primary text-sm"
-            style="border-width: 1; border-color: #333333; min-height: 120;">
+            class="bg-dark rounded-xl p-4 text-text-primary text-sm placeholder:text-text-secondary"
+            style="border-width: 1; border-color: #333333; min-height: 120; placeholder-color: #B8B8B8;">
           </TextView>
           
           <Label *ngIf="reviewText"
                  [text]="reviewText.length + '/500'"
                  class="text-right text-2xs text-text-secondary mt-1">
           </Label>
-
-          <Button
-            text="{{ isSubmitting ? 'Saving...' : 'Save Review' }}"
-            [class]="isDirty && userRating && !isSubmitting ? 'bg-brand-gold text-black' : 'bg-gray-700 text-gray-400'"
-            class="rounded-xl font-semibold py-3 mt-4"
-            [isUserInteractionEnabled]="isDirty && !!userRating && !isSubmitting"
-            (tap)="submitReview()">
-          </Button>
 
         </StackLayout>
 
