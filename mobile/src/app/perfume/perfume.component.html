@@ -126,12 +126,12 @@
               *ngFor="let star of [1,2,3,4,5]; let i = index"
               text="&#xf005;"
               class="text-3xl mr-1.5"
-              [class.far]="star > (userRating || 0)"
-              [class.fas]="star <= (userRating || 0)"
-              [class.text-brand-gold]="star <= (userRating || 0)"
-              [class.text-text-secondary]="!(star <= (userRating || 0))"
-              [class.opacity-100]="star <= (userRating || 0)"
-              [class.opacity-50]="!(star <= (userRating || 0))"
+              [class.far]="!isStarFilled(star)"
+              [class.fas]="isStarFilled(star)"
+              [class.text-brand-gold]="isStarFilled(star)"
+              [class.text-text-secondary]="!isStarFilled(star)"
+              [class.opacity-100]="isStarFilled(star)"
+              [class.opacity-50]="!isStarFilled(star)"
               (tap)="rate(star)">
             </Label>
           </StackLayout>

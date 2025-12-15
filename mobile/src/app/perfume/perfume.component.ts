@@ -7,7 +7,7 @@ import { ReviewService } from '../services/review.service';
 import { PerfumeDetailsDto } from '../models/perfumedetails.dto';
 import { NoteTypeEnum } from '../models/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
-import { GROUP_COLORS } from '../const/GROUP_COLORS'
+import { GROUP_COLORS } from '../const/GROUP_COLORS';
 import { environment } from '~/environments/environment';
 import { DatePipe } from '@angular/common';
 
@@ -33,6 +33,8 @@ export class PerfumeComponent implements OnInit {
   isDirty = false;
   isSubmitting = false;
 
+  private initialRating: number | null = null;
+  private initialText: string = '';
 
   private readonly baseUrl = `${environment.contentUrl}`;
 
@@ -52,11 +54,11 @@ export class PerfumeComponent implements OnInit {
     this.perfumeService.getPerfumeDetails(this.perfumeId).subscribe({
       next: d => {
         this.details = d;
-
         this.userRating = d.myRating ?? undefined;
         this.reviewText = d.myReview ?? '';
         this.isDirty = false;
-
+        this.initialRating = d.myRating ?? null;
+        this.initialText = (d.myReview ?? '');
         this.loading = false;
       },
       error: () => {
@@ -67,11 +69,7 @@ export class PerfumeComponent implements OnInit {
 
   get perfumeImageSrc(): string {
     const path = this.details?.imageUrl;
-
-    if (!path) {
-      return '~/assets/images/perfume-placeholder.png';
-    }
-
+    if (!path) return '~/assets/images/perfume-placeholder.png';
     return `${this.baseUrl}${path}`;
   }
 
@@ -95,25 +93,44 @@ export class PerfumeComponent implements OnInit {
 
   rate(value: number) {
     if (this.userRating === value) return;
-
     this.userRating = value;
-    this.isDirty = true;
+    this.recomputeDirty();
+  }
+
+  onReviewTextChange(value: string) {
+    this.reviewText = value ?? '';
+    this.recomputeDirty();
+  }
+
+  private recomputeDirty(): void {
+    const currentRating = this.userRating ?? null;
+    const currentText = (this.reviewText ?? '').trim();
+    const baselineText = (this.initialText ?? '').trim();
+
+    this.isDirty = currentRating !== this.initialRating || currentText !== baselineText;
   }
 
   submitReview(): void {
-    if (!this.userRating) return;
+    if (!this.userRating || !this.details) return;
 
     this.isSubmitting = true;
 
+    const rating = this.userRating;
+    const text = this.reviewText?.trim() || null;
+
     this.reviewService.createOrUpdate({
       perfumeId: this.details.perfumeId,
-      rating: this.userRating,
-      text: this.reviewText?.trim() || null
+      rating,
+      text
     }).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.isDirty = false;
-        this.reloadDetails();
+        this.applyLocalAggregates(rating, text);
+        this.initialRating = this.details?.myRating ?? null;
+        this.initialText = this.details?.myReview ?? '';
+        this.recomputeDirty();
+        this.refreshCurrentUserReview();
       },
       error: () => {
         this.isSubmitting = false;
@@ -121,22 +138,59 @@ export class PerfumeComponent implements OnInit {
     });
   }
 
-  private reloadDetails(): void {
-    this.loading = true;
+  private applyLocalAggregates(rating: number, text: string | null): void {
+    if (!this.details) return;
 
-    this.perfumeService.getPerfumeDetails(this.perfumeId).subscribe({
-      next: d => {
-        this.details = d;
+    const hadRatingBefore = this.details.myRating != null;
+    const hadReviewBefore = !!this.details.myReview;
 
-        this.userRating = d.myRating ?? undefined;
-        this.reviewText = d.myReview ?? '';
-        this.isDirty = false;
+    this.details.myRating = rating;
+    this.details.myReview = text;
 
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
+    if (!hadRatingBefore) {
+      this.details.avgRating = this.recalculateAverage(
+        this.details.avgRating,
+        this.details.ratingCount,
+        rating
+      );
+      this.details.ratingCount++;
+    }
+
+    if (!hadReviewBefore && text) {
+      this.details.commentCount++;
+    }
+  }
+
+  private recalculateAverage(currentAvg: number, 
+                             count: number,
+                             newRating: number): number {
+    if (count === 0) return newRating;
+    return ((currentAvg * count) + newRating) / (count + 1);
+  }
+
+  private refreshCurrentUserReview(): void {
+    if (!this.details) return;
+
+    this.reviewService.getCurrentUserReview(this.details.perfumeId).subscribe({
+      next: review => {
+        const index = this.details!.reviews.findIndex(
+          r => r.author === review.author
+        );
+
+        if (index >= 0) {
+          this.details!.reviews[index] = review;
+        } else {
+          this.details!.reviews.unshift(review);
+        }
       }
     });
+  }
+
+  get canSubmitReview(): boolean {
+    return !!this.userRating && this.isDirty && !this.isSubmitting;
+  }
+
+  isStarFilled(star: number): boolean {
+    return star <= (this.userRating || 0);
   }
 }
