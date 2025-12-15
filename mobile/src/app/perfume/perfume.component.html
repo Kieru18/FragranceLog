@@ -142,7 +142,7 @@
 
               <TextView
                 [(ngModel)]="reviewText"
-                (ngModelChange)="isDirty = true"
+                (ngModelChange)="onReviewTextChange($event)"
                 hint="Write a review (optional) ..."
                 returnKeyType="done"
                 maxLength="2000"
@@ -155,6 +155,7 @@
                   border-color: #333333;
                   min-height: 120;
                   placeholder-color: #B8B8B8;
+                  line-height: 8;
                 ">
               </TextView>
 
@@ -165,8 +166,8 @@
                 marginBottom="8"
                 width="44"
                 height="44"
-                [class.opacity-50]="!(isDirty && userRating && !isSubmitting)"
-                [isUserInteractionEnabled]="isDirty && !!userRating && !isSubmitting"
+                [class.opacity-50]="!canSubmitReview"
+                [isUserInteractionEnabled]="canSubmitReview"
                 (tap)="submitReview()"
                 class="rounded-full bg-brand-gold">
 
@@ -231,7 +232,8 @@
             *ngIf="r.text"
             [text]="r.text"
             textWrap="true"
-            class="text-sm text-text-secondary mb-3">
+            class="text-sm text-text-secondary mb-3"
+            style="line-height: 8;">
           </Label>
 
           <StackLayout orientation="horizontal" class="items-center opacity-70">

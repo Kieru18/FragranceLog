@@ -44,5 +44,23 @@ public sealed class ReviewService : IReviewService
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task<ReviewDto?> GetByUserAndPerfumeAsync(int userId, int perfumeId)
+    {
+        var review = await _context.Reviews
+            .AsNoTracking()
+            .Where(r => r.PerfumeId == perfumeId && r.UserId == userId)
+            .Select(r => new ReviewDto
+            {
+                ReviewId = r.ReviewId,
+                Author = r.User.Username,
+                Rating = r.Rating,
+                Text = r.Comment,
+                CreatedAt = r.ReviewDate
+            })
+            .FirstOrDefaultAsync();
+
+        return review;
+    }
 }
 
