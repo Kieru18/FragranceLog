@@ -5,6 +5,7 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Core.Interfaces;
+using Core.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data;
@@ -49,6 +50,8 @@ namespace Api
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddScoped<IPerfumeService, PerfumeService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IPerfumeVoteService, PerfumeVoteService>();
+
 
             if (!builder.Environment.IsDevelopment())
             {
