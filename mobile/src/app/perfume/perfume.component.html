@@ -202,6 +202,132 @@
 
         </StackLayout>
 
+        <StackLayout class="mb-6 bg-dark-secondary rounded-2xl p-4">
+
+          <Label
+            text="Community perception"
+            class="text-sm font-semibold text-text-primary mb-4">
+          </Label>
+
+          <StackLayout class="mb-4">
+            <Label
+              text="Gender"
+              class="text-xs text-text-secondary mb-2">
+            </Label>
+
+            <StackLayout orientation="horizontal">
+              <StackLayout
+                *ngFor="let g of [GenderEnum.Male, GenderEnum.Unisex, GenderEnum.Female]"
+                class="px-4 py-2 mr-2 rounded-full"
+                [class.bg-brand-gold]="myGender === g"
+                [class.bg-dark]="myGender !== g"
+                (tap)="selectGender(g)">
+
+                <Label
+                  [text]="GenderEnum[g]"
+                  class="text-xs"
+                  [class.text-black]="myGender === g"
+                  [class.text-text-secondary]="myGender !== g">
+                </Label>
+              </StackLayout>
+            </StackLayout>
+          </StackLayout>
+
+          <StackLayout class="mb-4">
+            <Label
+              text="Longevity"
+              class="text-xs text-text-secondary mb-2">
+            </Label>
+
+            <StackLayout orientation="horizontal">
+              <Label
+                *ngFor="let l of [LongevityEnum.VeryWeak, LongevityEnum.Weak, LongevityEnum.Moderate, LongevityEnum.LongLasting, LongevityEnum.Eternal]"
+                text="&#xf017;"
+                class="far text-lg mr-2"
+                [class.fas]="l <= (myLongevity ?? 0)"
+                [class.text-brand-gold]="l <= (myLongevity ?? 0)"
+                [class.text-text-secondary]="l > (myLongevity ?? 0)"
+                (tap)="selectLongevity(l)">
+              </Label>
+            </StackLayout>
+          </StackLayout>
+
+          <StackLayout>
+            <Label
+              text="Sillage"
+              class="text-xs text-text-secondary mb-2">
+            </Label>
+
+            <StackLayout orientation="horizontal">
+              <Label
+                *ngFor="let s of [SillageEnum.Intimate, SillageEnum.Moderate, SillageEnum.Strong, SillageEnum.Enormous]"
+                text="&#xf5a1;"
+                class="fas text-lg mr-2"
+                [class.text-brand-gold]="s <= (mySillage ?? 0)"
+                [class.opacity-50]="s > (mySillage ?? 0)"
+                (tap)="selectSillage(s)">
+              </Label>
+            </StackLayout>
+          </StackLayout>
+
+        </StackLayout>
+
+        <StackLayout class="mb-6 bg-dark-secondary rounded-2xl p-4">
+
+          <Label
+            text="When you wear it"
+            class="text-sm font-semibold text-text-primary mb-4">
+          </Label>
+
+          <StackLayout class="mb-4">
+            <Label
+              text="Season"
+              class="text-xs text-text-secondary mb-2">
+            </Label>
+
+            <FlexboxLayout flexWrap="wrap">
+              <StackLayout
+                *ngFor="let s of [SeasonEnum.Spring, SeasonEnum.Summer, SeasonEnum.Autumn, SeasonEnum.Winter]"
+                class="px-4 py-2 mr-2 mb-2 rounded-full"
+                [class.bg-brand-gold]="mySeason === s"
+                [class.bg-dark]="mySeason !== s"
+                (tap)="selectSeason(s)">
+
+                <Label
+                  [text]="SeasonEnum[s]"
+                  class="text-xs"
+                  [class.text-black]="mySeason === s"
+                  [class.text-text-secondary]="mySeason !== s">
+                </Label>
+              </StackLayout>
+            </FlexboxLayout>
+          </StackLayout>
+
+          <StackLayout>
+            <Label
+              text="Daytime"
+              class="text-xs text-text-secondary mb-2">
+            </Label>
+
+            <StackLayout orientation="horizontal">
+              <StackLayout
+                *ngFor="let d of [DaytimeEnum.Day, DaytimeEnum.Night]"
+                class="px-4 py-2 mr-2 rounded-full"
+                [class.bg-brand-gold]="myDaytime === d"
+                [class.bg-dark]="myDaytime !== d"
+                (tap)="selectDaytime(d)">
+
+                <Label
+                  [text]="DaytimeEnum[d]"
+                  class="text-xs"
+                  [class.text-black]="myDaytime === d"
+                  [class.text-text-secondary]="myDaytime !== d">
+                </Label>
+              </StackLayout>
+            </StackLayout>
+          </StackLayout>
+
+        </StackLayout>
 
         <StackLayout *ngFor="let r of details.reviews"
             class="mb-4 bg-dark-secondary rounded-2xl px-4 py-4">

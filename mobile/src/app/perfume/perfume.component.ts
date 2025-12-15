@@ -4,12 +4,23 @@ import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript
 import { Page } from '@nativescript/core';
 import { PerfumeService } from '../services/perfume.service';
 import { ReviewService } from '../services/review.service';
+import { VoteService } from '../services/vote.service';
 import { PerfumeDetailsDto } from '../models/perfumedetails.dto';
 import { NoteTypeEnum } from '../enums/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
 import { GROUP_COLORS } from '../const/GROUP_COLORS';
 import { environment } from '~/environments/environment';
 import { DatePipe } from '@angular/common';
+import { GenderEnum } from '../enums/gender.enum';
+import { LongevityEnum } from '../enums/longevity.enum';
+import { SillageEnum } from '../enums/sillage.enum';
+import { SeasonEnum } from '../enums/season.enum';
+import { DaytimeEnum } from '../enums/daytime.enum';
+import { SetLongevityVoteRequestDto } from '../models/setlongevityvoterequest.dto';
+import { SetGenderVoteRequestDto } from '../models/setgendervoterequest.dto';
+import { SetSillageVoteRequestDto } from '../models/setsillagevoterequest.dto';
+import { SetSeasonVoteRequestDto } from '../models/setseasonvoterequest.dto';
+import { SetDaytimeVoteRequestDto } from '../models/setdaytimevoterequest.dto';
 
 @Component({
   standalone: true,
@@ -24,6 +35,12 @@ import { DatePipe } from '@angular/common';
   schemas: [NO_ERRORS_SCHEMA]
 })
 export class PerfumeComponent implements OnInit {
+  GenderEnum = GenderEnum;
+  LongevityEnum = LongevityEnum;
+  SillageEnum = SillageEnum;
+  SeasonEnum = SeasonEnum;
+  DaytimeEnum = DaytimeEnum;
+
   loading = true;
   details: PerfumeDetailsDto | null = null;
   perfumeId!: number;
@@ -36,13 +53,20 @@ export class PerfumeComponent implements OnInit {
   private initialRating: number | null = null;
   private initialText: string = '';
 
+  myGender: GenderEnum | null = null;
+  myLongevity: LongevityEnum | null = null;
+  mySillage: SillageEnum | null = null;
+  mySeason: SeasonEnum | null = null;
+  myDaytime: DaytimeEnum | null = null;
+
   private readonly baseUrl = `${environment.contentUrl}`;
 
   constructor(
     private route: ActivatedRoute,
     private perfumeService: PerfumeService,
     private page: Page,
-    private reviewService: ReviewService
+    private reviewService: ReviewService,
+    private voteService: VoteService
   ) {
     this.page.actionBarHidden = true;
   }
@@ -192,5 +216,50 @@ export class PerfumeComponent implements OnInit {
 
   isStarFilled(star: number): boolean {
     return star <= (this.userRating || 0);
+  }
+
+  selectGender(value: GenderEnum) {
+    if (this.myGender === value) return;
+
+    this.myGender = value;
+    this.voteService
+      .setGenderVote(this.perfumeId, new SetGenderVoteRequestDto(value))
+      .subscribe();
+  }
+
+  selectLongevity(value: LongevityEnum) {
+    if (this.myLongevity === value) return;
+
+    this.myLongevity = value;
+    this.voteService
+      .setLongevityVote(this.perfumeId, new SetLongevityVoteRequestDto(value))
+      .subscribe();
+  }
+
+  selectSillage(value: SillageEnum) {
+    if (this.mySillage === value) return;
+
+    this.mySillage = value;
+    this.voteService
+      .setSillageVote(this.perfumeId, new SetSillageVoteRequestDto(value))
+      .subscribe();
+  }
+
+  selectSeason(value: SeasonEnum) {
+    if (this.mySeason === value) return;
+
+    this.mySeason = value;
+    this.voteService
+      .setSeasonVote(this.perfumeId, new SetSeasonVoteRequestDto(value))
+      .subscribe();
+  }
+
+  selectDaytime(value: DaytimeEnum) {
+    if (this.myDaytime === value) return;
+
+    this.myDaytime = value;
+    this.voteService
+      .setDaytimeVote(this.perfumeId, new SetDaytimeVoteRequestDto(value))
+      .subscribe();
   }
 }
