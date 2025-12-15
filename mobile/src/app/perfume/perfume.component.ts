@@ -5,7 +5,7 @@ import { Page } from '@nativescript/core';
 import { PerfumeService } from '../services/perfume.service';
 import { ReviewService } from '../services/review.service';
 import { PerfumeDetailsDto } from '../models/perfumedetails.dto';
-import { NoteTypeEnum } from '../models/notetype.enum';
+import { NoteTypeEnum } from '../enums/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
 import { GROUP_COLORS } from '../const/GROUP_COLORS';
 import { environment } from '~/environments/environment';

@@ -1,4 +1,4 @@
-import { NoteTypeEnum } from './notetype.enum';
+import { NoteTypeEnum } from '../enums/notetype.enum';
 import { PerfumeNoteDto } from './perfumenote.dto';
 
 export interface PerfumeNoteGroupDto {

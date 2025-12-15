@@ -17,7 +17,7 @@ import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
 import { PerfumeSearchRow } from '../models/types';
 import { EventData, View, Screen, Page, Utils, PanGestureEventData } from '@nativescript/core';
-import { GenderEnum } from '../models/gender.enum';
+import { GenderEnum } from '../enums/gender.enum';
 import { FooterComponent } from '../footer/footer.component';
 
 
