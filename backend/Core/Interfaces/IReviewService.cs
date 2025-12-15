@@ -4,6 +4,6 @@ namespace Core.Interfaces
 {
     public interface IReviewService
     {
-        Task CreateOrUpdateAsync(int userId, CreateReviewDto dto);
+        Task CreateOrUpdateAsync(int userId, SaveReviewDto dto);
     }
 }

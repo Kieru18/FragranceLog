@@ -15,7 +15,7 @@ public sealed class ReviewService : IReviewService
         _context = context;
     }
 
-    public async Task CreateOrUpdateAsync(int userId, CreateReviewDto dto)
+    public async Task CreateOrUpdateAsync(int userId, SaveReviewDto dto)
     {
         var existing = await _context.Reviews
             .FirstOrDefaultAsync(r =>

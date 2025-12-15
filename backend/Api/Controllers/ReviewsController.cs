@@ -19,7 +19,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveReview(CreateReviewDto dto)
+        public async Task<IActionResult> SaveReview(SaveReviewDto dto)
         {
             var userId = User.GetUserId();
             if (userId == null)

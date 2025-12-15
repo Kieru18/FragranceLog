@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Api.Validators
 {
-    public sealed class CreateReviewDtoValidator : AbstractValidator<CreateReviewDto>
+    public sealed class CreateReviewDtoValidator : AbstractValidator<SaveReviewDto>
     {
         public CreateReviewDtoValidator()
         {

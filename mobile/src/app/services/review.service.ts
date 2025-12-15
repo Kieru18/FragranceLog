@@ -1,4 +1,4 @@
-import { CreateReviewRequestDto } from '../models/createreviewrequest.dto'
+import { SaveReviewRequestDto } from '../models/savereviewrequest.dto'
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -12,7 +12,7 @@ export class ReviewService {
 
   constructor(private http: HttpClient) {}
 
-  createOrUpdate(req: CreateReviewRequestDto): Observable<void> {
+  createOrUpdate(req: SaveReviewRequestDto): Observable<void> {
     return this.http.post<void>(this.baseUrl, req);
   }
 }

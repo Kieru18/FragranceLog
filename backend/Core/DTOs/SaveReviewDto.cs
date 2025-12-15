@@ -1,6 +1,6 @@
 ﻿namespace Core.DTOs
 {
-    public sealed class CreateReviewDto
+    public sealed class SaveReviewDto
     {
         public int PerfumeId { get; init; }
         public int Rating { get; init; }
