@@ -78,11 +78,19 @@ export class PerfumeComponent implements OnInit {
     this.perfumeService.getPerfumeDetails(this.perfumeId).subscribe({
       next: d => {
         this.details = d;
+
         this.userRating = d.myRating ?? undefined;
         this.reviewText = d.myReview ?? '';
-        this.isDirty = false;
         this.initialRating = d.myRating ?? null;
-        this.initialText = (d.myReview ?? '');
+        this.initialText = d.myReview ?? '';
+        this.isDirty = false;
+
+        this.myGender = d.myGenderVote ?? null;
+        this.myLongevity = d.myLongevityVote ?? null;
+        this.mySillage = d.mySillageVote ?? null;
+        this.mySeason = d.mySeasonVote ?? null;
+        this.myDaytime = d.myDaytimeVote ?? null;
+
         this.loading = false;
       },
       error: () => {
