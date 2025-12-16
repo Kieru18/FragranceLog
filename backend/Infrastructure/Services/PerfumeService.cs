@@ -119,9 +119,39 @@ namespace Infrastructure.Services
                         : 0d,
 
                     RatingCount = p.Reviews.Count(),
+                    CommentCount = p.Reviews.Count(r => !string.IsNullOrWhiteSpace(r.Comment)),
 
-                    CommentCount = p.Reviews.Count(r =>
-                        !string.IsNullOrWhiteSpace(r.Comment)),
+                    Gender = p.PerfumeGenderVotes.Any()
+                        ? (GenderEnum?)p.PerfumeGenderVotes
+                            .GroupBy(v => v.GenderId)
+                            .OrderByDescending(g => g.Count())
+                            .Select(g => g.Key)
+                            .First()
+                        : null,
+
+                    Season = p.PerfumeSeasonVotes.Any()
+                        ? (SeasonEnum?)p.PerfumeSeasonVotes
+                            .GroupBy(v => v.SeasonId)
+                            .OrderByDescending(g => g.Count())
+                            .Select(g => g.Key)
+                            .First()
+                        : null,
+
+                    Daytime = p.PerfumeDaytimeVotes.Any()
+                        ? (DaytimeEnum?)p.PerfumeDaytimeVotes
+                            .GroupBy(v => v.DaytimeId)
+                            .OrderByDescending(g => g.Count())
+                            .Select(g => g.Key)
+                            .First()
+                        : null,
+
+                    Longevity = p.PerfumeLongevityVotes.Any()
+                        ? p.PerfumeLongevityVotes.Average(v => (double?)v.LongevityId)
+                        : null,
+
+                    Sillage = p.PerfumeSillageVotes.Any()
+                        ? p.PerfumeSillageVotes.Average(v => (double?)v.SillageId)
+                        : null,
 
                     Groups = p.Groups
                         .OrderBy(g => g.Name)
@@ -156,12 +186,6 @@ namespace Infrastructure.Services
                         })
                         .ToList(),
 
-                    Gender = null,
-                    Longevity = null,
-                    Sillage = null,
-                    Seasons = Array.Empty<string>(),
-                    Daytimes = Array.Empty<string>(),
-
                     MyRating = userId == null
                         ? null
                         : p.Reviews
@@ -176,9 +200,40 @@ namespace Infrastructure.Services
                             .Select(r => r.Comment)
                             .FirstOrDefault(),
 
-                    MyGenderVote = null,
-                    MyLongevityVote = null,
-                    MySillageVote = null
+                    MyGenderVote = userId == null
+                        ? null
+                        : p.PerfumeGenderVotes
+                            .Where(v => v.UserId == userId)
+                            .Select(v => (GenderEnum?)v.GenderId)
+                            .FirstOrDefault(),
+
+                    MySeasonVote = userId == null
+                        ? null
+                        : p.PerfumeSeasonVotes
+                            .Where(v => v.UserId == userId)
+                            .Select(v => (SeasonEnum?)v.SeasonId)
+                            .FirstOrDefault(),
+
+                    MyDaytimeVote = userId == null
+                        ? null
+                        : p.PerfumeDaytimeVotes
+                            .Where(v => v.UserId == userId)
+                            .Select(v => (DaytimeEnum?)v.DaytimeId)
+                            .FirstOrDefault(),
+
+                    MyLongevityVote = userId == null
+                        ? null
+                        : p.PerfumeLongevityVotes
+                            .Where(v => v.UserId == userId)
+                            .Select(v => (LongevityEnum?)v.LongevityId)
+                            .FirstOrDefault(),
+
+                    MySillageVote = userId == null
+                        ? null
+                        : p.PerfumeSillageVotes
+                            .Where(v => v.UserId == userId)
+                            .Select(v => (SillageEnum?)v.SillageId)
+                            .FirstOrDefault()
                 })
                 .SingleOrDefaultAsync(ct);
 
