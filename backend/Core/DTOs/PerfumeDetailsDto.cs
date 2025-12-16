@@ -1,4 +1,6 @@
-﻿namespace Core.DTOs
+﻿using Core.Enums;
+
+namespace Core.DTOs
 {
     public sealed class PerfumeDetailsDto
     {
@@ -12,22 +14,24 @@
         public int RatingCount { get; init; }
         public int CommentCount { get; init; }
 
-        public string? Gender { get; init; }
-        public string? Longevity { get; init; }
-        public string? Sillage { get; init; }
-        public IReadOnlyList<string> Seasons { get; init; } = [];
-        public IReadOnlyList<string> Daytimes { get; init; } = [];
+        public GenderEnum? Gender { get; init; }
+        public SeasonEnum? Season { get; init; }
+        public DaytimeEnum? Daytime { get; init; }
+        public double? Longevity { get; init; }
+        public double? Sillage { get; init; }
 
         public int? MyRating { get; init; }
         public string? MyReview { get; init; }
-        public string? MyGenderVote { get; init; }
-        public string? MyLongevityVote { get; init; }
-        public string? MySillageVote { get; init; }
+
+        public GenderEnum? MyGenderVote { get; init; }
+        public SeasonEnum? MySeasonVote { get; init; }
+        public DaytimeEnum? MyDaytimeVote { get; init; }
+        public LongevityEnum? MyLongevityVote { get; init; }
+        public SillageEnum? MySillageVote { get; init; }
 
         public IReadOnlyList<string> Groups { get; init; } = [];
         public IReadOnlyList<PerfumeNoteGroupDto> NoteGroups { get; init; } = [];
 
         public IReadOnlyList<ReviewDto> Reviews { get; init; } = [];
     }
-
 }

@@ -1,5 +1,10 @@
-import { PerfumeNoteGroupDto } from './perfumenotegroup.dto';
+import { GenderEnum } from '../enums/gender.enum';
+import { SeasonEnum } from '../enums/season.enum';
+import { DaytimeEnum } from '../enums/daytime.enum';
+import { LongevityEnum } from '../enums/longevity.enum';
+import { SillageEnum } from '../enums/sillage.enum';
 import { ReviewDto } from './review.dto';
+import { PerfumeNoteGroupDto } from './perfumenotegroup.dto';
 
 export interface PerfumeDetailsDto {
   perfumeId: number;
@@ -11,17 +16,20 @@ export interface PerfumeDetailsDto {
   ratingCount: number;
   commentCount: number;
 
-  gender?: string | null;
-  longevity?: string | null;
-  sillage?: string | null;
-  seasons: string[];
-  daytimes: string[];
+  gender?: GenderEnum | null;
+  season?: SeasonEnum | null;
+  daytime?: DaytimeEnum | null;
+  longevity?: number | null;
+  sillage?: number | null;
 
   myRating?: number | null;
   myReview?: string | null;
-  myGenderVote?: string | null;
-  myLongevityVote?: string | null;
-  mySillageVote?: string | null;
+
+  myGenderVote?: GenderEnum | null;
+  mySeasonVote?: SeasonEnum | null;
+  myDaytimeVote?: DaytimeEnum | null;
+  myLongevityVote?: LongevityEnum | null;
+  mySillageVote?: SillageEnum | null;
 
   groups: string[];
   noteGroups: PerfumeNoteGroupDto[];
