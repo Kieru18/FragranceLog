@@ -1,7 +1,7 @@
 import { Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
-import { Page } from '@nativescript/core';
+import { Page, View, Screen, Utils, PanGestureEventData } from '@nativescript/core';
 import { PerfumeService } from '../services/perfume.service';
 import { ReviewService } from '../services/review.service';
 import { VoteService } from '../services/vote.service';
@@ -67,6 +67,11 @@ export class PerfumeComponent implements OnInit {
 
   showVotingModal = false;
   isSavingVotes = false;
+
+  private sheetView!: View;
+  private backdropView!: View;
+  private readonly screenHeight = Screen.mainScreen.heightDIPs;
+  private panStartY = 0;
 
   private readonly baseUrl = `${environment.contentUrl}`;
 
@@ -249,7 +254,47 @@ export class PerfumeComponent implements OnInit {
            this.myDaytime !== null;
   }
 
+  onVotingSheetLoaded(args: any): void {
+    this.sheetView = args.object as View;
+    const parent = this.sheetView.parent as View;
+    this.backdropView = parent.getViewById('votingBackdrop') as View;
+
+    this.sheetView.translateY = this.screenHeight;
+    this.backdropView.opacity = 0;
+  }
+
+  onVotingSheetPan(args: PanGestureEventData): void {
+    if (!this.sheetView) return;
+
+    switch (args.state) {
+      case 1:
+        this.panStartY = this.sheetView.translateY || 0;
+        break;
+
+      case 2:
+        const newY = Math.max(0, this.panStartY + args.deltaY);
+        this.sheetView.translateY = newY;
+        break;
+
+      case 3:
+      case 4:
+        if (this.sheetView.translateY > this.screenHeight * 0.3) {
+          this.closeVotingModal();
+        } else {
+          this.sheetView.animate({
+            translate: { x: 0, y: 0 },
+            duration: 200,
+            curve: 'easeOut'
+          });
+        }
+        break;
+    }
+  }
+
   openVotingModal(): void {
+    if (this.showVotingModal) return;
+    Utils.dismissSoftInput();
+    
     this.modalGender = this.myGender;
     this.modalLongevity = this.myLongevity;
     this.modalSillage = this.mySillage;
@@ -257,11 +302,38 @@ export class PerfumeComponent implements OnInit {
     this.modalDaytime = this.myDaytime;
     
     this.showVotingModal = true;
+
+    this.sheetView.translateY = this.screenHeight;
+    this.backdropView.opacity = 0;
+
+    this.backdropView.animate({
+      opacity: 0.6,
+      duration: 240
+    });
+
+    this.sheetView.animate({
+      translate: { x: 0, y: 0 },
+      duration: 240,
+      curve: 'easeOut'
+    });
   }
 
-  closeVotingModal(event?: any): void {
-    if (event && event.target !== event.object) return;
-    this.showVotingModal = false;
+  closeVotingModal(): void {
+    if (!this.showVotingModal) return;
+    Utils.dismissSoftInput();
+    
+    this.sheetView.animate({
+      translate: { x: 0, y: this.screenHeight },
+      duration: 180,
+      curve: 'easeIn'
+    });
+
+    this.backdropView.animate({
+      opacity: 0,
+      duration: 150
+    }).then(() => {
+      this.showVotingModal = false;
+    });
   }
 
   selectModalGender(value: GenderEnum) {
@@ -299,7 +371,6 @@ export class PerfumeComponent implements OnInit {
             new SetGenderVoteRequestDto(this.modalGender)
           )
         );
-      } else {
       }
     }
 
@@ -311,7 +382,6 @@ export class PerfumeComponent implements OnInit {
             new SetLongevityVoteRequestDto(this.modalLongevity)
           )
         );
-      } else {
       }
     }
 
@@ -323,7 +393,6 @@ export class PerfumeComponent implements OnInit {
             new SetSillageVoteRequestDto(this.modalSillage)
           )
         );
-      } else {
       }
     }
 
@@ -335,7 +404,6 @@ export class PerfumeComponent implements OnInit {
             new SetSeasonVoteRequestDto(this.modalSeason)
           )
         );
-      } else {
       }
     }
 
@@ -347,7 +415,6 @@ export class PerfumeComponent implements OnInit {
             new SetDaytimeVoteRequestDto(this.modalDaytime)
           )
         );
-      } else {
       }
     }
 
