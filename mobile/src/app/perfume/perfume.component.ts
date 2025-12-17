@@ -485,46 +485,6 @@ export class PerfumeComponent implements OnInit {
       });
   }
 
-  selectGender(value: GenderEnum) {
-    if (this.myGender === value) return;
-    this.myGender = value;
-    this.voteService
-      .setGenderVote(this.perfumeId, new SetGenderVoteRequestDto(value))
-      .subscribe();
-  }
-
-  selectLongevity(value: LongevityEnum) {
-    if (this.myLongevity === value) return;
-    this.myLongevity = value;
-    this.voteService
-      .setLongevityVote(this.perfumeId, new SetLongevityVoteRequestDto(value))
-      .subscribe();
-  }
-
-  selectSillage(value: SillageEnum) {
-    if (this.mySillage === value) return;
-    this.mySillage = value;
-    this.voteService
-      .setSillageVote(this.perfumeId, new SetSillageVoteRequestDto(value))
-      .subscribe();
-  }
-
-  selectSeason(value: SeasonEnum) {
-    if (this.mySeason === value) return;
-    this.mySeason = value;
-    this.voteService
-      .setSeasonVote(this.perfumeId, new SetSeasonVoteRequestDto(value))
-      .subscribe();
-  }
-
-  selectDaytime(value: DaytimeEnum) {
-    if (this.myDaytime === value) return;
-    this.myDaytime = value;
-    this.voteService
-      .setDaytimeVote(this.perfumeId, new SetDaytimeVoteRequestDto(value))
-      .subscribe();
-  }
-
   get longevityLevel(): number {
     if (this.details?.longevity == null) return 0;
     return Math.round(this.details.longevity);
@@ -534,4 +494,61 @@ export class PerfumeComponent implements OnInit {
     if (this.details?.sillage == null) return 0;
     return Math.round(this.details.sillage);
   }
+
+  deleteMyReview(): void {
+    if (!this.details || this.isSubmitting) return;
+
+    this.isSubmitting = true;
+
+    this.reviewService.delete(this.details.perfumeId).subscribe({
+      next: () => {
+        this.applyLocalReviewDelete();
+        this.isSubmitting = false;
+      },
+      error: () => {
+        this.isSubmitting = false;
+      }
+    });
+  }
+
+  private applyLocalReviewDelete(): void {
+    if (!this.details) return;
+
+    const hadRating = this.details.myRating != null;
+    const hadComment = !!this.details.myReview;
+
+    if (hadRating) {
+      const oldRating = this.details.myRating!;
+      const oldCount = this.details.ratingCount;
+
+      this.details.ratingCount--;
+
+      this.details.avgRating =
+        this.details.ratingCount > 0
+          ? ((this.details.avgRating * oldCount) - oldRating) / this.details.ratingCount
+          : 0;
+    }
+
+    if (hadComment) {
+      this.details.commentCount--;
+    }
+
+    this.details.myRating = null;
+    this.details.myReview = null;
+
+    this.userRating = undefined;
+    this.reviewText = '';
+    this.initialRating = null;
+    this.initialText = '';
+    this.isDirty = false;
+
+    const idx = this.details.reviews.findIndex(
+      r => r.author === this.details!.reviews.find(rr => rr.author)?.author
+    );
+
+    if (idx >= 0) {
+      this.details.reviews.splice(idx, 1);
+    }
+  }
+
 }

@@ -1,5 +1,6 @@
 ﻿using Core.DTOs;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,21 @@ public sealed class ReviewService : IReviewService
             .FirstOrDefaultAsync();
 
         return review;
+    }
+
+    public async Task DeleteAsync(int perfumeId, int userId, CancellationToken ct)
+    {
+        var review = await _context.Reviews
+            .SingleOrDefaultAsync(
+                r => r.PerfumeId == perfumeId && r.UserId == userId,
+                ct
+            );
+
+        if (review == null)
+            throw new NotFoundException("Review not found.");
+
+        _context.Reviews.Remove(review);
+        await _context.SaveChangesAsync(ct);
     }
 }
 

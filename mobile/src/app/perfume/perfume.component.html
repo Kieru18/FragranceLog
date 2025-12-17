@@ -51,7 +51,7 @@
             class="fas text-brand-gold text-sm mr-1"></Label>
 
           <Label
-            [text]="details.avgRating.toFixed(1)"
+            [text]="details.avgRating.toFixed(2)"
             class="text-text-secondary text-sm"></Label>
 
           <Label
@@ -214,7 +214,7 @@
               <TextView
                 [(ngModel)]="reviewText"
                 (ngModelChange)="onReviewTextChange($event)"
-                hint="Write a review (optional) ..."
+                hint="Write a review ..."
                 returnKeyType="done"
                 maxLength="2000"
                 autocorrect="true"
@@ -230,35 +230,54 @@
                 ">
               </TextView>
 
-              <GridLayout
+              <FlexboxLayout
                 horizontalAlignment="right"
                 verticalAlignment="bottom"
                 marginRight="8"
                 marginBottom="8"
-                width="44"
-                height="44"
-                [class.opacity-50]="!canSubmitReview"
-                [isUserInteractionEnabled]="canSubmitReview"
-                (tap)="submitReview()"
-                class="rounded-full bg-brand-gold">
+                alignItems="center">
 
-                <StackLayout verticalAlignment="center" horizontalAlignment="center">
+                <GridLayout
+                  *ngIf="details.myRating != null"
+                  width="36"
+                  height="36"
+                  class="rounded-full bg-dark-secondary mr-2"
+                  (tap)="deleteMyReview()">
+
                   <Label
-                    *ngIf="!isSubmitting"
-                    text="&#xf0c7;"
-                    class="fas text-black text-lg">
+                    text="&#xf1f8;"
+                    class="fas text-text-secondary text-sm"
+                    verticalAlignment="center"
+                    horizontalAlignment="center">
                   </Label>
+                </GridLayout>
 
-                  <ActivityIndicator
-                    *ngIf="isSubmitting"
-                    busy="true"
-                    color="#000000"
-                    width="20"
-                    height="20">
-                  </ActivityIndicator>
-                </StackLayout>
+                <GridLayout
+                  width="44"
+                  height="44"
+                  [class.opacity-50]="!canSubmitReview"
+                  [isUserInteractionEnabled]="canSubmitReview"
+                  (tap)="submitReview()"
+                  class="rounded-full bg-brand-gold">
 
-              </GridLayout>
+                  <StackLayout verticalAlignment="center" horizontalAlignment="center">
+                    <Label
+                      *ngIf="!isSubmitting"
+                      text="&#xf0c7;"
+                      class="fas text-black text-lg">
+                    </Label>
+
+                    <ActivityIndicator
+                      *ngIf="isSubmitting"
+                      busy="true"
+                      color="#000000"
+                      width="20"
+                      height="20">
+                    </ActivityIndicator>
+                  </StackLayout>
+
+                </GridLayout>
+              </FlexboxLayout>
 
             </GridLayout>
 

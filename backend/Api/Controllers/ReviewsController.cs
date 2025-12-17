@@ -46,5 +46,18 @@ namespace Api.Controllers
 
             return Ok(review);
         }
+
+        [HttpDelete("{perfumeId:int}")]
+        public async Task<IActionResult> Delete(int perfumeId, CancellationToken ct)
+        {
+            var userId = User.GetUserId();
+
+            if (userId == null)
+                return Unauthorized();
+
+            await _reviewService.DeleteAsync(perfumeId, userId ?? 0, ct);
+
+            return NoContent();
+        }
     }
 }

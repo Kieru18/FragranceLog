@@ -365,7 +365,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       return 'No rating';
     }
 
-    return `${item.rating.toFixed(1)} · ${item.ratingCount} reviews`;
+    return `${item.rating.toFixed(2)} · ${item.ratingCount} reviews`;
   }
 
   get filtersSummary(): string {

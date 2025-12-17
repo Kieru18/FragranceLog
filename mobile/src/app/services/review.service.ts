@@ -23,4 +23,10 @@ export class ReviewService {
       { params: { perfumeId } }
     );
   }
+
+  delete(perfumeId: number) {
+    return this.http.delete<void>(
+      `${this.baseUrl}/${perfumeId}`
+    );
+  }
 }

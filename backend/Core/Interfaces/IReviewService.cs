@@ -6,5 +6,6 @@ namespace Core.Interfaces
     {
         Task CreateOrUpdateAsync(int userId, SaveReviewDto dto);
         Task<ReviewDto?> GetByUserAndPerfumeAsync(int userId, int perfumeId);
+        Task DeleteAsync(int perfumeId, int userId, CancellationToken ct);
     }
 }
