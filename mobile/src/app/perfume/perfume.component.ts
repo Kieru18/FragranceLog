@@ -59,6 +59,15 @@ export class PerfumeComponent implements OnInit {
   mySeason: SeasonEnum | null = null;
   myDaytime: DaytimeEnum | null = null;
 
+  modalGender: GenderEnum | null = null;
+  modalLongevity: LongevityEnum | null = null;
+  modalSillage: SillageEnum | null = null;
+  modalSeason: SeasonEnum | null = null;
+  modalDaytime: DaytimeEnum | null = null;
+
+  showVotingModal = false;
+  isSavingVotes = false;
+
   private readonly baseUrl = `${environment.contentUrl}`;
 
   constructor(
@@ -90,6 +99,12 @@ export class PerfumeComponent implements OnInit {
         this.mySillage = d.mySillageVote ?? null;
         this.mySeason = d.mySeasonVote ?? null;
         this.myDaytime = d.myDaytimeVote ?? null;
+
+        this.modalGender = d.myGenderVote ?? null;
+        this.modalLongevity = d.myLongevityVote ?? null;
+        this.modalSillage = d.mySillageVote ?? null;
+        this.modalSeason = d.mySeasonVote ?? null;
+        this.modalDaytime = d.myDaytimeVote ?? null;
 
         this.loading = false;
       },
@@ -226,9 +241,139 @@ export class PerfumeComponent implements OnInit {
     return star <= (this.userRating || 0);
   }
 
+  hasAnyVotes(): boolean {
+    return this.myGender !== null || 
+           this.myLongevity !== null || 
+           this.mySillage !== null || 
+           this.mySeason !== null || 
+           this.myDaytime !== null;
+  }
+
+  openVotingModal(): void {
+    this.modalGender = this.myGender;
+    this.modalLongevity = this.myLongevity;
+    this.modalSillage = this.mySillage;
+    this.modalSeason = this.mySeason;
+    this.modalDaytime = this.myDaytime;
+    
+    this.showVotingModal = true;
+  }
+
+  closeVotingModal(event?: any): void {
+    if (event && event.target !== event.object) return;
+    this.showVotingModal = false;
+  }
+
+  selectModalGender(value: GenderEnum) {
+    this.modalGender = this.modalGender === value ? null : value;
+  }
+
+  selectModalLongevity(value: LongevityEnum) {
+    this.modalLongevity = this.modalLongevity === value ? null : value;
+  }
+
+  selectModalSillage(value: SillageEnum) {
+    this.modalSillage = this.modalSillage === value ? null : value;
+  }
+
+  selectModalSeason(value: SeasonEnum) {
+    this.modalSeason = this.modalSeason === value ? null : value;
+  }
+
+  selectModalDaytime(value: DaytimeEnum) {
+    this.modalDaytime = this.modalDaytime === value ? null : value;
+  }
+
+  saveAllVotes(): void {
+    if (this.isSavingVotes || !this.details) return;
+
+    this.isSavingVotes = true;
+
+    const requests = [];
+
+    if (this.modalGender !== this.myGender) {
+      if (this.modalGender !== null) {
+        requests.push(
+          this.voteService.setGenderVote(
+            this.perfumeId, 
+            new SetGenderVoteRequestDto(this.modalGender)
+          )
+        );
+      } else {
+      }
+    }
+
+    if (this.modalLongevity !== this.myLongevity) {
+      if (this.modalLongevity !== null) {
+        requests.push(
+          this.voteService.setLongevityVote(
+            this.perfumeId,
+            new SetLongevityVoteRequestDto(this.modalLongevity)
+          )
+        );
+      } else {
+      }
+    }
+
+    if (this.modalSillage !== this.mySillage) {
+      if (this.modalSillage !== null) {
+        requests.push(
+          this.voteService.setSillageVote(
+            this.perfumeId,
+            new SetSillageVoteRequestDto(this.modalSillage)
+          )
+        );
+      } else {
+      }
+    }
+
+    if (this.modalSeason !== this.mySeason) {
+      if (this.modalSeason !== null) {
+        requests.push(
+          this.voteService.setSeasonVote(
+            this.perfumeId,
+            new SetSeasonVoteRequestDto(this.modalSeason)
+          )
+        );
+      } else {
+      }
+    }
+
+    if (this.modalDaytime !== this.myDaytime) {
+      if (this.modalDaytime !== null) {
+        requests.push(
+          this.voteService.setDaytimeVote(
+            this.perfumeId,
+            new SetDaytimeVoteRequestDto(this.modalDaytime)
+          )
+        );
+      } else {
+      }
+    }
+
+    if (requests.length === 0) {
+      this.closeVotingModal();
+      return;
+    }
+
+    Promise.all(requests.map(req => req.toPromise()))
+      .then(() => {
+        this.myGender = this.modalGender;
+        this.myLongevity = this.modalLongevity;
+        this.mySillage = this.modalSillage;
+        this.mySeason = this.modalSeason;
+        this.myDaytime = this.modalDaytime;
+        
+        this.isSavingVotes = false;
+        this.closeVotingModal();
+      })
+      .catch(() => {
+        this.isSavingVotes = false;
+      });
+  }
+
   selectGender(value: GenderEnum) {
     if (this.myGender === value) return;
-
     this.myGender = value;
     this.voteService
       .setGenderVote(this.perfumeId, new SetGenderVoteRequestDto(value))
@@ -237,7 +382,6 @@ export class PerfumeComponent implements OnInit {
 
   selectLongevity(value: LongevityEnum) {
     if (this.myLongevity === value) return;
-
     this.myLongevity = value;
     this.voteService
       .setLongevityVote(this.perfumeId, new SetLongevityVoteRequestDto(value))
@@ -246,7 +390,6 @@ export class PerfumeComponent implements OnInit {
 
   selectSillage(value: SillageEnum) {
     if (this.mySillage === value) return;
-
     this.mySillage = value;
     this.voteService
       .setSillageVote(this.perfumeId, new SetSillageVoteRequestDto(value))
@@ -255,7 +398,6 @@ export class PerfumeComponent implements OnInit {
 
   selectSeason(value: SeasonEnum) {
     if (this.mySeason === value) return;
-
     this.mySeason = value;
     this.voteService
       .setSeasonVote(this.perfumeId, new SetSeasonVoteRequestDto(value))
@@ -264,7 +406,6 @@ export class PerfumeComponent implements OnInit {
 
   selectDaytime(value: DaytimeEnum) {
     if (this.myDaytime === value) return;
-
     this.myDaytime = value;
     this.voteService
       .setDaytimeVote(this.perfumeId, new SetDaytimeVoteRequestDto(value))

@@ -77,59 +77,79 @@
           </ng-container>
         </StackLayout>
 
-        <StackLayout orientation="horizontal" class="items-center mb-6">
-          <Label
-            *ngIf="details.gender !== null"
-            [text]="GenderEnum[details.gender]"
-            class="text-sm text-text-secondary">
-          </Label>
-
-          <Label text=" · " class="text-xs text-text-secondary"></Label>
-
-          <Label
-            *ngIf="details.season !== null"
-            [text]="SeasonEnum[details.season]"
-            class="text-sm text-text-secondary">
-          </Label>
-
-          <Label text=" · " class="text-xs text-text-secondary"></Label>
-
-          <Label
-            *ngIf="details.daytime !== null"
-            [text]="DaytimeEnum[details.daytime]"
-            class="text-sm text-text-secondary">
-          </Label>
-
-          <Label text=" · " class="text-xs text-text-secondary"></Label>
-
-          <StackLayout orientation="horizontal"
-                      class="items-center"
-                      marginRight="1">
+        <FlexboxLayout alignItems="center" class="mb-6">
+          <FlexboxLayout alignItems="center" flexWrap="wrap" flexGrow="1">
             <Label
-              *ngFor="let i of [1,2,3,4,5]"
-              text="&#xf252;"
-              class="fas text-sm mr-0.5"
-              [class.text-brand-gold]="i <= longevityLevel"
-              [class.text-text-secondary]="i > longevityLevel">
+              *ngIf="details.gender !== null"
+              [text]="GenderEnum[details.gender]"
+              class="text-sm text-text-secondary">
             </Label>
-          </StackLayout>
 
-          <Label text=" · " class="text-xs text-text-secondary"></Label>
+            <Label *ngIf="details.gender !== null" text=" · " class="text-xs text-text-secondary"></Label>
 
-          <StackLayout orientation="horizontal"
-                      class="items-center"
-                      marginLeft="1">
             <Label
-              *ngFor="let i of [1,2,3,4]"
-              text="&#xf72e;"
-              class="fas text-sm mr-0.5"
-              [class.text-brand-gold]="i <= sillageLevel"
-              [class.text-text-secondary]="i > sillageLevel">
+              *ngIf="details.season !== null"
+              [text]="SeasonEnum[details.season]"
+              class="text-sm text-text-secondary">
             </Label>
-          </StackLayout>
 
-        </StackLayout>
+            <Label *ngIf="details.season !== null" text=" · " class="text-xs text-text-secondary"></Label>
 
+            <Label
+              *ngIf="details.daytime !== null"
+              [text]="DaytimeEnum[details.daytime]"
+              class="text-sm text-text-secondary">
+            </Label>
+
+            <Label *ngIf="details.daytime !== null" text=" · " class="text-xs text-text-secondary"></Label>
+
+            <StackLayout orientation="horizontal"
+                        class="items-center"
+                        marginRight="1">
+              <Label
+                *ngFor="let i of [1,2,3,4,5]"
+                text="&#xf252;"
+                class="fas text-sm mr-0.5"
+                [class.text-brand-gold]="i <= longevityLevel"
+                [class.text-text-secondary]="i > longevityLevel">
+              </Label>
+            </StackLayout>
+
+            <Label text=" · " class="text-xs text-text-secondary"></Label>
+
+            <StackLayout orientation="horizontal"
+                        class="items-center"
+                        marginLeft="1">
+              <Label
+                *ngFor="let i of [1,2,3,4]"
+                text="&#xf72e;"
+                class="fas text-sm mr-0.5"
+                [class.text-brand-gold]="i <= sillageLevel"
+                [class.text-text-secondary]="i > sillageLevel">
+              </Label>
+            </StackLayout>
+          </FlexboxLayout>
+          
+          <FlexboxLayout alignItems="center" marginLeft="8">
+            <FlexboxLayout *ngIf="hasAnyVotes()" alignItems="center" marginRight="8">
+              <Label
+                text="&#xf00c;"
+                class="fas text-brand-gold text-xs">
+              </Label>
+            </FlexboxLayout>
+            
+            <GridLayout
+              (tap)="openVotingModal()"
+              width="32"
+              height="32"
+              class="rounded-full bg-dark-secondary items-center justify-center">
+              <Label
+                text="&#xf142;"
+                class="fas text-text-primary text-sm">
+              </Label>
+            </GridLayout>
+          </FlexboxLayout>
+        </FlexboxLayout>
 
         <StackLayout class="mb-4">
           <FlexboxLayout flexWrap="wrap">
@@ -147,14 +167,11 @@
         </StackLayout>
 
         <StackLayout class="mb-6">
-
           <StackLayout *ngFor="let group of details.noteGroups"
                        class="mb-3">
-
             <Label
               [text]="noteTypeLabel(group.type)"
               class="text-xs text-text-secondary mb-2"></Label>
-
             <FlexboxLayout flexWrap="wrap">
               <StackLayout *ngFor="let n of group.notes"
                            class="bg-dark-secondary rounded-xl px-3 py-2 mr-2 mb-2">
@@ -163,9 +180,7 @@
                   class="text-xs text-text-primary"></Label>
               </StackLayout>
             </FlexboxLayout>
-
           </StackLayout>
-
         </StackLayout>
 
         <StackLayout class="mb-6 bg-dark-secondary rounded-2xl p-4">
@@ -256,133 +271,6 @@
 
         </StackLayout>
 
-        <StackLayout class="mb-6 bg-dark-secondary rounded-2xl p-4">
-
-          <Label
-            text="Your perception"
-            class="text-sm font-semibold text-text-primary mb-4">
-          </Label>
-
-          <StackLayout class="mb-4">
-            <Label
-              text="Gender"
-              class="text-xs text-text-secondary mb-2">
-            </Label>
-
-            <StackLayout orientation="horizontal">
-              <StackLayout
-                *ngFor="let g of [GenderEnum.Male, GenderEnum.Unisex, GenderEnum.Female]"
-                class="px-4 py-2 mr-2 rounded-full"
-                [class.bg-brand-gold]="myGender === g"
-                [class.bg-dark]="myGender !== g"
-                (tap)="selectGender(g)">
-
-                <Label
-                  [text]="GenderEnum[g]"
-                  class="text-xs"
-                  [class.text-black]="myGender === g"
-                  [class.text-text-secondary]="myGender !== g">
-                </Label>
-              </StackLayout>
-            </StackLayout>
-          </StackLayout>
-
-          <StackLayout class="mb-4">
-            <Label
-              text="Longevity"
-              class="text-xs text-text-secondary mb-2">
-            </Label>
-
-            <StackLayout orientation="horizontal">
-              <Label
-                *ngFor="let l of [LongevityEnum.VeryWeak, LongevityEnum.Weak, LongevityEnum.Moderate, LongevityEnum.LongLasting, LongevityEnum.Eternal]"
-                text="&#xf017;"
-                class="far text-lg mr-2"
-                [class.fas]="l <= (myLongevity ?? 0)"
-                [class.text-brand-gold]="l <= (myLongevity ?? 0)"
-                [class.text-text-secondary]="l > (myLongevity ?? 0)"
-                (tap)="selectLongevity(l)">
-              </Label>
-            </StackLayout>
-          </StackLayout>
-
-          <StackLayout>
-            <Label
-              text="Sillage"
-              class="text-xs text-text-secondary mb-2">
-            </Label>
-
-            <StackLayout orientation="horizontal">
-              <Label
-                *ngFor="let s of [SillageEnum.Intimate, SillageEnum.Moderate, SillageEnum.Strong, SillageEnum.Enormous]"
-                text="&#xf5a1;"
-                class="fas text-lg mr-2"
-                [class.text-brand-gold]="s <= (mySillage ?? 0)"
-                [class.opacity-50]="s > (mySillage ?? 0)"
-                (tap)="selectSillage(s)">
-              </Label>
-            </StackLayout>
-          </StackLayout>
-
-        </StackLayout>
-
-        <StackLayout class="mb-6 bg-dark-secondary rounded-2xl p-4">
-
-          <Label
-            text="When you wear it"
-            class="text-sm font-semibold text-text-primary mb-4">
-          </Label>
-
-          <StackLayout class="mb-4">
-            <Label
-              text="Season"
-              class="text-xs text-text-secondary mb-2">
-            </Label>
-
-            <FlexboxLayout flexWrap="wrap">
-              <StackLayout
-                *ngFor="let s of [SeasonEnum.Spring, SeasonEnum.Summer, SeasonEnum.Autumn, SeasonEnum.Winter]"
-                class="px-4 py-2 mr-2 mb-2 rounded-full"
-                [class.bg-brand-gold]="mySeason === s"
-                [class.bg-dark]="mySeason !== s"
-                (tap)="selectSeason(s)">
-
-                <Label
-                  [text]="SeasonEnum[s]"
-                  class="text-xs"
-                  [class.text-black]="mySeason === s"
-                  [class.text-text-secondary]="mySeason !== s">
-                </Label>
-              </StackLayout>
-            </FlexboxLayout>
-          </StackLayout>
-
-          <StackLayout>
-            <Label
-              text="Daytime"
-              class="text-xs text-text-secondary mb-2">
-            </Label>
-
-            <StackLayout orientation="horizontal">
-              <StackLayout
-                *ngFor="let d of [DaytimeEnum.Day, DaytimeEnum.Night]"
-                class="px-4 py-2 mr-2 rounded-full"
-                [class.bg-brand-gold]="myDaytime === d"
-                [class.bg-dark]="myDaytime !== d"
-                (tap)="selectDaytime(d)">
-
-                <Label
-                  [text]="DaytimeEnum[d]"
-                  class="text-xs"
-                  [class.text-black]="myDaytime === d"
-                  [class.text-text-secondary]="myDaytime !== d">
-                </Label>
-              </StackLayout>
-            </StackLayout>
-          </StackLayout>
-
-        </StackLayout>
-
         <StackLayout *ngFor="let r of details.reviews"
             class="mb-4 bg-dark-secondary rounded-2xl px-4 py-4">
 
@@ -433,6 +321,180 @@
 
     </StackLayout>
   </ScrollView>
+
+  <GridLayout
+    *ngIf="showVotingModal"
+    rowSpan="3"
+    class="bg-dark-modal"
+    (tap)="closeVotingModal($event)">
+    
+    <StackLayout
+      verticalAlignment="bottom"
+      class="bg-dark-secondary rounded-t-3xl p-6">
+      
+      <StackLayout class="items-center mb-4">
+        <GridLayout
+          width="40"
+          height="4"
+          class="bg-text-secondary rounded-full opacity-30">
+        </GridLayout>
+      </StackLayout>
+      
+      <FlexboxLayout justifyContent="space-between" alignItems="center" class="mb-6">
+        <Label
+          text="Your perception"
+          class="text-lg font-semibold text-text-primary">
+        </Label>
+        
+        <GridLayout
+          (tap)="closeVotingModal()"
+          width="32"
+          height="32"
+          class="rounded-full bg-dark items-center justify-center">
+          <Label
+            text="&#xf00d;"
+            class="fas text-text-primary text-sm">
+          </Label>
+        </GridLayout>
+      </FlexboxLayout>
+
+      <StackLayout class="mb-6">
+        <Label
+          text="Gender"
+          class="text-sm text-text-secondary mb-3">
+        </Label>
+
+        <StackLayout orientation="horizontal" class="justify-between">
+          <StackLayout
+            *ngFor="let g of [GenderEnum.Male, GenderEnum.Unisex, GenderEnum.Female]"
+            class="px-4 py-3 mr-2 flex-grow"
+            [class.bg-brand-gold]="modalGender === g"
+            [class.bg-dark]="modalGender !== g"
+            (tap)="selectModalGender(g)">
+
+            <Label
+              [text]="GenderEnum[g]"
+              class="text-xs text-center"
+              [class.text-black]="modalGender === g"
+              [class.text-text-secondary]="modalGender !== g">
+            </Label>
+          </StackLayout>
+        </StackLayout>
+      </StackLayout>
+
+      <StackLayout class="mb-6">
+        <Label
+          text="Longevity"
+          class="text-sm text-text-secondary mb-3">
+        </Label>
+
+        <StackLayout orientation="horizontal" class="justify-between">
+          <Label
+            *ngFor="let l of [LongevityEnum.VeryWeak, LongevityEnum.Weak, LongevityEnum.Moderate, LongevityEnum.LongLasting, LongevityEnum.Eternal]"
+            text="&#xf017;"
+            class="far text-xl"
+            [style.marginRight]="12"
+            [class.fas]="l <= (modalLongevity ?? 0)"
+            [class.text-brand-gold]="l <= (modalLongevity ?? 0)"
+            [class.text-text-secondary]="l > (modalLongevity ?? 0)"
+            (tap)="selectModalLongevity(l)">
+          </Label>
+        </StackLayout>
+      </StackLayout>
+
+      <StackLayout class="mb-6">
+        <Label
+          text="Sillage"
+          class="text-sm text-text-secondary mb-3">
+        </Label>
+
+        <StackLayout orientation="horizontal" class="justify-between">
+          <Label
+            *ngFor="let s of [SillageEnum.Intimate, SillageEnum.Moderate, SillageEnum.Strong, SillageEnum.Enormous]"
+            text="&#xf5a1;"
+            class="fas text-xl"
+            [style.marginRight]="12"
+            [class.text-brand-gold]="s <= (modalSillage ?? 0)"
+            [class.opacity-50]="s > (modalSillage ?? 0)"
+            (tap)="selectModalSillage(s)">
+          </Label>
+        </StackLayout>
+      </StackLayout>
+
+      <StackLayout class="mb-6">
+        <Label
+          text="Season"
+          class="text-sm text-text-secondary mb-3">
+        </Label>
+
+        <FlexboxLayout flexWrap="wrap" class="justify-between">
+          <StackLayout
+            *ngFor="let s of [SeasonEnum.Spring, SeasonEnum.Summer, SeasonEnum.Autumn, SeasonEnum.Winter]"
+            class="px-4 py-3 mb-2"
+            [style.width]="'48%'"
+            [class.bg-brand-gold]="modalSeason === s"
+            [class.bg-dark]="modalSeason !== s"
+            (tap)="selectModalSeason(s)">
+
+            <Label
+              [text]="SeasonEnum[s]"
+              class="text-xs text-center"
+              [class.text-black]="modalSeason === s"
+              [class.text-text-secondary]="modalSeason !== s">
+            </Label>
+          </StackLayout>
+        </FlexboxLayout>
+      </StackLayout>
+
+      <StackLayout class="mb-8">
+        <Label
+          text="Daytime"
+          class="text-sm text-text-secondary mb-3">
+        </Label>
+
+        <StackLayout orientation="horizontal" class="justify-between">
+          <StackLayout
+            *ngFor="let d of [DaytimeEnum.Day, DaytimeEnum.Night]"
+            class="px-4 py-3 flex-grow mr-2"
+            [class.bg-brand-gold]="modalDaytime === d"
+            [class.bg-dark]="modalDaytime !== d"
+            (tap)="selectModalDaytime(d)">
+
+            <Label
+              [text]="DaytimeEnum[d]"
+              class="text-xs text-center"
+              [class.text-black]="modalDaytime === d"
+              [class.text-text-secondary]="modalDaytime !== d">
+            </Label>
+          </StackLayout>
+        </StackLayout>
+      </StackLayout>
+
+      <GridLayout
+        (tap)="saveAllVotes()"
+        [class.opacity-50]="isSavingVotes"
+        [isUserInteractionEnabled]="!isSavingVotes"
+        class="rounded-full bg-brand-gold py-4">
+        
+        <StackLayout verticalAlignment="center" horizontalAlignment="center">
+          <Label
+            *ngIf="!isSavingVotes"
+            text="Save votes"
+            class="text-sm font-semibold text-black">
+          </Label>
+          
+          <ActivityIndicator
+            *ngIf="isSavingVotes"
+            busy="true"
+            color="#000000"
+            width="20"
+            height="20">
+          </ActivityIndicator>
+        </StackLayout>
+      </GridLayout>
+
+    </StackLayout>
+  </GridLayout>
 
   <app-footer row="2"></app-footer>
 
