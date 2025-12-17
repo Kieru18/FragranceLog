@@ -5,4 +5,5 @@ export interface PerfumeSearchResultDto {
   rating: number | null;
   ratingCount: number;
   countryCode: string;
+  imageUrl?: string | null;
 }

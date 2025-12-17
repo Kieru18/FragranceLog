@@ -53,11 +53,13 @@
     <Label *ngIf="!loading && !results.length"
            text="No perfumes found."
            class="mt-6 text-sm text-text-secondary"></Label>
+
     <Label
       *ngIf="!loading && results.length"
       [text]="'Found ' + totalCount + ' perfumes matching the criteria.'"
       class="mt-4 text-xs text-text-secondary"
     ></Label>
+
     <Label 
       *ngIf="errorMessage"
       [text]="errorMessage"
@@ -93,22 +95,39 @@
                     class="text-text-secondary text-xs mt-0.5"></Label>
 
               <StackLayout orientation="horizontal" class="mt-1 items-center">
-              <Label
-                text="&#xf005;"
-                class="fas text-brand-gold text-xs mr-1"></Label>
+                <Label
+                  text="&#xf005;"
+                  class="fas text-brand-gold text-xs mr-1"></Label>
 
-              <Label
-                [text]="formatRating(row.data)"
-                class="text-text-secondary text-xs"></Label>
+                <Label
+                  [text]="formatRating(row.data)"
+                  class="text-text-secondary text-xs"></Label>
+              </StackLayout>
             </StackLayout>
 
-            </StackLayout>
-
-            <StackLayout
+            <GridLayout
               col="1"
               width="56"
               height="56"
-              class="mr-3 rounded-2xl bg-dark border border-dark-secondary" />
+              class="mr-3 rounded-2xl bg-dark overflow-hidden">
+
+              <Image
+                [src]="getThumbSrc(row.data)"
+                stretch="aspectFill"
+                opacity="0.35"
+                blurRadius="12"
+                borderRadius="16">
+              </Image>
+
+              <Image
+                [src]="getThumbSrc(row.data)"
+                stretch="aspectFit"
+                loadMode="async"
+                borderRadius="16"
+                (loaded)="onThumbLoaded($event)">
+              </Image>
+
+            </GridLayout>
 
           </GridLayout>
 
@@ -120,7 +139,7 @@
       <ng-template nsTemplateKey="spinner">
         <StackLayout class="py-6 items-center">
           <ActivityIndicator busy="true"
-                            color="#D3A54A" />
+                             color="#D3A54A" />
         </StackLayout>
       </ng-template>
     </ListView>
@@ -134,7 +153,9 @@
     ></ActivityIndicator>
 
   </StackLayout>
+
   <app-footer row="2"></app-footer>
+
   <GridLayout 
     [visibility]="showFilters ? 'visible' : 'collapsed'"
     rows="*, auto"
@@ -155,147 +176,149 @@
       height="90%"
       (loaded)="onFilterSheetLoaded($event)"
       (pan)="onSheetPan($event)">
-        <StackLayout
-          row="0"
-          width="40"
-          height="4"
-          class="bg-dark border border-dark-secondary rounded-full">
-        </StackLayout>   
-        <StackLayout row="1">
-            <Label text="Filters"
-                   class="text-lg font-semibold text-text-primary mb-4"></Label>
 
-            <StackLayout class="mb-4">
-                <Label text="Brand"
-                       class="text-xs text-text-secondary mb-1"></Label>
+      <StackLayout
+        row="0"
+        width="40"
+        height="4"
+        class="bg-dark border border-dark-secondary rounded-full">
+      </StackLayout>
 
-                <TextField [(ngModel)]="brandSearchText"
-                           class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
-                           hint="Search brands..." />
+      <StackLayout row="1">
+        <Label text="Filters"
+               class="text-lg font-semibold text-text-primary mb-4"></Label>
 
-                <ScrollView height="120" class="bg-dark rounded-2xl">
-                    <StackLayout>
-                        <StackLayout class="px-4 py-2"
-                                     (tap)="selectBrand(null)">
-                            <Label text="Any brand"
-                                   [class.text-highlight]="selectedBrandId === null"
-                                   class="text-xs text-text-primary"></Label>
-                        </StackLayout>
+        <StackLayout class="mb-4">
+          <Label text="Brand"
+                 class="text-xs text-text-secondary mb-1"></Label>
 
-                        <StackLayout *ngFor="let b of filteredBrands"
-                                     class="px-4 py-2 border-t border-dark-secondary"
-                                     (tap)="selectBrand(b)">
-                            <GridLayout columns="*, auto">
-                                <Label [text]="b.name"
-                                       class="text-xs text-text-primary"></Label>
+          <TextField [(ngModel)]="brandSearchText"
+                     class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
+                     hint="Search brands..." />
 
-                                <Label *ngIf="isBrandSelected(b)"
-                                       text="●"
-                                       col="1"
-                                       class="text-brand-gold text-xs"></Label>
-                            </GridLayout>
-                        </StackLayout>
-                    </StackLayout>
-                </ScrollView>
+          <ScrollView height="120" class="bg-dark rounded-2xl">
+            <StackLayout>
+              <StackLayout class="px-4 py-2"
+                           (tap)="selectBrand(null)">
+                <Label text="Any brand"
+                       [class.text-highlight]="selectedBrandId === null"
+                       class="text-xs text-text-primary"></Label>
+              </StackLayout>
+
+              <StackLayout *ngFor="let b of filteredBrands"
+                           class="px-4 py-2 border-t border-dark-secondary"
+                           (tap)="selectBrand(b)">
+                <GridLayout columns="*, auto">
+                  <Label [text]="b.name"
+                         class="text-xs text-text-primary"></Label>
+
+                  <Label *ngIf="isBrandSelected(b)"
+                         text="●"
+                         col="1"
+                         class="text-brand-gold text-xs"></Label>
+                </GridLayout>
+              </StackLayout>
             </StackLayout>
-
-            <StackLayout class="mb-4">
-                <Label text="Groups"
-                       class="text-xs text-text-secondary mb-1"></Label>
-
-                <TextField [(ngModel)]="groupSearchText"
-                           class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
-                           hint="Search groups..." />
-
-                <ScrollView height="140" class="bg-dark rounded-2xl">
-                    <StackLayout>
-                        <StackLayout *ngFor="let g of filteredGroups"
-                                     class="px-4 py-2 border-t border-dark-secondary"
-                                     (tap)="toggleGroup(g)">
-                            <GridLayout columns="*, auto">
-                                <Label [text]="g.name"
-                                       class="text-xs text-text-primary"></Label>
-
-                                <Label *ngIf="isGroupSelected(g)"
-                                       text="✓"
-                                       col="1"
-                                       class="text-brand-gold text-xs"></Label>
-                            </GridLayout>
-                        </StackLayout>
-                    </StackLayout>
-                </ScrollView>
-            </StackLayout>
-
-            <StackLayout class="mb-4">
-              <Label text="Gender"
-                    class="text-xs text-text-secondary mb-2"></Label>
-
-              <FlexboxLayout justifyContent="space-between">
-                <Label text="Any"
-                      class="filter-chip"
-                      [class.selected]="selectedGender === null"
-                      (tap)="selectGender(null)"></Label>
-
-                <Label text="Male"
-                      class="filter-chip"
-                      [class.selected]="selectedGender === GenderEnum.Male"
-                      (tap)="selectGender(GenderEnum.Male)"></Label>
-
-                <Label text="Female"
-                      class="filter-chip"
-                      [class.selected]="selectedGender === GenderEnum.Female"
-                      (tap)="selectGender(GenderEnum.Female)"></Label>
-
-                <Label text="Unisex"
-                      class="filter-chip"
-                      [class.selected]="selectedGender === GenderEnum.Unisex"
-                      (tap)="selectGender(GenderEnum.Unisex)"></Label>
-              </FlexboxLayout>
-            </StackLayout>
-
-            <StackLayout class="mb-4">
-              <Label text="Minimum rating"
-                    class="text-xs text-text-secondary mb-2"></Label>
-
-              <FlexboxLayout justifyContent="space-between">
-                <Label text="Any"
-                      class="filter-chip"
-                      [class.selected]="selectedMinRating === null"
-                      (tap)="setMinRating(null)"></Label>
-
-                <Label text="4+"
-                      class="filter-chip"
-                      [class.selected]="selectedMinRating === 4"
-                      (tap)="setMinRating(4)"></Label>
-
-                <Label text="3+"
-                      class="filter-chip"
-                      [class.selected]="selectedMinRating === 3"
-                      (tap)="setMinRating(3)"></Label>
-
-                <Label text="2+"
-                      class="filter-chip"
-                      [class.selected]="selectedMinRating === 2"
-                      (tap)="setMinRating(2)"></Label>
-              </FlexboxLayout>
-            </StackLayout>
+          </ScrollView>
         </StackLayout>
 
-        <FlexboxLayout row="2"
-                       justifyContent="space-between" 
-                       class="mt-4">
-            <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48 mr-2 items-center justify-center"
-                         (tap)="clearFilters()">
-                <Label text="Clear"
-                       class="text-sm text-text-secondary text-center"></Label>
+        <StackLayout class="mb-4">
+          <Label text="Groups"
+                 class="text-xs text-text-secondary mb-1"></Label>
+
+          <TextField [(ngModel)]="groupSearchText"
+                     class="bg-dark text-text-primary rounded-2xl px-4 py-2 mb-2"
+                     hint="Search groups..." />
+
+          <ScrollView height="140" class="bg-dark rounded-2xl">
+            <StackLayout>
+              <StackLayout *ngFor="let g of filteredGroups"
+                           class="px-4 py-2 border-t border-dark-secondary"
+                           (tap)="toggleGroup(g)">
+                <GridLayout columns="*, auto">
+                  <Label [text]="g.name"
+                         class="text-xs text-text-primary"></Label>
+
+                  <Label *ngIf="isGroupSelected(g)"
+                         text="✓"
+                         col="1"
+                         class="text-brand-gold text-xs"></Label>
+                </GridLayout>
+              </StackLayout>
             </StackLayout>
-            
-            <StackLayout class="bg-brand-gold rounded-2xl px-4 py-3 ml-2 w-48 items-center justify-center"
-                         (tap)="applyFilters()">
-                <Label text="Apply"
-                       class="text-sm text-dark font-semibold text-center"></Label>
-            </StackLayout>
-        </FlexboxLayout>
+          </ScrollView>
+        </StackLayout>
+
+        <StackLayout class="mb-4">
+          <Label text="Gender"
+                class="text-xs text-text-secondary mb-2"></Label>
+
+          <FlexboxLayout justifyContent="space-between">
+            <Label text="Any"
+                  class="filter-chip"
+                  [class.selected]="selectedGender === null"
+                  (tap)="selectGender(null)"></Label>
+
+            <Label text="Male"
+                  class="filter-chip"
+                  [class.selected]="selectedGender === GenderEnum.Male"
+                  (tap)="selectGender(GenderEnum.Male)"></Label>
+
+            <Label text="Female"
+                  class="filter-chip"
+                  [class.selected]="selectedGender === GenderEnum.Female"
+                  (tap)="selectGender(GenderEnum.Female)"></Label>
+
+            <Label text="Unisex"
+                  class="filter-chip"
+                  [class.selected]="selectedGender === GenderEnum.Unisex"
+                  (tap)="selectGender(GenderEnum.Unisex)"></Label>
+          </FlexboxLayout>
+        </StackLayout>
+
+        <StackLayout class="mb-4">
+          <Label text="Minimum rating"
+                class="text-xs text-text-secondary mb-2"></Label>
+
+          <FlexboxLayout justifyContent="space-between">
+            <Label text="Any"
+                  class="filter-chip"
+                  [class.selected]="selectedMinRating === null"
+                  (tap)="setMinRating(null)"></Label>
+
+            <Label text="4+"
+                  class="filter-chip"
+                  [class.selected]="selectedMinRating === 4"
+                  (tap)="setMinRating(4)"></Label>
+
+            <Label text="3+"
+                  class="filter-chip"
+                  [class.selected]="selectedMinRating === 3"
+                  (tap)="setMinRating(3)"></Label>
+
+            <Label text="2+"
+                  class="filter-chip"
+                  [class.selected]="selectedMinRating === 2"
+                  (tap)="setMinRating(2)"></Label>
+          </FlexboxLayout>
+        </StackLayout>
+      </StackLayout>
+
+      <FlexboxLayout row="2"
+                     justifyContent="space-between" 
+                     class="mt-4">
+        <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48 mr-2 items-center justify-center"
+                     (tap)="clearFilters()">
+          <Label text="Clear"
+                 class="text-sm text-text-secondary text-center"></Label>
+        </StackLayout>
+
+        <StackLayout class="bg-brand-gold rounded-2xl px-4 py-3 ml-2 w-48 items-center justify-center"
+                     (tap)="applyFilters()">
+          <Label text="Apply"
+                 class="text-sm text-dark font-semibold text-center"></Label>
+        </StackLayout>
+      </FlexboxLayout>
     </GridLayout>
   </GridLayout>
 </GridLayout>

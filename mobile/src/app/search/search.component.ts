@@ -5,10 +5,18 @@ import { RouterModule, Router } from '@angular/router';
 import { PerfumeService } from '../services/perfume.service';
 import { BrandService } from '../services/brand.service';
 import { GroupService } from '../services/group.service';
-import { BehaviorSubject, Subject, takeUntil,
-         debounceTime, distinctUntilChanged,
-         switchMap, of, tap, catchError, 
-         forkJoin} from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject,
+  takeUntil,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  of,
+  tap,
+  catchError,
+  forkJoin
+} from 'rxjs';
 import { PerfumeSearchResultDto } from '../models/perfumesearchresult.dto';
 import { BrandDictionaryItemDto } from '../models/branddictionaryitem.dto';
 import { GroupDictionaryItemDto } from '../models/groupdictionaryitem.dto';
@@ -19,8 +27,7 @@ import { PerfumeSearchRow } from '../models/types';
 import { EventData, View, Screen, Page, Utils, PanGestureEventData } from '@nativescript/core';
 import { GenderEnum } from '../enums/gender.enum';
 import { FooterComponent } from '../footer/footer.component';
-
-
+import { environment } from '~/environments/environment';
 
 @Component({
   standalone: true,
@@ -71,6 +78,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   private backdropView!: View;
   private readonly screenHeight = Screen.mainScreen.heightDIPs;
 
+  private readonly baseUrl = `${environment.contentUrl}`;
+
   constructor(
     private readonly perfumeService: PerfumeService,
     private readonly brandService: BrandService,
@@ -84,7 +93,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-        this.preloadFilters();
+      this.preloadFilters();
     }, 500);
 
     this.searchControl.valueChanges
@@ -163,18 +172,18 @@ export class SearchComponent implements OnInit, OnDestroy {
       brands: this.brandService.getBrandsDictionary(),
       groups: this.groupService.getGroupsDictionary()
     })
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: ({ brands, groups }) => {
-        this.brands = brands;
-        this.groups = groups;
-        this.filtersReady = true;
-        this.filtersLoading = false;
-      },
-      error: () => {
-        this.filtersLoading = false;
-      }
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: ({ brands, groups }) => {
+          this.brands = brands;
+          this.groups = groups;
+          this.filtersReady = true;
+          this.filtersLoading = false;
+        },
+        error: () => {
+          this.filtersLoading = false;
+        }
+      });
   }
 
   private buildQuery(): string | null {
@@ -375,5 +384,16 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     return parts.length ? parts.join(' · ') : 'No filters applied';
+  }
+
+  getThumbSrc(item: PerfumeSearchResultDto): string {
+    const path = (item as any)?.imageUrl as string | undefined;
+    if (!path) return '~/assets/images/perfume-placeholder.png';
+    return `${this.baseUrl}${path}`;
+  }
+
+  onThumbLoaded(e: any) {
+    e.object.opacity = 0;
+    e.object.animate({ opacity: 1, duration: 200 });
   }
 }

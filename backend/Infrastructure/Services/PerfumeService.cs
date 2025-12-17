@@ -30,9 +30,13 @@ namespace Infrastructure.Services
             var query =
                 from p in _context.Perfumes.AsNoTracking()
                 join r in _context.Reviews on p.PerfumeId equals r.PerfumeId into ratings
+                join photo in _context.PerfumePhotos
+                    on p.PerfumeId equals photo.PerfumeId into photos
+                from photo in photos.DefaultIfEmpty()
                 select new
                 {
                     Perfume = p,
+                    PhotoPath = photo.Path,
                     AvgRating = ratings.Any() ? ratings.Average(x => x.Rating) : 0,
                     RatingCount = ratings.Count()
                 };
@@ -86,7 +90,8 @@ namespace Infrastructure.Services
                     Brand = x.Perfume.Brand.Name,
                     Rating = Math.Round(x.AvgRating, 2),
                     RatingCount = x.RatingCount,
-                    CountryCode = x.Perfume.CountryCode
+                    CountryCode = x.Perfume.CountryCode,
+                    ImageUrl = x.PhotoPath
                 })
                 .ToListAsync(ct);
 
