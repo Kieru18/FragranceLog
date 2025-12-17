@@ -213,7 +213,7 @@ export class PerfumeComponent implements OnInit {
     }
   }
 
-  private recalculateAverage(currentAvg: number, 
+  private recalculateAverage(currentAvg: number,
                              count: number,
                              newRating: number): number {
     if (count === 0) return newRating;
@@ -247,10 +247,10 @@ export class PerfumeComponent implements OnInit {
   }
 
   hasAnyVotes(): boolean {
-    return this.myGender !== null || 
-           this.myLongevity !== null || 
-           this.mySillage !== null || 
-           this.mySeason !== null || 
+    return this.myGender !== null ||
+           this.myLongevity !== null ||
+           this.mySillage !== null ||
+           this.mySeason !== null ||
            this.myDaytime !== null;
   }
 
@@ -294,13 +294,13 @@ export class PerfumeComponent implements OnInit {
   openVotingModal(): void {
     if (this.showVotingModal) return;
     Utils.dismissSoftInput();
-    
+
     this.modalGender = this.myGender;
     this.modalLongevity = this.myLongevity;
     this.modalSillage = this.mySillage;
     this.modalSeason = this.mySeason;
     this.modalDaytime = this.myDaytime;
-    
+
     this.showVotingModal = true;
 
     this.sheetView.translateY = this.screenHeight;
@@ -321,7 +321,7 @@ export class PerfumeComponent implements OnInit {
   closeVotingModal(): void {
     if (!this.showVotingModal) return;
     Utils.dismissSoftInput();
-    
+
     this.sheetView.animate({
       translate: { x: 0, y: this.screenHeight },
       duration: 180,
@@ -356,6 +356,42 @@ export class PerfumeComponent implements OnInit {
     this.modalDaytime = this.modalDaytime === value ? null : value;
   }
 
+  private refreshPerfumeFeaturesAfterVotes(): void {
+    if (!this.details) return;
+
+    this.perfumeService.getPerfumeDetails(this.perfumeId).subscribe({
+      next: d => {
+        if (!this.details) return;
+
+        this.details.gender = d.gender ?? null;
+        this.details.season = d.season ?? null;
+        this.details.daytime = d.daytime ?? null;
+        this.details.longevity = d.longevity ?? null;
+        this.details.sillage = d.sillage ?? null;
+
+        this.details.myGenderVote = d.myGenderVote ?? null;
+        this.details.mySeasonVote = d.mySeasonVote ?? null;
+        this.details.myDaytimeVote = d.myDaytimeVote ?? null;
+        this.details.myLongevityVote = d.myLongevityVote ?? null;
+        this.details.mySillageVote = d.mySillageVote ?? null;
+
+        this.myGender = d.myGenderVote ?? null;
+        this.myLongevity = d.myLongevityVote ?? null;
+        this.mySillage = d.mySillageVote ?? null;
+        this.mySeason = d.mySeasonVote ?? null;
+        this.myDaytime = d.myDaytimeVote ?? null;
+
+        if (this.showVotingModal) {
+          this.modalGender = this.myGender;
+          this.modalLongevity = this.myLongevity;
+          this.modalSillage = this.mySillage;
+          this.modalSeason = this.mySeason;
+          this.modalDaytime = this.myDaytime;
+        }
+      }
+    });
+  }
+
   saveAllVotes(): void {
     if (this.isSavingVotes || !this.details) return;
 
@@ -367,7 +403,7 @@ export class PerfumeComponent implements OnInit {
       if (this.modalGender !== null) {
         requests.push(
           this.voteService.setGenderVote(
-            this.perfumeId, 
+            this.perfumeId,
             new SetGenderVoteRequestDto(this.modalGender)
           )
         );
@@ -419,6 +455,7 @@ export class PerfumeComponent implements OnInit {
     }
 
     if (requests.length === 0) {
+      this.isSavingVotes = false;
       this.closeVotingModal();
       return;
     }
@@ -430,9 +467,18 @@ export class PerfumeComponent implements OnInit {
         this.mySillage = this.modalSillage;
         this.mySeason = this.modalSeason;
         this.myDaytime = this.modalDaytime;
-        
+
+        if (this.details) {
+          this.details.myGenderVote = this.myGender;
+          this.details.myLongevityVote = this.myLongevity;
+          this.details.mySillageVote = this.mySillage;
+          this.details.mySeasonVote = this.mySeason;
+          this.details.myDaytimeVote = this.myDaytime;
+        }
+
         this.isSavingVotes = false;
         this.closeVotingModal();
+        this.refreshPerfumeFeaturesAfterVotes();
       })
       .catch(() => {
         this.isSavingVotes = false;
