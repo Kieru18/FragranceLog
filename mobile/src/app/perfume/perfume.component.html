@@ -45,7 +45,7 @@
 
         </GridLayout>
 
-        <StackLayout orientation="horizontal" class="mb-6 items-center">
+        <StackLayout orientation="horizontal" class="mb-1 items-center">
           <Label
             text="&#xf005;"
             class="fas text-brand-gold text-sm mr-1"></Label>
@@ -76,6 +76,60 @@
               class="text-text-secondary text-sm"></Label>
           </ng-container>
         </StackLayout>
+
+        <StackLayout orientation="horizontal" class="items-center mb-6">
+          <Label
+            *ngIf="details.gender !== null"
+            [text]="GenderEnum[details.gender]"
+            class="text-sm text-text-secondary">
+          </Label>
+
+          <Label text=" · " class="text-xs text-text-secondary"></Label>
+
+          <Label
+            *ngIf="details.season !== null"
+            [text]="SeasonEnum[details.season]"
+            class="text-sm text-text-secondary">
+          </Label>
+
+          <Label text=" · " class="text-xs text-text-secondary"></Label>
+
+          <Label
+            *ngIf="details.daytime !== null"
+            [text]="DaytimeEnum[details.daytime]"
+            class="text-sm text-text-secondary">
+          </Label>
+
+          <Label text=" · " class="text-xs text-text-secondary"></Label>
+
+          <StackLayout orientation="horizontal"
+                      class="items-center"
+                      marginRight="1">
+            <Label
+              *ngFor="let i of [1,2,3,4,5]"
+              text="&#xf252;"
+              class="fas text-sm mr-0.5"
+              [class.text-brand-gold]="i <= longevityLevel"
+              [class.text-text-secondary]="i > longevityLevel">
+            </Label>
+          </StackLayout>
+
+          <Label text=" · " class="text-xs text-text-secondary"></Label>
+
+          <StackLayout orientation="horizontal"
+                      class="items-center"
+                      marginLeft="1">
+            <Label
+              *ngFor="let i of [1,2,3,4]"
+              text="&#xf72e;"
+              class="fas text-sm mr-0.5"
+              [class.text-brand-gold]="i <= sillageLevel"
+              [class.text-text-secondary]="i > sillageLevel">
+            </Label>
+          </StackLayout>
+
+        </StackLayout>
+
 
         <StackLayout class="mb-4">
           <FlexboxLayout flexWrap="wrap">
@@ -205,7 +259,7 @@
         <StackLayout class="mb-6 bg-dark-secondary rounded-2xl p-4">
 
           <Label
-            text="Community perception"
+            text="Your perception"
             class="text-sm font-semibold text-text-primary mb-4">
           </Label>
 

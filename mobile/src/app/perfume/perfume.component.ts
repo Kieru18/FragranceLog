@@ -270,4 +270,14 @@ export class PerfumeComponent implements OnInit {
       .setDaytimeVote(this.perfumeId, new SetDaytimeVoteRequestDto(value))
       .subscribe();
   }
+
+  get longevityLevel(): number {
+    if (this.details?.longevity == null) return 0;
+    return Math.round(this.details.longevity);
+  }
+
+  get sillageLevel(): number {
+    if (this.details?.sillage == null) return 0;
+    return Math.round(this.details.sillage);
+  }
 }
