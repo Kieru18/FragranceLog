@@ -29,6 +29,9 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     loadComponent: () => import('./search/search.component').then(m => m.SearchComponent)
   },
-  // { path: 'perfume/:id', loadComponent: () => import('./perfume/perfume.component').then(m => m.PerfumeComponent) }
+  { 
+    path: 'perfume/:id', 
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./perfume/perfume.component').then(m => m.PerfumeComponent) 
+  }
 ];
-

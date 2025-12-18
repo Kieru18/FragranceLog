@@ -41,6 +41,9 @@
         </None>
         <None Update="Data\fra_cleaned.csv">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>   
-    </ItemGroup>
+        </None>
+		<None Update="Data\perfumes.jsonl">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

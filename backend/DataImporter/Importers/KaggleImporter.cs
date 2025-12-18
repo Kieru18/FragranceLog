@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace DataImporter.Importers;
 
-public class KaggleImporter
+public class KaggleImporter : IImporter
 {
     private readonly FragranceLogContext _db;
     private readonly CsvReaderService _csvReader;
@@ -39,7 +39,7 @@ public class KaggleImporter
         Console.WriteLine("Reading CSV...");
         var processed = 0;
 
-        var rows = _csvReader.ReadRows(_options.CsvPath)
+        var rows = _csvReader.ReadRows(_options.Kaggle.CsvPath)
         .Where(r => !string.IsNullOrWhiteSpace(r.PerfumeName)
                     && !string.IsNullOrWhiteSpace(r.BrandName))
         .ToList();
@@ -181,7 +181,7 @@ public class KaggleImporter
 
     private async Task<List<User>> EnsureFakeUsersAsync(CancellationToken ct)
     {
-        if (_options.FakeUserCount <= 0)
+        if (_options.Kaggle.FakeUserCount <= 0)
             throw new InvalidOperationException("FakeUserCount must be > 0");
 
         var users = await _db.Users
@@ -192,7 +192,7 @@ public class KaggleImporter
         var result = new List<User>(users);
 
         var index = result.Count + 1;
-        while (result.Count < _options.FakeUserCount)
+        while (result.Count < _options.Kaggle.FakeUserCount)
         {
             var username = $"SystemUser_{index:D3}";
 
@@ -200,7 +200,7 @@ public class KaggleImporter
             {
                 Username = username,
                 Email = $"{username}@fragrance.log",
-                Password = _options.ImporterUser.Password
+                Password = _options.Kaggle.ImporterUser.Password
             };
 
             _db.Users.Add(user);

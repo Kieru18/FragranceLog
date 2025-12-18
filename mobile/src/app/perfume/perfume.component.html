@@ -1,0 +1,496 @@
+<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
+
+  <StackLayout row="0" height="24"></StackLayout>
+
+  <ScrollView row="1">
+    <StackLayout class="px-6 pb-10">
+
+      <StackLayout *ngIf="loading"
+                   class="items-center mt-20">
+        <ActivityIndicator busy="true"
+                           color="#D3A54A" />
+      </StackLayout>
+
+      <ng-container *ngIf="!loading && details">
+
+        <StackLayout class="pt-4 mb-4">
+          <Label
+            [text]="details.name"
+            textWrap="true"
+            class="text-2xl font-semibold text-text-primary mb-1"></Label>
+
+          <Label
+            [text]="details.brand"
+            class="text-sm text-text-secondary"></Label>
+        </StackLayout>
+
+        <GridLayout
+          class="rounded-3xl bg-dark-secondary h-56 mb-6 overflow-hidden">
+
+          <Image
+            [src]="perfumeImageSrc"
+            stretch="aspectFill"
+            opacity="0.35"
+            blurRadius="25"
+            borderRadius="24">
+          </Image>
+
+          <Image
+            [src]="perfumeImageSrc"
+            stretch="aspectFit"
+            loadMode="async"
+            class="rounded-lg"
+            (loaded)="onImageLoaded($event)">
+          </Image>
+
+        </GridLayout>
+
+        <StackLayout orientation="horizontal" class="mb-1 items-center">
+          <Label
+            text="&#xf005;"
+            class="fas text-brand-gold text-sm mr-1"></Label>
+
+          <Label
+            [text]="details.avgRating.toFixed(2)"
+            class="text-text-secondary text-sm"></Label>
+
+          <Label
+            text=" · "
+            class="text-text-secondary text-sm"></Label>
+
+          <Label
+            [text]="details.ratingCount + ' votes'"
+            class="text-text-secondary text-sm"></Label>
+
+          <ng-container *ngIf="details.commentCount > 0">
+            <Label
+              text=" · "
+              class="text-text-secondary text-sm"></Label>
+
+            <Label
+              text="&#xf075;"
+              class="fas text-text-secondary text-sm mr-1"></Label>
+
+            <Label
+              [text]="details.commentCount"
+              class="text-text-secondary text-sm"></Label>
+          </ng-container>
+        </StackLayout>
+
+        <FlexboxLayout alignItems="center" class="mb-6">
+          <FlexboxLayout alignItems="center" flexWrap="wrap" flexGrow="1">
+            <Label
+              *ngIf="details.gender !== null"
+              [text]="GenderEnum[details.gender]"
+              class="text-sm text-text-secondary">
+            </Label>
+
+            <Label *ngIf="details.gender !== null" text=" · " class="text-xs text-text-secondary"></Label>
+
+            <Label
+              *ngIf="details.season !== null"
+              [text]="SeasonEnum[details.season]"
+              class="text-sm text-text-secondary">
+            </Label>
+
+            <Label *ngIf="details.season !== null" text=" · " class="text-xs text-text-secondary"></Label>
+
+            <Label
+              *ngIf="details.daytime !== null"
+              [text]="DaytimeEnum[details.daytime]"
+              class="text-sm text-text-secondary">
+            </Label>
+
+            <Label *ngIf="details.daytime !== null" text=" · " class="text-xs text-text-secondary"></Label>
+
+            <StackLayout orientation="horizontal"
+                        class="items-center"
+                        marginRight="1">
+              <Label
+                *ngFor="let i of [1,2,3,4,5]"
+                text="&#xf252;"
+                class="fas text-sm mr-0.5"
+                [class.text-brand-gold]="i <= longevityLevel"
+                [class.text-text-secondary]="i > longevityLevel">
+              </Label>
+            </StackLayout>
+
+            <Label text=" · " class="text-xs text-text-secondary"></Label>
+
+            <StackLayout orientation="horizontal"
+                        class="items-center"
+                        marginLeft="1">
+              <Label
+                *ngFor="let i of [1,2,3,4]"
+                text="&#xf72e;"
+                class="fas text-sm mr-0.5"
+                [class.text-brand-gold]="i <= sillageLevel"
+                [class.text-text-secondary]="i > sillageLevel">
+              </Label>
+            </StackLayout>
+          </FlexboxLayout>
+
+          <FlexboxLayout alignItems="center" marginLeft="8">
+            <FlexboxLayout *ngIf="hasAnyVotes()" alignItems="center" marginRight="8">
+              <Label
+                text="&#xf00c;"
+                class="fas text-brand-gold text-xs">
+              </Label>
+            </FlexboxLayout>
+
+            <GridLayout
+              (tap)="openVotingModal()"
+              width="32"
+              height="32"
+              class="rounded-full bg-dark-secondary items-center justify-center">
+              <Label
+                text="&#xf141;"
+                class="fas text-text-primary text-base"
+                verticalAlignment="center"
+                horizontalAlignment="center">
+              </Label>
+            </GridLayout>
+          </FlexboxLayout>
+        </FlexboxLayout>
+
+        <StackLayout class="mb-4">
+          <FlexboxLayout flexWrap="wrap">
+            <StackLayout *ngFor="let g of details.groups"
+                        class="rounded-xl px-3 py-2 mr-2 mb-2"
+                        [style.borderWidth]="1"
+                        [style.borderColor]="getGroupColor(g)"
+                        [style.backgroundColor]="'transparent'">
+              <Label
+                [text]="g"
+                class="text-xs"
+                [style.color]="getGroupColor(g)"></Label>
+            </StackLayout>
+          </FlexboxLayout>
+        </StackLayout>
+
+        <StackLayout class="mb-6">
+          <StackLayout *ngFor="let group of details.noteGroups"
+                       class="mb-3">
+            <Label
+              [text]="noteTypeLabel(group.type)"
+              class="text-xs text-text-secondary mb-2"></Label>
+            <FlexboxLayout flexWrap="wrap">
+              <StackLayout *ngFor="let n of group.notes"
+                           class="bg-dark-secondary rounded-xl px-3 py-2 mr-2 mb-2">
+                <Label
+                  [text]="n.name"
+                  class="text-xs text-text-primary"></Label>
+              </StackLayout>
+            </FlexboxLayout>
+          </StackLayout>
+        </StackLayout>
+
+        <StackLayout class="mb-6 bg-dark-secondary rounded-2xl p-4">
+
+          <Label
+            text="Your Rating"
+            class="text-sm font-semibold text-text-primary mb-2.5">
+          </Label>
+
+          <StackLayout orientation="horizontal" class="mb-4">
+            <Label
+              *ngFor="let star of [1,2,3,4,5]; let i = index"
+              text="&#xf005;"
+              class="text-3xl mr-1.5"
+              [class.far]="!isStarFilled(star)"
+              [class.fas]="isStarFilled(star)"
+              [class.text-brand-gold]="isStarFilled(star)"
+              [class.text-text-secondary]="!isStarFilled(star)"
+              [class.opacity-100]="isStarFilled(star)"
+              [class.opacity-50]="!isStarFilled(star)"
+              (tap)="rate(star)">
+            </Label>
+          </StackLayout>
+
+          <GridLayout rows="auto, auto" class="mb-1">
+
+            <GridLayout row="0">
+
+              <TextView
+                [(ngModel)]="reviewText"
+                (ngModelChange)="onReviewTextChange($event)"
+                hint="Write a review ..."
+                returnKeyType="done"
+                maxLength="2000"
+                autocorrect="true"
+                class="bg-dark rounded-xl text-text-primary text-sm"
+                style="
+                  padding: 16;
+                  padding-right: 56;
+                  border-width: 1;
+                  border-color: #333333;
+                  min-height: 120;
+                  placeholder-color: #B8B8B8;
+                  line-height: 8;
+                ">
+              </TextView>
+
+              <GridLayout
+                horizontalAlignment="right"
+                verticalAlignment="bottom"
+                marginRight="8"
+                marginBottom="8"
+                width="44"
+                height="44"
+                class="rounded-full"
+                [class.bg-brand-gold]="reviewAction === 'save'"
+                [class.bg-danger-dark]="reviewAction === 'delete'"
+                [class.opacity-50]="!canPerformReviewAction"
+                [isUserInteractionEnabled]="canPerformReviewAction"
+                (tap)="reviewAction === 'save'
+                        ? submitReview()
+                        : deleteMyReview()">
+
+                <StackLayout verticalAlignment="center" horizontalAlignment="center">
+
+                  <Label
+                    *ngIf="reviewAction === 'save' && !isSubmitting"
+                    text="&#xf0c7;"
+                    class="fas text-black text-lg">
+                  </Label>
+
+                  <Label
+                    *ngIf="reviewAction === 'delete' && !isSubmitting"
+                    text="&#xf1f8;"
+                    class="fas text-text-secondary text-lg">
+                  </Label>
+
+                  <ActivityIndicator
+                    *ngIf="isSubmitting"
+                    busy="true"
+                    color="#000000"
+                    width="20"
+                    height="20">
+                  </ActivityIndicator>
+
+                </StackLayout>
+              </GridLayout>
+
+            </GridLayout>
+
+            <Label
+              row="1"
+              *ngIf="reviewText"
+              [text]="reviewText.length + '/2000'"
+              class="text-right text-2xs text-text-secondary mt-1">
+            </Label>
+
+          </GridLayout>
+
+        </StackLayout>
+
+        <StackLayout *ngFor="let r of details.reviews"
+            class="mb-4 bg-dark-secondary rounded-2xl px-4 py-4">
+
+          <GridLayout columns="*, auto" class="mb-2">
+
+            <StackLayout>
+              <Label
+                [text]="r.author"
+                class="text-sm text-text-primary font-semibold">
+              </Label>
+            </StackLayout>
+
+            <StackLayout col="1" orientation="horizontal" class="items-center">
+              <Label
+                text="&#xf005;"
+                class="fas text-brand-gold text-xs mr-1">
+              </Label>
+              <Label
+                [text]="r.rating"
+                class="text-xs text-brand-gold">
+              </Label>
+            </StackLayout>
+
+          </GridLayout>
+
+          <Label
+            *ngIf="r.text"
+            [text]="r.text"
+            textWrap="true"
+            class="text-sm text-text-secondary mb-3"
+            style="line-height: 8;">
+          </Label>
+
+          <StackLayout orientation="horizontal" class="items-center opacity-70">
+            <Label
+              text="&#xf017;"
+              class="far text-text-secondary text-2xs mr-1">
+            </Label>
+            <Label
+              [text]="r.createdAt | date:'dd.MM.yyyy'"
+              class="text-2xs text-text-secondary">
+            </Label>
+          </StackLayout>
+
+        </StackLayout>
+
+      </ng-container>
+
+    </StackLayout>
+  </ScrollView>
+  <app-footer row="2"></app-footer>
+  <GridLayout
+    [visibility]="showVotingModal ? 'visible' : 'collapsed'"
+    rows="*, auto"
+    rowSpan="3">
+
+    <StackLayout
+      id="votingBackdrop"
+      row="0"
+      class="bg-black"
+      (tap)="closeVotingModal()">
+    </StackLayout>
+
+    <GridLayout
+      id="votingSheet"
+      row="1"
+      rows="auto, *, auto"
+      class="bg-dark-secondary rounded-t-3xl px-6 pt-4 pb-6"
+      height="80%"
+      (loaded)="onVotingSheetLoaded($event)"
+      (pan)="onVotingSheetPan($event)">
+
+      <StackLayout
+        row="0"
+        width="40"
+        height="4"
+        class="bg-dark border border-dark-secondary rounded-full">
+      </StackLayout>
+
+      <StackLayout row="1">
+        <Label
+          text="Your perception"
+          class="text-lg font-semibold text-text-primary mb-6">
+        </Label>
+
+        <StackLayout class="mb-6">
+          <Label
+            text="Gender"
+            class="text-sm text-text-secondary mb-3">
+          </Label>
+
+          <FlexboxLayout justifyContent="space-between">
+            <StackLayout
+              *ngFor="let g of [GenderEnum.Male, GenderEnum.Unisex, GenderEnum.Female]"
+              class="filter-chip"
+              [class.selected]="modalGender === g"
+              (tap)="selectModalGender(g)">
+              <Label
+                [text]="GenderEnum[g]"
+                class="text-xs text-center"
+                [class.text-black]="modalGender === g"
+                [class.text-text-secondary]="modalGender !== g">
+              </Label>
+            </StackLayout>
+          </FlexboxLayout>
+        </StackLayout>
+
+        <StackLayout class="mb-6">
+          <Label
+            text="Longevity"
+            class="text-sm text-text-secondary mb-3">
+          </Label>
+
+          <FlexboxLayout>
+            <Label
+              *ngFor="let l of [LongevityEnum.VeryWeak, LongevityEnum.Weak, LongevityEnum.Moderate, LongevityEnum.LongLasting, LongevityEnum.Eternal]"
+              text="&#xf252;"
+              class="fas text-xl mr-4"
+              [class.text-brand-gold]="l <= (modalLongevity ?? 0)"
+              [class.text-text-secondary]="l > (modalLongevity ?? 0)"
+              (tap)="selectModalLongevity(l)">
+            </Label>
+          </FlexboxLayout>
+        </StackLayout>
+
+        <StackLayout class="mb-6">
+          <Label
+            text="Sillage"
+            class="text-sm text-text-secondary mb-3">
+          </Label>
+
+          <FlexboxLayout>
+            <Label
+              *ngFor="let s of [SillageEnum.Intimate, SillageEnum.Moderate, SillageEnum.Strong, SillageEnum.Enormous]"
+              text="&#xf72e;"
+              class="fas text-xl mr-4"
+              [class.text-brand-gold]="s <= (modalSillage ?? 0)"
+              [class.text-text-secondary]="s > (modalSillage ?? 0)"
+              (tap)="selectModalSillage(s)">
+            </Label>
+          </FlexboxLayout>
+        </StackLayout>
+
+        <StackLayout class="mb-6">
+          <Label
+            text="Season"
+            class="text-sm text-text-secondary mb-3">
+          </Label>
+
+          <FlexboxLayout justifyContent="space-between">
+            <StackLayout
+              *ngFor="let s of [SeasonEnum.Spring, SeasonEnum.Summer, SeasonEnum.Autumn, SeasonEnum.Winter]"
+              class="filter-chip"
+              [class.selected]="modalSeason === s"
+              (tap)="selectModalSeason(s)">
+              <Label
+                [text]="SeasonEnum[s]"
+                class="text-xs text-center"
+                [class.text-black]="modalSeason === s"
+                [class.text-text-secondary]="modalSeason !== s">
+              </Label>
+            </StackLayout>
+          </FlexboxLayout>
+        </StackLayout>
+
+        <StackLayout class="mb-6">
+          <Label
+            text="Daytime"
+            class="text-sm text-text-secondary mb-3">
+          </Label>
+
+          <FlexboxLayout justifyContent="space-between">
+            <StackLayout
+              *ngFor="let d of [DaytimeEnum.Day, DaytimeEnum.Night]"
+              class="filter-chip"
+              [class.selected]="modalDaytime === d"
+              (tap)="selectModalDaytime(d)">
+              <Label
+                [text]="DaytimeEnum[d]"
+                class="text-xs text-center"
+                [class.text-black]="modalDaytime === d"
+                [class.text-text-secondary]="modalDaytime !== d">
+              </Label>
+            </StackLayout>
+          </FlexboxLayout>
+        </StackLayout>
+      </StackLayout>
+
+      <FlexboxLayout row="2"
+                     justifyContent="space-between" 
+                     class="mt-4">
+        <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48 mr-2 items-center justify-center"
+                     (tap)="clearAllVotes()">
+          <Label text="Clear"
+                 class="text-sm text-text-secondary text-center"></Label>
+        </StackLayout>
+
+        <StackLayout class="bg-brand-gold rounded-2xl px-4 py-3 ml-2 w-48 items-center justify-center"
+                     [class.opacity-50]="isSavingVotes || !areFeatureVotesDirty"
+                     [isUserInteractionEnabled]="!isSavingVotes || areFeatureVotesDirty"
+                     (tap)="saveAllVotes()">
+          <Label text="Save"
+                 class="text-sm text-dark font-semibold text-center"></Label>
+        </StackLayout>
+      </FlexboxLayout>
+
+    </GridLayout>
+  </GridLayout>
+
+</GridLayout>

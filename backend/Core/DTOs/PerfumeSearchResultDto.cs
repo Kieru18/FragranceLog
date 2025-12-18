@@ -8,5 +8,6 @@
         public double Rating { get; init; }
         public int RatingCount { get; init; }
         public string CountryCode { get; init; } = null!;
+        public string? ImageUrl { get; init; }
     }
 }

@@ -1,16 +1,18 @@
 using Api.Middleware;
-using Api.Validators;
 using Api.Swagger;
+using Api.Validators;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Core.Interfaces;
+using Core.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -47,6 +49,9 @@ namespace Api
             builder.Services.AddScoped<PasswordHasher>();
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddScoped<IPerfumeService, PerfumeService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IPerfumeVoteService, PerfumeVoteService>();
+
 
             if (!builder.Environment.IsDevelopment())
             {
@@ -130,6 +135,13 @@ namespace Api
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(
+                        Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
+                    RequestPath = ""
+                });
             }
 
             app.UseMiddleware<ErrorHandlerMiddleware>();

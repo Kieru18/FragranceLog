@@ -5,10 +5,18 @@ import { RouterModule, Router } from '@angular/router';
 import { PerfumeService } from '../services/perfume.service';
 import { BrandService } from '../services/brand.service';
 import { GroupService } from '../services/group.service';
-import { BehaviorSubject, Subject, takeUntil,
-         debounceTime, distinctUntilChanged,
-         switchMap, of, tap, catchError, 
-         forkJoin} from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject,
+  takeUntil,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  of,
+  tap,
+  catchError,
+  forkJoin
+} from 'rxjs';
 import { PerfumeSearchResultDto } from '../models/perfumesearchresult.dto';
 import { BrandDictionaryItemDto } from '../models/branddictionaryitem.dto';
 import { GroupDictionaryItemDto } from '../models/groupdictionaryitem.dto';
@@ -17,9 +25,9 @@ import { PerfumeSearchResponseDto } from '../models/perfumesearchresponse.dto';
 import { CommonService } from '../services/common.service';
 import { PerfumeSearchRow } from '../models/types';
 import { EventData, View, Screen, Page, Utils, PanGestureEventData } from '@nativescript/core';
-import { GenderEnum } from '../models/gender.enum';
-
-
+import { GenderEnum } from '../enums/gender.enum';
+import { FooterComponent } from '../footer/footer.component';
+import { environment } from '~/environments/environment';
 
 @Component({
   standalone: true,
@@ -29,7 +37,8 @@ import { GenderEnum } from '../models/gender.enum';
     NativeScriptCommonModule,
     NativeScriptFormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    FooterComponent
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
@@ -69,6 +78,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   private backdropView!: View;
   private readonly screenHeight = Screen.mainScreen.heightDIPs;
 
+  private readonly baseUrl = `${environment.contentUrl}`;
+
   constructor(
     private readonly perfumeService: PerfumeService,
     private readonly brandService: BrandService,
@@ -82,7 +93,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-        this.preloadFilters();
+      this.preloadFilters();
     }, 500);
 
     this.searchControl.valueChanges
@@ -161,18 +172,18 @@ export class SearchComponent implements OnInit, OnDestroy {
       brands: this.brandService.getBrandsDictionary(),
       groups: this.groupService.getGroupsDictionary()
     })
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: ({ brands, groups }) => {
-        this.brands = brands;
-        this.groups = groups;
-        this.filtersReady = true;
-        this.filtersLoading = false;
-      },
-      error: () => {
-        this.filtersLoading = false;
-      }
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: ({ brands, groups }) => {
+          this.brands = brands;
+          this.groups = groups;
+          this.filtersReady = true;
+          this.filtersLoading = false;
+        },
+        error: () => {
+          this.filtersLoading = false;
+        }
+      });
   }
 
   private buildQuery(): string | null {
@@ -354,7 +365,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       return 'No rating';
     }
 
-    return `${item.rating.toFixed(1)} · ${item.ratingCount} reviews`;
+    return `${item.rating.toFixed(2)} · ${item.ratingCount} reviews`;
   }
 
   get filtersSummary(): string {
@@ -373,5 +384,16 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     return parts.length ? parts.join(' · ') : 'No filters applied';
+  }
+
+  getThumbSrc(item: PerfumeSearchResultDto): string {
+    const path = (item as any)?.imageUrl as string | undefined;
+    if (!path) return '~/assets/images/perfume-placeholder.png';
+    return `${this.baseUrl}${path}`;
+  }
+
+  onThumbLoaded(e: any) {
+    e.object.opacity = 0;
+    e.object.animate({ opacity: 1, duration: 200 });
   }
 }

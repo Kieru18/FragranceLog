@@ -1,4 +1,4 @@
-import { GenderEnum } from './gender.enum'
+import { GenderEnum } from '../enums/gender.enum'
 
 export interface PerfumeSearchRequestDto {
   query?: string | null;

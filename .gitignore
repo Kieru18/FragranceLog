@@ -22,6 +22,8 @@ backend/**/appsettings.*.json
 # Logs
 backend/**/*.log
 
+# Local images
+backend/DataImporter/Data/images/
 
 ##########################################
 # MOBILE (Angular / NativeScript)
@@ -66,3 +68,4 @@ test-results/
 *.trx
 *.coverage
 *.coveragexml
+/backend/Api/wwwroot/perfume-images
