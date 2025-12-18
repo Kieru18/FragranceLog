@@ -13,6 +13,8 @@ module.exports = {
             'text-primary': '#F5F5F5',
             'text-secondary': '#B8B8B8',
             'highlight': '#8A7FFF',
+            'danger-dark': '#4A1F24',
+            'danger-dark-hover': '#61282D'
         },
     },
   },

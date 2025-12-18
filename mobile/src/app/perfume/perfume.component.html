@@ -230,54 +230,46 @@
                 ">
               </TextView>
 
-              <FlexboxLayout
+              <GridLayout
                 horizontalAlignment="right"
                 verticalAlignment="bottom"
                 marginRight="8"
                 marginBottom="8"
-                alignItems="center">
+                width="44"
+                height="44"
+                class="rounded-full"
+                [class.bg-brand-gold]="reviewAction === 'save'"
+                [class.bg-danger-dark]="reviewAction === 'delete'"
+                [class.opacity-50]="!canPerformReviewAction"
+                [isUserInteractionEnabled]="canPerformReviewAction"
+                (tap)="reviewAction === 'save'
+                        ? submitReview()
+                        : deleteMyReview()">
 
-                <GridLayout
-                  *ngIf="details.myRating != null"
-                  width="36"
-                  height="36"
-                  class="rounded-full bg-dark-secondary mr-2"
-                  (tap)="deleteMyReview()">
+                <StackLayout verticalAlignment="center" horizontalAlignment="center">
 
                   <Label
-                    text="&#xf1f8;"
-                    class="fas text-text-secondary text-sm"
-                    verticalAlignment="center"
-                    horizontalAlignment="center">
+                    *ngIf="reviewAction === 'save' && !isSubmitting"
+                    text="&#xf0c7;"
+                    class="fas text-black text-lg">
                   </Label>
-                </GridLayout>
 
-                <GridLayout
-                  width="44"
-                  height="44"
-                  [class.opacity-50]="!canSubmitReview"
-                  [isUserInteractionEnabled]="canSubmitReview"
-                  (tap)="submitReview()"
-                  class="rounded-full bg-brand-gold">
+                  <Label
+                    *ngIf="reviewAction === 'delete' && !isSubmitting"
+                    text="&#xf1f8;"
+                    class="fas text-text-secondary text-lg">
+                  </Label>
 
-                  <StackLayout verticalAlignment="center" horizontalAlignment="center">
-                    <Label
-                      *ngIf="!isSubmitting"
-                      text="&#xf0c7;"
-                      class="fas text-black text-lg">
-                    </Label>
+                  <ActivityIndicator
+                    *ngIf="isSubmitting"
+                    busy="true"
+                    color="#000000"
+                    width="20"
+                    height="20">
+                  </ActivityIndicator>
 
-                    <ActivityIndicator
-                      *ngIf="isSubmitting"
-                      busy="true"
-                      color="#000000"
-                      width="20"
-                      height="20">
-                    </ActivityIndicator>
-                  </StackLayout>
-
-                </GridLayout>
-              </FlexboxLayout>
+                </StackLayout>
+              </GridLayout>
 
             </GridLayout>
 

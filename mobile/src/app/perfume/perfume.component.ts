@@ -119,6 +119,20 @@ export class PerfumeComponent implements OnInit {
     });
   }
 
+  get reviewAction(): 'save' | 'delete' | 'none' {
+    if (!this.details) return 'none';
+
+    if (this.isDirty) return 'save';
+
+    if (this.details.myRating != null) return 'delete';
+
+    return 'none';
+  }
+
+  get canPerformReviewAction(): boolean {
+    return this.reviewAction !== 'none' && !this.isSubmitting;
+  }
+
   get perfumeImageSrc(): string {
     const path = this.details?.imageUrl;
     if (!path) return '~/assets/images/perfume-placeholder.png';
