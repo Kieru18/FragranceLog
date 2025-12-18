@@ -9,4 +9,9 @@ public interface IPerfumeVoteService
     Task SetLongevityVoteAsync(int perfumeId, int userId, LongevityEnum? longevity);
     Task SetSeasonVoteAsync(int perfumeId, int userId, SeasonEnum? season);
     Task SetDaytimeVoteAsync(int perfumeId, int userId, DaytimeEnum? daytime);
+    Task DeleteGenderVoteAsync(int perfumeId, int userId, CancellationToken ct);
+    Task DeleteLongevityVoteAsync(int perfumeId, int userId, CancellationToken ct);
+    Task DeleteSillageVoteAsync(int perfumeId, int userId, CancellationToken ct);
+    Task DeleteSeasonVoteAsync(int perfumeId, int userId, CancellationToken ct);
+    Task DeleteDaytimeVoteAsync(int perfumeId, int userId, CancellationToken ct);
 }

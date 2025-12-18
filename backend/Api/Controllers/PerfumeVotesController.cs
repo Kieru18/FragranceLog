@@ -83,4 +83,59 @@ public sealed class PerfumeVotesController : ControllerBase
         await _voteService.SetDaytimeVoteAsync(perfumeId, userId ?? 0, dto.Daytime);
         return NoContent();
     }
+
+    [HttpDelete("gender")]
+    public async Task<IActionResult> DeleteGenderVote(int perfumeId, CancellationToken ct)
+    {
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        await _voteService.DeleteGenderVoteAsync(perfumeId, userId ?? 0, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("longevity")]
+    public async Task<IActionResult> DeleteLongevityVote(int perfumeId, CancellationToken ct)
+    {
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        await _voteService.DeleteLongevityVoteAsync(perfumeId, userId ?? 0, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("sillage")]
+    public async Task<IActionResult> DeleteSillageVote(int perfumeId, CancellationToken ct)
+    {
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        await _voteService.DeleteSillageVoteAsync(perfumeId, userId ?? 0, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("season")]
+    public async Task<IActionResult> DeleteSeasonVote(int perfumeId, CancellationToken ct)
+    {
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        await _voteService.DeleteSeasonVoteAsync(perfumeId, userId ?? 0, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("daytime")]
+    public async Task<IActionResult> DeleteDaytimeVote(int perfumeId, CancellationToken ct)
+    {
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        await _voteService.DeleteDaytimeVoteAsync(perfumeId, userId ?? 0, ct);
+        return NoContent();
+    }
 }

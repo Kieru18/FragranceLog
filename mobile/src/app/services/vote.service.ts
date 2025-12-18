@@ -66,4 +66,24 @@ export class VoteService {
       req
     );
   }
+
+  deleteGenderVote(perfumeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${perfumeId}/votes/gender`);
+  }
+
+  deleteLongevityVote(perfumeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${perfumeId}/votes/longevity`);
+  }
+
+  deleteSillageVote(perfumeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${perfumeId}/votes/sillage`);
+  }
+
+  deleteSeasonVote(perfumeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${perfumeId}/votes/season`);
+  }
+
+  deleteDaytimeVote(perfumeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${perfumeId}/votes/daytime`);
+  }
 }

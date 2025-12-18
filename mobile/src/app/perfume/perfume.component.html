@@ -472,29 +472,23 @@
         </StackLayout>
       </StackLayout>
 
-      <GridLayout
-        row="2"
-        (tap)="saveAllVotes()"
-        [class.opacity-50]="isSavingVotes"
-        [isUserInteractionEnabled]="!isSavingVotes"
-        class="rounded-full bg-brand-gold py-4">
-
-        <StackLayout verticalAlignment="center" horizontalAlignment="center">
-          <Label
-            *ngIf="!isSavingVotes"
-            text="Save votes"
-            class="text-sm font-semibold text-black">
-          </Label>
-
-          <ActivityIndicator
-            *ngIf="isSavingVotes"
-            busy="true"
-            color="#000000"
-            width="20"
-            height="20">
-          </ActivityIndicator>
+      <FlexboxLayout row="2"
+                     justifyContent="space-between" 
+                     class="mt-4">
+        <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48 mr-2 items-center justify-center"
+                     (tap)="clearAllVotes()">
+          <Label text="Clear"
+                 class="text-sm text-text-secondary text-center"></Label>
         </StackLayout>
-      </GridLayout>
+
+        <StackLayout class="bg-brand-gold rounded-2xl px-4 py-3 ml-2 w-48 items-center justify-center"
+                     [class.opacity-50]="isSavingVotes || !areFeatureVotesDirty"
+                     [isUserInteractionEnabled]="!isSavingVotes || areFeatureVotesDirty"
+                     (tap)="saveAllVotes()">
+          <Label text="Save"
+                 class="text-sm text-dark font-semibold text-center"></Label>
+        </StackLayout>
+      </FlexboxLayout>
 
     </GridLayout>
   </GridLayout>

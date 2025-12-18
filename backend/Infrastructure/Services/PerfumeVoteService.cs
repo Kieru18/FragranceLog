@@ -179,4 +179,59 @@ public sealed class PerfumeVoteService : IPerfumeVoteService
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task DeleteGenderVoteAsync(int perfumeId, int userId, CancellationToken ct)
+    {
+        var vote = await _context.PerfumeGenderVotes
+            .FirstOrDefaultAsync(v => v.PerfumeId == perfumeId && v.UserId == userId, ct);
+
+        if (vote == null) return;
+
+        _context.PerfumeGenderVotes.Remove(vote);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteLongevityVoteAsync(int perfumeId, int userId, CancellationToken ct)
+    {
+        var vote = await _context.PerfumeLongevityVotes
+            .FirstOrDefaultAsync(v => v.PerfumeId == perfumeId && v.UserId == userId, ct);
+
+        if (vote == null) return;
+
+        _context.PerfumeLongevityVotes.Remove(vote);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteSillageVoteAsync(int perfumeId, int userId, CancellationToken ct)
+    {
+        var vote = await _context.PerfumeSillageVotes
+            .FirstOrDefaultAsync(v => v.PerfumeId == perfumeId && v.UserId == userId, ct);
+
+        if (vote == null) return;
+
+        _context.PerfumeSillageVotes.Remove(vote);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteSeasonVoteAsync(int perfumeId, int userId, CancellationToken ct)
+    {
+        var vote = await _context.PerfumeSeasonVotes
+            .FirstOrDefaultAsync(v => v.PerfumeId == perfumeId && v.UserId == userId, ct);
+
+        if (vote == null) return;
+
+        _context.PerfumeSeasonVotes.Remove(vote);
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteDaytimeVoteAsync(int perfumeId, int userId, CancellationToken ct)
+    {
+        var vote = await _context.PerfumeDaytimeVotes
+            .FirstOrDefaultAsync(v => v.PerfumeId == perfumeId && v.UserId == userId, ct);
+
+        if (vote == null) return;
+
+        _context.PerfumeDaytimeVotes.Remove(vote);
+        await _context.SaveChangesAsync(ct);
+    }
 }

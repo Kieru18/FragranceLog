@@ -370,6 +370,14 @@ export class PerfumeComponent implements OnInit {
     this.modalDaytime = this.modalDaytime === value ? null : value;
   }
 
+  get areFeatureVotesDirty(): boolean {
+    return this.modalGender !== this.myGender ||
+          this.modalLongevity !== this.myLongevity ||
+          this.modalSillage !== this.mySillage ||
+          this.modalSeason !== this.mySeason ||
+          this.modalDaytime !== this.myDaytime;
+  }
+
   private refreshPerfumeFeaturesAfterVotes(): void {
     if (!this.details) return;
 
@@ -421,6 +429,8 @@ export class PerfumeComponent implements OnInit {
             new SetGenderVoteRequestDto(this.modalGender)
           )
         );
+      } else {
+        requests.push(this.voteService.deleteGenderVote(this.perfumeId));
       }
     }
 
@@ -432,6 +442,8 @@ export class PerfumeComponent implements OnInit {
             new SetLongevityVoteRequestDto(this.modalLongevity)
           )
         );
+      } else {
+        requests.push(this.voteService.deleteLongevityVote(this.perfumeId));
       }
     }
 
@@ -443,6 +455,8 @@ export class PerfumeComponent implements OnInit {
             new SetSillageVoteRequestDto(this.modalSillage)
           )
         );
+      } else {
+        requests.push(this.voteService.deleteSillageVote(this.perfumeId));
       }
     }
 
@@ -454,6 +468,8 @@ export class PerfumeComponent implements OnInit {
             new SetSeasonVoteRequestDto(this.modalSeason)
           )
         );
+      } else {
+        requests.push(this.voteService.deleteSeasonVote(this.perfumeId));
       }
     }
 
@@ -465,6 +481,8 @@ export class PerfumeComponent implements OnInit {
             new SetDaytimeVoteRequestDto(this.modalDaytime)
           )
         );
+      } else {
+        requests.push(this.voteService.deleteDaytimeVote(this.perfumeId));
       }
     }
 
@@ -523,6 +541,14 @@ export class PerfumeComponent implements OnInit {
         this.isSubmitting = false;
       }
     });
+  }
+
+  clearAllVotes(): void {
+    this.modalGender = null;
+    this.modalLongevity = null;
+    this.modalSillage = null;
+    this.modalSeason = null;
+    this.modalDaytime = null;
   }
 
   private applyLocalReviewDelete(): void {
