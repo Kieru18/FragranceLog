@@ -22,4 +22,8 @@ export class FooterComponent {
   goToHome() {
     this.routerExtensions.navigate(['/home']);
   }
+
+  goToListsOverview() {
+    this.routerExtensions.navigate(['/lists-overview']);
+  }
 }
