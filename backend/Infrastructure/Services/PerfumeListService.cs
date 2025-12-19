@@ -1,4 +1,6 @@
-﻿using Core.Entities;
+﻿using Core.Dtos;
+using Core.DTOs;
+using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -14,17 +16,24 @@ public class PerfumeListService : IPerfumeListService
         _context = context;
     }
 
-    public async Task<IReadOnlyList<PerfumeList>> GetUserListsAsync(int userId)
+    public async Task<IReadOnlyList<PerfumeListDto>> GetUserListsAsync(int userId)
     {
         return await _context.PerfumeLists
             .Where(l => l.UserId == userId)
             .OrderBy(l => l.IsSystem)
             .ThenBy(l => l.Name)
+            .Select(l => new PerfumeListDto
+            {
+                PerfumeListId = l.PerfumeListId,
+                Name = l.Name,
+                IsSystem = l.IsSystem,
+                CreationDate = l.CreationDate
+            })
             .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<PerfumeList> CreateListAsync(int userId, string name)
+    public async Task<PerfumeListDto> CreateListAsync(int userId, string name)
     {
         var exists = await _context.PerfumeLists
             .AnyAsync(l => l.UserId == userId && l.Name == name);
@@ -43,7 +52,13 @@ public class PerfumeListService : IPerfumeListService
         _context.PerfumeLists.Add(list);
         await _context.SaveChangesAsync();
 
-        return list;
+        return new PerfumeListDto
+        {
+            PerfumeListId = list.PerfumeListId,
+            Name = list.Name,
+            IsSystem = list.IsSystem,
+            CreationDate = list.CreationDate
+        };
     }
 
     public async Task RenameListAsync(int userId, int perfumeListId, string newName)
@@ -68,14 +83,40 @@ public class PerfumeListService : IPerfumeListService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IReadOnlyList<Perfume>> GetListPerfumesAsync(int userId, int perfumeListId)
+    public async Task<IReadOnlyList<PerfumeListItemDto>> GetListPerfumesAsync(int userId, int perfumeListId)
     {
         await EnsureListOwnershipAsync(userId, perfumeListId);
 
-        return await _context.PerfumeListItems
-            .Where(i => i.PerfumeListId == perfumeListId)
-            .Select(i => i.Perfume)
-            .AsNoTracking()
+        var query =
+            from li in _context.PerfumeListItems.AsNoTracking()
+            where li.PerfumeListId == perfumeListId
+            join p in _context.Perfumes.AsNoTracking() on li.PerfumeId equals p.PerfumeId
+            join r in _context.Reviews on p.PerfumeId equals r.PerfumeId into ratings
+            join photo in _context.PerfumePhotos on p.PerfumeId equals photo.PerfumeId into photos
+            from photo in photos.DefaultIfEmpty()
+            select new
+            {
+                Perfume = p,
+                PhotoPath = photo.Path,
+                AvgRating = ratings.Any() ? ratings.Average(x => x.Rating) : 0,
+                RatingCount = ratings.Count(),
+                MyRating = ratings
+                    .Where(x => x.UserId == userId)
+                    .Select(x => (int?)x.Rating)
+                    .FirstOrDefault()
+            };
+
+        return await query
+            .Select(x => new PerfumeListItemDto
+            {
+                PerfumeId = x.Perfume.PerfumeId,
+                Name = x.Perfume.Name,
+                Brand = x.Perfume.Brand.Name,
+                ImageUrl = x.PhotoPath,
+                AvgRating = Math.Round(x.AvgRating, 2),
+                RatingCount = x.RatingCount,
+                MyRating = x.MyRating
+            })
             .ToListAsync();
     }
 
