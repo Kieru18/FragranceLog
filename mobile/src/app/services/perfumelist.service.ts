@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PerfumeListDto } from '../models/perfumelist.dto';
-import { PerfumeListItemDto } from '../models/perfume-list-item.dto';
+import { PerfumeListItemDto } from '../models/perfumelistitem.dto';
+import { PerfumeListOverviewDto } from '../models/perfumelistoverview.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,11 @@ export class PerfumeListService {
     return this.http.get<PerfumeListDto[]>(this.baseUrl);
   }
 
+  getListsOverview(): Observable<PerfumeListOverviewDto[]> {
+    return this.http.get<PerfumeListOverviewDto[]>(
+      `${this.baseUrl}/overview`
+    );
+  }
   createList(name: string): Observable<PerfumeListDto> {
     return this.http.post<PerfumeListDto>(this.baseUrl, { name });
   }

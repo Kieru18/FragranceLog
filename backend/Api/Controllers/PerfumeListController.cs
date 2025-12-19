@@ -29,6 +29,17 @@ public class PerfumeListsController : ControllerBase
         return Ok(lists);
     }
 
+    [HttpGet("overview")]
+    public async Task<IActionResult> GetListsOverview()
+    {
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var result = await _service.GetListsOverviewAsync(userId.Value);
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateList([FromBody] CreateListRequest request)
     {

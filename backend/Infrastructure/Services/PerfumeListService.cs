@@ -33,6 +33,42 @@ public class PerfumeListService : IPerfumeListService
             .ToListAsync();
     }
 
+    public async Task<IReadOnlyList<PerfumeListOverviewDto>> GetListsOverviewAsync(int userId)
+    {
+        var lists =
+            from l in _context.PerfumeLists.AsNoTracking()
+            where l.UserId == userId
+            select new
+            {
+                l.PerfumeListId,
+                l.Name,
+                l.IsSystem,
+                PerfumeIds = _context.PerfumeListItems
+                    .Where(li => li.PerfumeListId == l.PerfumeListId)
+                    .Select(li => li.PerfumeId)
+            };
+
+        var result = await lists
+            .Select(l => new PerfumeListOverviewDto
+            {
+                PerfumeListId = l.PerfumeListId,
+                Name = l.Name,
+                IsSystem = l.IsSystem,
+                PerfumeCount = l.PerfumeIds.Count(),
+                PreviewImages = _context.PerfumePhotos
+                    .Where(pp => l.PerfumeIds.Contains(pp.PerfumeId))
+                    .OrderBy(pp => pp.PerfumeId)
+                    .Select(pp => pp.Path)
+                    .Take(4)
+                    .ToList()
+            })
+            .OrderBy(x => x.IsSystem)
+            .ThenBy(x => x.Name)
+            .ToListAsync();
+
+        return result;
+    }
+
     public async Task<PerfumeListDto> CreateListAsync(int userId, string name)
     {
         var exists = await _context.PerfumeLists
