@@ -279,4 +279,5 @@ CREATE INDEX IX_Reviews_PerfumeId ON Reviews(PerfumeId);
 CREATE INDEX IX_PerfumeGroup_PerfumeId ON PerfumeGroup(PerfumeId);
 CREATE INDEX IX_PerfumeGroup_GroupId ON PerfumeGroup(GroupId);
 
-
+CREATE INDEX IX_PerfumeList_UserId ON PerfumeList (UserId);
+CREATE INDEX IX_PerfumeListItem_ListId ON PerfumeListItem (PerfumeListId);

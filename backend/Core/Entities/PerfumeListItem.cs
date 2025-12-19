@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Core.Entities;
 
 [Table("PerfumeListItem")]
+[Index("PerfumeListId", Name = "IX_PerfumeListItem_ListId")]
 [Index("PerfumeListId", "PerfumeId", Name = "UQ_PerfumeListItem_List_Perfume", IsUnique = true)]
 public partial class PerfumeListItem
 {
