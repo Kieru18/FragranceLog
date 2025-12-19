@@ -32,6 +32,9 @@ public partial class User
     public virtual ICollection<PerfumeGenderVote> PerfumeGenderVotes { get; set; } = new List<PerfumeGenderVote>();
 
     [InverseProperty("User")]
+    public virtual ICollection<PerfumeList> PerfumeLists { get; set; } = new List<PerfumeList>();
+
+    [InverseProperty("User")]
     public virtual ICollection<PerfumeLongevityVote> PerfumeLongevityVotes { get; set; } = new List<PerfumeLongevityVote>();
 
     [InverseProperty("User")]
