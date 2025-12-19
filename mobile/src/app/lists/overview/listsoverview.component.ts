@@ -13,7 +13,7 @@ type PreviewSlot = { path: string | null };
 @Component({
   standalone: true,
   selector: 'app-lists-overview',
-  templateUrl: './lists-overview.component.html',
+  templateUrl: './listsoverview.component.html',
   imports: [NativeScriptCommonModule, RouterModule],
   schemas: [NO_ERRORS_SCHEMA]
 })

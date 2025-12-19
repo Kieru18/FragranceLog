@@ -1,71 +1,141 @@
-<GridLayout rows="auto, *" class="ns-dark bg-dark h-full">
-  <GridLayout row="0" columns="*, auto" class="px-6 pt-6 pb-4">
-    <StackLayout col="0">
-      <Label text="My Lists" class="text-2xl font-semibold text-text-primary"></Label>
-      <Label text="Owned, Wanted, and your custom collections" class="text-sm text-text-secondary mt-1"></Label>
-    </StackLayout>
+<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
 
-    <Button col="1"
-            text="+"
-            class="bg-dark-secondary text-brand-gold font-semibold rounded-2xl w-12 h-12"
-            (tap)="createList()"></Button>
-  </GridLayout>
+  <StackLayout row="0" height="24"></StackLayout>
 
   <ScrollView row="1">
     <StackLayout class="px-6 pb-10">
 
-      <StackLayout *ngIf="loading" class="items-center mt-10">
+      <StackLayout class="pt-4 mb-4">
+        <GridLayout columns="*, auto">
+          <StackLayout col="0">
+            <Label
+              text="My Lists"
+              class="text-2xl font-semibold text-text-primary mb-1">
+            </Label>
+
+            <Label
+              text="Owned, Wanted, and your custom collections"
+              class="text-sm text-text-secondary">
+            </Label>
+          </StackLayout>
+
+          <GridLayout
+            col="1"
+            width="40"
+            height="40"
+            class="rounded-full bg-dark-secondary items-center justify-center"
+            (tap)="createList()">
+
+            <Label
+              text="+"
+              class="text-brand-gold text-xl font-semibold"
+              verticalAlignment="center"
+              horizontalAlignment="center">
+            </Label>
+          </GridLayout>
+        </GridLayout>
+      </StackLayout>
+
+      <StackLayout *ngIf="loading" class="items-center mt-20">
         <ActivityIndicator busy="true" color="#D3A54A"></ActivityIndicator>
       </StackLayout>
 
-      <Label *ngIf="!loading && error"
-             [text]="error"
-             class="text-sm text-red-400 mt-4"></Label>
+      <Label
+        *ngIf="!loading && error"
+        [text]="error"
+        class="text-sm text-red-400 mt-4">
+      </Label>
 
-      <StackLayout *ngIf="!loading && !error && items.length === 0" class="mt-10">
-        <Label text="No lists yet." class="text-text-primary text-lg font-semibold"></Label>
-        <Label text="Create your first custom list with the + button."
-               class="text-text-secondary text-sm mt-2"></Label>
+      <StackLayout *ngIf="!loading && !error && items.length <= 2"
+                   class="mt-12 items-center px-6">
+
+        <Label
+          text="No lists yet"
+          class="text-lg font-semibold text-text-primary text-center">
+        </Label>
+
+        <Label
+          text="Create your first custom list using the + button above."
+          textWrap="true"
+          class="text-sm text-text-secondary text-center mt-2">
+        </Label>
       </StackLayout>
 
-      <StackLayout *ngIf="!loading && !error && items.length > 0" class="mt-2">
+      <StackLayout *ngIf="!loading && !error && items.length > 0"
+                   class="mt-2">
+
         <StackLayout *ngFor="let item of items; trackBy: trackByListId"
                      class="bg-dark-secondary rounded-3xl p-5 mb-4">
 
           <GridLayout columns="*, auto" rows="auto, auto, auto">
-            <Label row="0" col="0"
-                   [text]="item.name"
-                   class="text-lg font-semibold text-text-primary"></Label>
 
-            <Button row="0" col="1"
-                    *ngIf="!item.isSystem"
-                    text="⋮"
-                    class="bg-transparent text-text-secondary text-xl w-10 h-10"
-                    (tap)="openListMenu(item)"></Button>
+            <Label
+              row="0"
+              col="0"
+              [text]="item.name"
+              class="text-lg font-semibold text-text-primary">
+            </Label>
 
-            <Label row="1" col="0"
-                   [text]="item.perfumeCount + ' perfumes'"
-                   class="text-sm text-text-secondary mt-1"></Label>
+            <GridLayout
+              row="0"
+              col="1"
+              *ngIf="!item.isSystem"
+              width="32"
+              height="32"
+              class="rounded-full bg-dark items-center justify-center"
+              (tap)="openListMenu(item)">
 
-            <StackLayout row="2" col="0" orientation="horizontal" class="mt-4">
+              <Label
+                text="&#xf141;"
+                class="fas text-text-secondary text-base"
+                verticalAlignment="center"
+                horizontalAlignment="center">
+              </Label>
+            </GridLayout>
+
+            <Label
+              row="1"
+              col="0"
+              [text]="item.perfumeCount + ' perfumes'"
+              class="text-sm text-text-secondary mt-1">
+            </Label>
+
+            <StackLayout
+              row="2"
+              col="0"
+              orientation="horizontal"
+              class="mt-4">
+
               <ng-container *ngFor="let slot of previewSlots(item); let i = index; trackBy: trackByIndex">
-                <GridLayout [marginLeft]="i === 0 ? 0 : -12"
-                            class="w-11 h-11 rounded-2xl bg-dark overflow-hidden border border-black/20">
-                  <Image *ngIf="slot.path"
-                         [src]="slot.path"
-                         stretch="aspectFill"
-                         class="w-full h-full"></Image>
 
-                  <GridLayout *ngIf="!slot.path"
-                              class="w-full h-full bg-dark"></GridLayout>
+                <GridLayout
+                  [marginLeft]="i === 0 ? 0 : -12"
+                  class="w-11 h-11 rounded-2xl bg-dark overflow-hidden border border-black/20">
+
+                  <Image
+                    *ngIf="slot.path"
+                    [src]="slot.path"
+                    stretch="aspectFill"
+                    class="w-full h-full">
+                  </Image>
+
+                  <GridLayout
+                    *ngIf="!slot.path"
+                    class="w-full h-full bg-dark">
+                  </GridLayout>
+
                 </GridLayout>
+
               </ng-container>
             </StackLayout>
-          </GridLayout>
 
+          </GridLayout>
         </StackLayout>
       </StackLayout>
 
     </StackLayout>
   </ScrollView>
+
+  <app-footer row="2"></app-footer>
+
 </GridLayout>
