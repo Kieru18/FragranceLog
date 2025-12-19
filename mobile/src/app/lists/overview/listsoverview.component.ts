@@ -7,6 +7,7 @@ import { action, confirm, prompt } from '@nativescript/core/ui/dialogs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PerfumeListService } from '../../services/perfumelist.service';
 import { PerfumeListOverviewDto } from '../../models/perfumelistoverview.dto';
+import { FooterComponent } from '~/app/footer/footer.component';
 
 type PreviewSlot = { path: string | null };
 
@@ -14,7 +15,7 @@ type PreviewSlot = { path: string | null };
   standalone: true,
   selector: 'app-lists-overview',
   templateUrl: './listsoverview.component.html',
-  imports: [NativeScriptCommonModule, RouterModule],
+  imports: [NativeScriptCommonModule, RouterModule, FooterComponent],
   schemas: [NO_ERRORS_SCHEMA]
 })
 export class ListsOverviewComponent implements OnInit {
