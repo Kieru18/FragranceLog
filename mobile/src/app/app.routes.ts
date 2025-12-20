@@ -33,5 +33,10 @@ export const routes: Routes = [
     path: 'perfume/:id', 
     canActivate: [AuthGuard],
     loadComponent: () => import('./perfume/perfume.component').then(m => m.PerfumeComponent) 
-  }
+  },
+  {
+    path: 'lists-overview',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./lists/overview/listsoverview.component').then(m => m.ListsOverviewComponent)
+  },
 ];

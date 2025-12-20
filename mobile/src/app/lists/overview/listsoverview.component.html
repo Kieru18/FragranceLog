@@ -6,34 +6,15 @@
     <StackLayout class="px-6 pb-10">
 
       <StackLayout class="pt-4 mb-4">
-        <GridLayout columns="*, auto">
-          <StackLayout col="0">
-            <Label
-              text="My Lists"
-              class="text-2xl font-semibold text-text-primary mb-1">
-            </Label>
+        <Label
+          text="My Lists"
+          class="text-2xl font-semibold text-text-primary mb-1">
+        </Label>
 
-            <Label
-              text="Manage and share your perfume collections"
-              class="text-sm text-text-secondary">
-            </Label>
-          </StackLayout>
-
-          <GridLayout
-            col="1"
-            width="40"
-            height="40"
-            class="rounded-full bg-dark-secondary items-center justify-center"
-            (tap)="createList()">
-
-            <Label
-              text="+"
-              class="text-brand-gold text-xl font-semibold"
-              verticalAlignment="center"
-              horizontalAlignment="center">
-            </Label>
-          </GridLayout>
-        </GridLayout>
+        <Label
+          text="Manage and share your perfume collections"
+          class="text-sm text-text-secondary">
+        </Label>
       </StackLayout>
 
       <StackLayout *ngIf="loading" class="items-center mt-20">
@@ -46,24 +27,7 @@
         class="text-sm text-red-400 mt-4">
       </Label>
 
-      <StackLayout *ngIf="!loading && !error && items.length <= 2"
-                   class="mt-12 items-center px-6">
-
-        <Label
-          text="No lists yet"
-          class="text-lg font-semibold text-text-primary text-center">
-        </Label>
-
-        <Label
-          text="Create your first custom list using the Add button."
-          textWrap="true"
-          class="text-sm text-text-secondary text-center mt-2"
-          style="line-height: 1.2;">
-        </Label>
-      </StackLayout>
-
-      <StackLayout *ngIf="!loading && !error && items.length > 0"
-                   class="mt-2">
+      <StackLayout *ngIf="!loading && !error">
 
         <StackLayout *ngFor="let item of items; trackBy: trackByListId"
                      class="bg-dark-secondary rounded-3xl p-5 mb-4">
@@ -102,6 +66,7 @@
             </Label>
 
             <StackLayout
+              *ngIf="item.perfumeCount > 0"
               row="2"
               col="0"
               orientation="horizontal"
@@ -120,11 +85,6 @@
                     class="w-full h-full">
                   </Image>
 
-                  <GridLayout
-                    *ngIf="!slot.path"
-                    class="w-full h-full bg-dark">
-                  </GridLayout>
-
                 </GridLayout>
 
               </ng-container>
@@ -132,6 +92,25 @@
 
           </GridLayout>
         </StackLayout>
+
+        <StackLayout col="1"
+                     width="44"
+                     height="44"
+                     horizontalAlignment="right"
+                     class="rounded-full bg-brand-gold items-center justify-center"
+                     (tap)="createList()">
+
+          <GridLayout width="44" height="44" class="items-center justify-center">
+            <Label
+              text="&#xf067;"
+              class="fas text-black text-lg"
+              verticalAlignment="center"
+              horizontalAlignment="center">
+            </Label>
+          </GridLayout>
+
+        </StackLayout>
+
       </StackLayout>
 
     </StackLayout>
