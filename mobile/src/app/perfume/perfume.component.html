@@ -581,19 +581,26 @@
               <StackLayout
                 *ngFor="let l of lists"
                 class="bg-dark rounded-2xl px-4 py-3 mb-3"
+                [class.border-brand-gold]="l.containsPerfume"
+                [class.border-dark]="!l.containsPerfume"
+                style="border-width: 2;"
                 (tap)="toggleList(l)">
 
                 <GridLayout columns="auto, *" rows="auto" class="items-center">
                   <Label
                     col="0"
                     [text]="l.containsPerfume ? '&#xf14a;' : '&#xf0c8;'"
-                    class="far text-text-secondary text-base mr-3">
+                    class="far text-base mr-3"
+                    [class.text-brand-gold]="l.containsPerfume"
+                    [class.text-text-secondary]="!l.containsPerfume">
                   </Label>
 
                   <Label
                     col="1"
                     [text]="l.name"
-                    class="text-sm text-text-primary">
+                    class="text-sm"
+                    [class.text-brand-gold]="l.containsPerfume"
+                    [class.text-text-primary]="!l.containsPerfume">
                   </Label>
                 </GridLayout>
               </StackLayout>
