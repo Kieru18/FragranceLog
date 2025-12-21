@@ -106,6 +106,21 @@ public class PerfumeListsController : ControllerBase
         await _service.RemovePerfumeFromListAsync(userId ?? 0, id, perfumeId);
         return NoContent();
     }
+
+    [HttpGet("for-perfume/{perfumeId}")]
+    public async Task<IActionResult> GetListsForPerfume(int perfumeId)
+    {
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var result = await _service.GetListsForPerfumeAsync(
+            userId.Value,
+            perfumeId
+        );
+
+        return Ok(result);
+    }
 }
 
 public record CreateListRequest(string Name);

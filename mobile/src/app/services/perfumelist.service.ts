@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { PerfumeListDto } from '../models/perfumelist.dto';
 import { PerfumeListItemDto } from '../models/perfumelistitem.dto';
 import { PerfumeListOverviewDto } from '../models/perfumelistoverview.dto';
+import { PerfumeListMembershipDto } from '../models/perfumelistmembership.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,12 @@ export class PerfumeListService {
   removePerfumeFromList(listId: number, perfumeId: number): Observable<void> {
     return this.http.delete<void>(
       `${this.baseUrl}/${listId}/perfumes/${perfumeId}`
+    );
+  }
+
+  getListsForPerfume(perfumeId: number) {
+    return this.http.get<PerfumeListMembershipDto[]>(
+      `${this.baseUrl}/lists/for-perfume/${perfumeId}`
     );
   }
 }

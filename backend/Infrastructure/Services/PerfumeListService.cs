@@ -209,4 +209,26 @@ public class PerfumeListService : IPerfumeListService
 
         return list;
     }
+
+    public async Task<IReadOnlyList<PerfumeListMembershipDto>> GetListsForPerfumeAsync(int userId, int perfumeId)
+    {
+        var query =
+            from l in _context.PerfumeLists.AsNoTracking()
+            where l.UserId == userId
+            select new PerfumeListMembershipDto
+            {
+                PerfumeListId = l.PerfumeListId,
+                Name = l.Name,
+                IsSystem = l.IsSystem,
+                ContainsPerfume = _context.PerfumeListItems
+                    .Any(li =>
+                        li.PerfumeListId == l.PerfumeListId &&
+                        li.PerfumeId == perfumeId)
+            };
+
+        return await query
+            .OrderBy(x => x.IsSystem)
+            .ThenBy(x => x.Name)
+            .ToListAsync();
+    }
 }
