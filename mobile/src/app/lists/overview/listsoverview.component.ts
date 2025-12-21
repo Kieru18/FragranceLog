@@ -6,6 +6,7 @@ import { Page, Screen, Utils, View } from '@nativescript/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PerfumeListService } from '../../services/perfumelist.service';
 import { PerfumeListOverviewDto } from '../../models/perfumelistoverview.dto';
+import { PerfumeListDto } from '../../models/perfumelist.dto';
 import { FooterComponent } from '~/app/footer/footer.component';
 
 type PreviewSlot = { path: string | null };
@@ -69,11 +70,7 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (data: PerfumeListOverviewDto[]) => {
-          this.items = (data ?? []).slice().sort((a, b) => {
-            const sys = (a.isSystem === b.isSystem) ? 0 : (a.isSystem ? -1 : 1);
-            if (sys !== 0) return sys;
-            return (a.name ?? '').localeCompare(b.name ?? '');
-          });
+          this.sortItems(data);
         },
         error: (err: HttpErrorResponse) => {
           console.log(err);
@@ -189,14 +186,51 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
       this.dialog.visible = false;
       
       if (mode === 'create') {
-        this.loading = true;
-        this.error = null;
+        const tempId = -Date.now();
+        const newList: PerfumeListOverviewDto = {
+          perfumeListId: tempId,
+          name: name,
+          perfumeCount: 0,
+          previewImages: [],
+          isSystem: false
+        };
+        this.items = [newList, ...this.items];
+        this.sortItems(this.items);
+        
         this.lists.createList(name)
-          .pipe(finalize(() => (this.loading = false)))
           .subscribe({
-            next: () => this.load(),
+            next: (newListFromServer: PerfumeListDto) => {
+              const updatedList: PerfumeListOverviewDto = {
+                perfumeListId: newListFromServer.perfumeListId,
+                name: newListFromServer.name,
+                perfumeCount: 0,
+                previewImages: [],
+                isSystem: false
+              };
+              this.items = this.items.map(item => 
+                item.perfumeListId === tempId ? updatedList : item
+              );
+              this.sortItems(this.items);
+              
+              setTimeout(() => {
+                this.lists.getListsOverview()
+                  .subscribe({
+                    next: (freshData) => {
+                      const freshItem = freshData.find(x => x.perfumeListId === newListFromServer.perfumeListId);
+                      if (freshItem) {
+                        this.items = this.items.map(item => 
+                          item.perfumeListId === newListFromServer.perfumeListId ? freshItem : item
+                        );
+                        this.sortItems(this.items);
+                      }
+                    }
+                  });
+              }, 1000);
+            },
             error: (err: HttpErrorResponse) => {
               console.log(err);
+              this.items = this.items.filter(item => item.perfumeListId !== tempId);
+              this.sortItems(this.items);
               this.error = 'Failed to create list.';
             }
           });
@@ -204,14 +238,24 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
       }
       
       if (mode === 'rename' && id) {
-        this.loading = true;
-        this.error = null;
+        const originalItem = this.items.find(item => item.perfumeListId === id);
+        if (!originalItem) return;
+        
+        this.items = this.items.map(item => 
+          item.perfumeListId === id ? { ...item, name } : item
+        );
+        this.sortItems(this.items);
+        
         this.lists.renameList(id, name)
-          .pipe(finalize(() => (this.loading = false)))
           .subscribe({
-            next: () => this.load(),
+            next: () => {
+            },
             error: (err: HttpErrorResponse) => {
               console.log(err);
+              this.items = this.items.map(item => 
+                item.perfumeListId === id ? originalItem : item
+              );
+              this.sortItems(this.items);
               this.error = 'Failed to rename list.';
             }
           });
@@ -219,18 +263,32 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
       }
       
       if (mode === 'delete' && id) {
-        this.loading = true;
-        this.error = null;
+        const itemsBeforeDelete = [...this.items];
+        
+        this.items = this.items.filter(item => item.perfumeListId !== id);
+        this.sortItems(this.items);
+        
         this.lists.deleteList(id)
-          .pipe(finalize(() => (this.loading = false)))
           .subscribe({
-            next: () => this.load(),
+            next: () => {
+            },
             error: (err: HttpErrorResponse) => {
               console.log(err);
+              this.items = itemsBeforeDelete;
+              this.sortItems(this.items);
               this.error = 'Failed to delete list.';
             }
           });
       }
+    });
+  }
+
+  private sortItems(data?: PerfumeListOverviewDto[]): void {
+    const itemsToSort = data || this.items;
+    this.items = itemsToSort.slice().sort((a, b) => {
+      const sys = (a.isSystem === b.isSystem) ? 0 : (a.isSystem ? -1 : 1);
+      if (sys !== 0) return sys;
+      return (a.name ?? '').localeCompare(b.name ?? '');
     });
   }
 
