@@ -158,19 +158,6 @@
               </Label>
             </FlexboxLayout>
 
-            <!-- <GridLayout
-              width="32"
-              height="32"
-              class="rounded-full bg-dark-secondary items-center justify-center mr-2"
-              (tap)="openListsModal()">
-              <Label
-                text="&#xf02e;"
-                class="fas text-text-primary text-base"
-                verticalAlignment="center"
-                horizontalAlignment="center">
-              </Label>
-            </GridLayout> -->
-
             <GridLayout
               (tap)="openVotingModal()"
               width="32"
@@ -596,7 +583,7 @@
                 class="bg-dark rounded-2xl px-4 py-3 mb-3"
                 (tap)="toggleList(l)">
 
-                <GridLayout columns="auto, *, auto" rows="auto" class="items-center">
+                <GridLayout columns="auto, *" rows="auto" class="items-center">
                   <Label
                     col="0"
                     [text]="l.containsPerfume ? '&#xf14a;' : '&#xf0c8;'"
@@ -607,13 +594,6 @@
                     col="1"
                     [text]="l.name"
                     class="text-sm text-text-primary">
-                  </Label>
-
-                  <Label
-                    col="2"
-                    *ngIf="l.isSystem"
-                    text="System"
-                    class="text-2xs text-text-secondary opacity-70">
                   </Label>
                 </GridLayout>
               </StackLayout>
