@@ -57,7 +57,7 @@ export class PerfumeListService {
 
   getListsForPerfume(perfumeId: number) {
     return this.http.get<PerfumeListMembershipDto[]>(
-      `${this.baseUrl}/lists/for-perfume/${perfumeId}`
+      `${this.baseUrl}/for-perfume/${perfumeId}`
     );
   }
 }
