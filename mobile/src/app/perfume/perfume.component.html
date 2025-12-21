@@ -541,22 +541,23 @@
       row="0"
       col="0"
       width="85%"
+      height="475"
       verticalAlignment="center"
       horizontalAlignment="center"
-      class="bg-dark-secondary rounded-2xl px-5 py-5"
+      class="bg-dark-secondary rounded-2xl"
       [opacity]="listsModalOpacity"
       isUserInteractionEnabled="true"
       (loaded)="onListsModalLoaded($event)">
 
-      <GridLayout rows="auto, auto, *, auto">
-
-        <GridLayout row="0" columns="*, auto" class="mb-3">
+      <GridLayout rows="auto, auto, *, auto" class="px-5 py-5 h-full">
+        
+        <GridLayout row="0" columns="*, auto" class="mb-4">
           <Label
             col="0"
             text="Add to lists"
             class="text-lg font-semibold text-text-primary">
           </Label>
-
+          
           <GridLayout col="1" width="32" height="32" class="items-center justify-center" (tap)="closeListsModal()">
             <Label
               text="&#xf00d;"
@@ -574,21 +575,22 @@
           class="text-sm text-red-400 mb-3">
         </Label>
 
-        <StackLayout row="2" class="mb-4">
+        <ScrollView 
+          row="2" 
+          class="flex-grow"
+          isUserInteractionEnabled="true">
+          
+          <StackLayout>
+            <StackLayout *ngIf="listsLoading" class="items-center justify-center py-10">
+              <ActivityIndicator busy="true" color="#D3A54A"></ActivityIndicator>
+            </StackLayout>
 
-          <StackLayout *ngIf="listsLoading" class="items-center mt-6 mb-6">
-            <ActivityIndicator busy="true" color="#D3A54A"></ActivityIndicator>
-          </StackLayout>
-
-          <ScrollView *ngIf="!listsLoading" height="260" isUserInteractionEnabled="true">
-            <StackLayout>
+            <StackLayout *ngIf="!listsLoading">
               <StackLayout
                 *ngFor="let l of lists"
                 class="bg-dark rounded-2xl px-4 py-3 mb-3"
-                [class.border-brand-gold]="l.containsPerfume"
-                [class.border-dark]="!l.containsPerfume"
                 style="border-width: 2;"
-                (tap)="toggleList(l)">
+                (tap)="toggleList(l, $event)">
 
                 <GridLayout columns="auto, *" rows="auto" class="items-center">
                   <Label
@@ -612,13 +614,17 @@
               <Label
                 *ngIf="lists.length === 0 && !listsError"
                 text="No lists yet."
-                class="text-sm text-text-secondary mt-2">
+                class="text-sm text-text-secondary py-4 text-center">
               </Label>
             </StackLayout>
-          </ScrollView>
-        </StackLayout>
+          </StackLayout>
+        </ScrollView>
 
-        <FlexboxLayout row="3" justifyContent="space-between" class="mt-2">
+        <FlexboxLayout 
+          row="3" 
+          justifyContent="space-between" 
+          class="mt-4 pt-4">
+          
           <StackLayout
             class="bg-dark rounded-2xl px-4 py-3 w-48 items-center justify-center"
             (tap)="closeListsModal()">
