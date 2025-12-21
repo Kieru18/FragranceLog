@@ -30,16 +30,20 @@
             col="1"
             width="36"
             height="36"
-            class="rounded-full bg-dark-secondary items-center justify-center"
-            (tap)="openListsModal()">
+            class="rounded-full items-center justify-center"
+            [class.bg-dark-secondary]="!isPerfumeInAnyList"
+            [class.bg-brand-gold]="isPerfumeInAnyList"
+            (tap)="openListsModal()"
+            style="margin-top: -10;">
 
             <Label
-              text="&#xf005;"
-              class="fas text-text-primary text-base"
+              text="&#xf02e;"
+              class="fas text-base"
+              [class.text-text-primary]="!isPerfumeInAnyList"
+              [class.text-black]="isPerfumeInAnyList"
               verticalAlignment="center"
               horizontalAlignment="center">
             </Label>
-
           </GridLayout>
 
         </GridLayout>

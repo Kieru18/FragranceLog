@@ -134,6 +134,10 @@ export class PerfumeComponent implements OnInit {
     });
   }
 
+  get isPerfumeInAnyList(): boolean {
+    return this.lists.some(list => list.containsPerfume);
+  }
+
   openListsModal(): void {
     if (!this.details || this.listsModalVisible) return;
 
