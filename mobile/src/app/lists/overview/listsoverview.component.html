@@ -39,38 +39,45 @@
   <GridLayout *ngIf="menu.visible" row="0" rowSpan="3" rows="*" columns="*">
     <StackLayout #menuBackdrop row="0" col="0" class="bg-black" opacity="0" (tap)="closeMenu()"></StackLayout>
     <GridLayout #menuPanel row="0" col="0" width="78%" verticalAlignment="center" horizontalAlignment="center" class="bg-dark-secondary rounded-2xl px-5 py-5" opacity="0">
-      <StackLayout>
-        <Label [text]="menu.name" class="text-lg font-semibold text-text-primary mb-4"></Label>
-        <StackLayout class="bg-dark rounded-2xl px-4 py-3 mb-3" (tap)="chooseRename()">
-          <Label text="Rename" class="text-sm text-text-primary text-center"></Label>
+      <GridLayout rows="auto, auto, auto">
+        <GridLayout row="0" columns="*, auto" class="mb-4">
+          <Label col="0" [text]="menu.name" class="text-lg font-semibold text-text-primary"></Label>
+          <GridLayout col="1" width="32" height="32" class="items-center justify-center" (tap)="closeMenu()">
+            <Label text="&#xf00d;" class="fas text-text-secondary text-sm" verticalAlignment="center" horizontalAlignment="center"></Label>
+          </GridLayout>
+        </GridLayout>
+        <StackLayout row="1" class="bg-brand-gold rounded-2xl px-4 py-3 mb-3" (tap)="chooseRename()">
+          <Label text="Rename" class="text-sm font-semibold text-black text-center"></Label>
         </StackLayout>
-        <StackLayout class="bg-danger-dark rounded-2xl px-4 py-3 mb-3" (tap)="chooseDelete()">
+        <StackLayout row="2" class="bg-danger-dark rounded-2xl px-4 py-3" (tap)="chooseDelete()">
           <Label text="Delete" class="text-sm text-text-secondary text-center"></Label>
         </StackLayout>
-        <StackLayout class="bg-dark rounded-2xl px-4 py-3" (tap)="closeMenu()">
-          <Label text="Cancel" class="text-sm text-text-secondary text-center"></Label>
-        </StackLayout>
-      </StackLayout>
+      </GridLayout>
     </GridLayout>
   </GridLayout>
   <GridLayout *ngIf="dialog.visible" row="0" rowSpan="3" rows="*" columns="*">
     <StackLayout #dialogBackdrop row="0" col="0" class="bg-black" opacity="0" (tap)="closeDialog()"></StackLayout>
     <GridLayout #dialogPanel row="0" col="0" width="85%" verticalAlignment="center" horizontalAlignment="center" class="bg-dark-secondary rounded-2xl px-5 py-5" opacity="0">
-      <StackLayout>
-        <Label *ngIf="dialog.mode === 'create'" text="Create list" class="text-lg font-semibold text-text-primary mb-3"></Label>
-        <Label *ngIf="dialog.mode === 'rename'" text="Rename list" class="text-lg font-semibold text-text-primary mb-3"></Label>
-        <Label *ngIf="dialog.mode === 'delete'" text="Delete list" class="text-lg font-semibold text-text-primary mb-3"></Label>
-        <TextField *ngIf="dialog.mode !== 'delete'" [(ngModel)]="dialog.name" hint="List name" maxLength="40" returnKeyType="done" class="bg-dark rounded-xl text-text-primary text-sm px-4 py-3 mb-5"></TextField>
-        <Label *ngIf="dialog.mode === 'delete'" [text]="'Delete ' + dialog.name + '? This cannot be undone.'" textWrap="true" class="text-sm text-text-secondary mb-5"></Label>
-        <FlexboxLayout justifyContent="space-between">
+      <GridLayout rows="auto, auto, auto">
+        <GridLayout row="0" columns="*, auto" class="mb-3">
+          <Label col="0" *ngIf="dialog.mode === 'create'" text="Create list" class="text-lg font-semibold text-text-primary"></Label>
+          <Label col="0" *ngIf="dialog.mode === 'rename'" text="Rename list" class="text-lg font-semibold text-text-primary"></Label>
+          <Label col="0" *ngIf="dialog.mode === 'delete'" text="Delete list" class="text-lg font-semibold text-text-primary"></Label>
+          <GridLayout col="1" width="32" height="32" class="items-center justify-center" (tap)="closeDialog()">
+            <Label text="&#xf00d;" class="fas text-text-secondary text-sm" verticalAlignment="center" horizontalAlignment="center"></Label>
+          </GridLayout>
+        </GridLayout>
+        <TextField row="1" *ngIf="dialog.mode !== 'delete'" [(ngModel)]="dialog.name" hint="list name" maxLength="40" returnKeyType="done" class="bg-dark rounded-xl text-text-primary text-sm px-4 py-3 mb-5"></TextField>
+        <Label row="1" *ngIf="dialog.mode === 'delete'" [text]="'Delete &quot;' + dialog.name + '&quot;? This cannot be undone.'" textWrap="true" class="text-sm text-text-secondary mb-5"></Label>
+        <FlexboxLayout row="2" justifyContent="space-between" class="mt-2">
           <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48" (tap)="closeDialog()">
             <Label text="Cancel" class="text-sm text-text-secondary text-center"></Label>
           </StackLayout>
-          <StackLayout class="rounded-2xl px-4 py-3 w-48" [class.bg-brand-gold]="dialog.mode !== 'delete'" [class.bg-danger-dark]="dialog.mode === 'delete'" (tap)="confirmDialog()">
+          <StackLayout class="rounded-2xl px-4 py-3 w-48 ml-3" [class.bg-brand-gold]="dialog.mode !== 'delete'" [class.bg-danger-dark]="dialog.mode === 'delete'" (tap)="confirmDialog()">
             <Label [text]="dialog.mode === 'delete' ? 'Delete' : 'Save'" class="text-sm font-semibold text-center" [class.text-black]="dialog.mode !== 'delete'" [class.text-text-secondary]="dialog.mode === 'delete'"></Label>
           </StackLayout>
         </FlexboxLayout>
-      </StackLayout>
+      </GridLayout>
     </GridLayout>
   </GridLayout>
 </GridLayout>
