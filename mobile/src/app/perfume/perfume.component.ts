@@ -1,7 +1,7 @@
 import { Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
-import { Page, View, Screen, Utils, PanGestureEventData, Color } from '@nativescript/core';
+import { Page, View, Screen, Utils, PanGestureEventData, Color, Label } from '@nativescript/core';
 import { PerfumeService } from '../services/perfume.service';
 import { ReviewService } from '../services/review.service';
 import { VoteService } from '../services/vote.service';
@@ -273,59 +273,7 @@ export class PerfumeComponent implements OnInit {
   }
 
   toggleList(list: PerfumeListMembershipDto, args?: any): void {
-    const tappedView = args?.object as View;
-    const newState = !list.containsPerfume;
-    
-    if (tappedView) {
-      Promise.all([
-        this.animateScalePulse(tappedView),
-        this.animateBorderColor(tappedView, newState)
-      ]).then(() => {
-        list.containsPerfume = newState;
-      });
-    } else {
-      list.containsPerfume = newState;
-    }
-  }
-
-  private animateScalePulse(view: View): Promise<void> {
-    return new Promise((resolve) => {
-      view.animate({
-        scale: { x: 0.95, y: 0.95 },
-        duration: 80,
-        curve: 'easeIn'
-      }).then(() => {
-        view.animate({
-          scale: { x: 1, y: 1 },
-          duration: 120,
-          curve: 'spring'
-        }).then(() => {
-          resolve();
-        });
-      });
-    });
-  }
-
-  private animateBorderColor(view: View, isSelected: boolean): Promise<void> {
-    return new Promise((resolve) => {
-      view.className = view.className
-        .replace('border-brand-gold', '')
-        .replace('border-dark', '')
-        .trim();
-      
-      const borderClass = isSelected ? 'border-brand-gold' : 'border-dark';
-      view.className += ' ' + borderClass;
-      
-      view.opacity = 0.8;
-      
-      view.animate({
-        opacity: 1,
-        duration: 200,
-        curve: 'easeOut'
-      }).then(() => {
-        resolve();
-      });
-    });
+    list.containsPerfume = !list.containsPerfume;
   }
 
   get areListsDirty(): boolean {
