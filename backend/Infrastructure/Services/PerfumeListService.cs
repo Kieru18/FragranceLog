@@ -55,7 +55,7 @@ public class PerfumeListService : IPerfumeListService
                             .Contains(pp.PerfumeId))
                     .OrderBy(pp => pp.PerfumeId)
                     .Select(pp => pp.Path)
-                    .Take(4)
+                    .Take(6)
                     .ToList()
             })
             .OrderBy(x => x.IsSystem)
