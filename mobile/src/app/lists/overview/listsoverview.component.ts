@@ -8,6 +8,7 @@ import { PerfumeListService } from '../../services/perfumelist.service';
 import { PerfumeListOverviewDto } from '../../models/perfumelistoverview.dto';
 import { PerfumeListDto } from '../../models/perfumelist.dto';
 import { FooterComponent } from '~/app/footer/footer.component';
+import { environment } from '~/environments/environment';
 
 type PreviewSlot = { path: string | null };
 type DialogMode = 'create' | 'rename' | 'delete';
@@ -39,6 +40,8 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
 
   private readonly screenHeight = Screen.mainScreen.heightDIPs;
   private isAnimating = false;
+
+  private readonly contentUrl = environment.contentUrl;
 
   @ViewChild('dialogBackdrop', { static: false }) dialogBackdropRef?: ElementRef<View>;
   @ViewChild('dialogPanel', { static: false }) dialogPanelRef?: ElementRef<View>;
@@ -434,11 +437,17 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
   }
 
   previewSlots(item: PerfumeListOverviewDto): PreviewSlot[] {
-    const imgs = (item.previewImages ?? []).filter(x => !!x);
+    const imgs = (item.previewImages ?? []).filter(Boolean);
+
     const slots: PreviewSlot[] = [];
-    for (let i = 0; i < 4; i++) {
-      slots.push({ path: imgs[i] ?? null });
+    for (let i = 0; i < Math.min(item.perfumeCount, 6); i++) {
+      const path = imgs[i]
+        ? `${this.contentUrl}${imgs[i]}`
+        : null;
+
+      slots.push({ path });
     }
+
     return slots;
   }
 
