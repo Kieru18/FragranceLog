@@ -272,7 +272,7 @@ export class PerfumeComponent implements OnInit {
     }
   }
 
-  toggleList(list: PerfumeListMembershipDto, args?: any): void {
+  toggleList(list: PerfumeListMembershipDto): void {
     list.containsPerfume = !list.containsPerfume;
   }
 
