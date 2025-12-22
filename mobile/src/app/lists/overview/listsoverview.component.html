@@ -11,7 +11,7 @@
       </StackLayout>
       <Label *ngIf="!loading && error" [text]="error" class="text-sm text-red-400 mt-4"></Label>
       <StackLayout *ngIf="!loading && !error">
-        <StackLayout *ngFor="let item of items; trackBy: trackByListId" class="bg-dark-secondary rounded-3xl p-5 mb-4">
+        <StackLayout *ngFor="let item of items; trackBy: trackByListId" class="bg-dark-secondary rounded-3xl p-5 mb-4" (tap)="openList(item)">
           <GridLayout columns="*, auto" rows="auto, auto, auto">
             <Label row="0" col="0" [text]="item.name" class="text-lg font-semibold text-text-primary"></Label>
             <GridLayout row="0" col="1" *ngIf="!item.isSystem" width="32" height="32" class="rounded-full bg-dark items-center justify-center" (tap)="openListMenu(item)">

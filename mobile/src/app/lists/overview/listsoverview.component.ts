@@ -1,6 +1,6 @@
 import { Component, ElementRef, NO_ERRORS_SCHEMA, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { Page, Screen, Utils, View } from '@nativescript/core';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -51,7 +51,8 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
   constructor(
     private readonly lists: PerfumeListService,
     private page: Page,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private router: Router
   ) {
     this.page.actionBarHidden = true;
   }
@@ -464,5 +465,9 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
       return '~/assets/images/perfume-placeholder.png';
     }
     return path;
+  }
+
+  openList(item: PerfumeListOverviewDto): void {
+    this.router.navigate(['/lists', item.perfumeListId]);
   }
 }

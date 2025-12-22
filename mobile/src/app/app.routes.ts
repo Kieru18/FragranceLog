@@ -39,4 +39,9 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     loadComponent: () => import('./lists/overview/listsoverview.component').then(m => m.ListsOverviewComponent)
   },
+  {
+    path: 'lists/:id',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./lists/detail/listsdetail.component').then(m => m.ListsDetailComponent)
+  }
 ];

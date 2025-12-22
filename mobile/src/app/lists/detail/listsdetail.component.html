@@ -1,0 +1,152 @@
+<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
+
+  <StackLayout row="0" class="px-6 pt-10 pb-3 bg-dark">
+    <Label
+      [text]="listName ? listName : 'List'"
+      class="text-2xl font-semibold text-text-primary mb-1">
+    </Label>
+
+    <Label
+      [text]="items.length + ' perfumes'"
+      class="text-xs text-text-secondary mb-2">
+    </Label>
+
+    <GridLayout columns="auto, *" class="items-center">
+      <GridLayout
+        col="0"
+        width="36"
+        height="36"
+        class="rounded-full bg-dark-secondary items-center justify-center"
+        (tap)="load()">
+
+        <Label
+          text="&#xf021;"
+          class="fas text-text-secondary text-sm"
+          verticalAlignment="center"
+          horizontalAlignment="center">
+        </Label>
+
+      </GridLayout>
+
+      <Label
+        col="1"
+        *ngIf="error"
+        [text]="error"
+        class="text-xs text-red-500 ml-3">
+      </Label>
+    </GridLayout>
+  </StackLayout>
+
+  <StackLayout row="1" class="px-6 pb-6">
+
+    <StackLayout *ngIf="loading" class="items-center mt-10">
+      <ActivityIndicator busy="true" color="#D3A54A"></ActivityIndicator>
+    </StackLayout>
+
+    <StackLayout *ngIf="!loading && !items.length" class="items-center mt-12">
+      <Label
+        text="This list is empty."
+        class="text-sm text-text-secondary mb-1">
+      </Label>
+      <Label
+        text="Add perfumes from a perfume screen or later via Add mode."
+        textWrap="true"
+        class="text-xs text-text-secondary text-center px-6">
+      </Label>
+    </StackLayout>
+
+    <ListView
+      *ngIf="!loading && items.length"
+      [items]="items"
+      class="mt-2">
+
+      <ng-template let-item="item">
+        <StackLayout>
+
+          <GridLayout columns="*, auto" class="bg-dark-secondary rounded-2xl px-4 py-3">
+
+            <StackLayout col="0" (tap)="onPerfumeTap(item)">
+              <Label
+                [text]="item.name"
+                textWrap="true"
+                maxLines="2"
+                class="text-text-primary font-semibold"
+                android:lineSpacingMultiplier="1"
+                android:lineSpacingExtra="0">
+              </Label>
+
+              <Label
+                [text]="item.brand"
+                class="text-text-secondary text-xs mt-0.5">
+              </Label>
+
+              <StackLayout orientation="horizontal" class="mt-1 items-center">
+                <Label
+                  text="&#xf005;"
+                  class="fas text-brand-gold text-xs mr-1">
+                </Label>
+
+                <Label
+                  [text]="formatRating(item)"
+                  class="text-text-secondary text-xs">
+                </Label>
+              </StackLayout>
+            </StackLayout>
+
+            <GridLayout col="1" rows="auto" class="mr-3">
+
+              <GridLayout
+                horizontalAlignment="right"
+                verticalAlignment="top"
+                width="24"
+                height="24"
+                class="bg-dark rounded-full items-center justify-center"
+                (tap)="removeFromList(item)">
+
+                <Label
+                  text="&#xf1f8;"
+                  class="fas text-text-secondary text-2xs"
+                  verticalAlignment="center"
+                  horizontalAlignment="center">
+                </Label>
+              </GridLayout>
+
+              <GridLayout
+                marginTop="4"
+                width="56"
+                height="56"
+                class="rounded-2xl bg-dark overflow-hidden"
+                (tap)="onPerfumeTap(item)">
+
+                <Image
+                  [src]="getThumbSrc(item)"
+                  stretch="aspectFill"
+                  opacity="0.35"
+                  blurRadius="12"
+                  borderRadius="16">
+                </Image>
+
+                <Image
+                  [src]="getThumbSrc(item)"
+                  stretch="aspectFit"
+                  loadMode="async"
+                  borderRadius="16">
+                </Image>
+
+              </GridLayout>
+
+            </GridLayout>
+
+          </GridLayout>
+
+          <StackLayout height="12"></StackLayout>
+
+        </StackLayout>
+      </ng-template>
+    </ListView>
+
+  </StackLayout>
+
+  <app-footer row="2"></app-footer>
+
+</GridLayout>
