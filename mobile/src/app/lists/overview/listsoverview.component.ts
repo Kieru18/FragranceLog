@@ -458,4 +458,11 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
   trackByIndex(i: number): number {
     return i;
   }
+
+  getThumbSrc(path?: string | null): string {
+    if (!path) {
+      return '~/assets/images/perfume-placeholder.png';
+    }
+    return path;
+  }
 }
