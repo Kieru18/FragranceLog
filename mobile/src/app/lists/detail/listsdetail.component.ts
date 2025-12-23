@@ -110,4 +110,8 @@ export class ListsDetailComponent implements OnInit {
       }
     });
   }
+
+  openAddMode(): void {
+    this.router.navigate(['/lists', this.listId, 'add']);
+  }
 }

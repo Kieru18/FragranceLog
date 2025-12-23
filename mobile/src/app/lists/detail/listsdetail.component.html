@@ -1,41 +1,48 @@
 <GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
 
   <StackLayout row="0" class="px-6 pt-10 pb-3 bg-dark">
-    <Label
-      [text]="listName ? listName : 'List'"
-      class="text-2xl font-semibold text-text-primary mb-1">
-    </Label>
 
-    <Label
-      [text]="items.length + ' perfumes'"
-      class="text-xs text-text-secondary mb-2">
-    </Label>
+    <GridLayout columns="*, auto" rows="auto" class="items-center">
 
-    <GridLayout columns="auto, *" class="items-center">
-      <GridLayout
-        col="0"
-        width="36"
-        height="36"
-        class="rounded-full bg-dark-secondary items-center justify-center"
-        (tap)="load()">
+      <StackLayout col="0">
+        <Label
+          [text]="listName ? listName : 'List'"
+          class="text-2xl font-semibold text-text-primary mb-1">
+        </Label>
 
         <Label
-          text="&#xf021;"
-          class="fas text-text-secondary text-sm"
+          [text]="items.length + ' perfumes'"
+          class="text-xs text-text-secondary">
+        </Label>
+      </StackLayout>
+
+      <GridLayout
+        col="1"
+        width="36"
+        height="36"
+        class="rounded-full bg-brand-gold items-center justify-center"
+        verticalAlignment="center"
+        (tap)="openAddMode()">
+
+        <Label
+          text="&#xf067;"
+          class="fas text-black text-sm"
           verticalAlignment="center"
           horizontalAlignment="center">
         </Label>
 
       </GridLayout>
 
-      <Label
-        col="1"
-        *ngIf="error"
-        [text]="error"
-        class="text-xs text-red-500 ml-3">
-      </Label>
     </GridLayout>
+
+    <Label
+      *ngIf="error"
+      [text]="error"
+      class="text-xs text-red-500 mt-2">
+    </Label>
+
   </StackLayout>
+
 
   <StackLayout row="1" class="px-6 pb-6">
 
