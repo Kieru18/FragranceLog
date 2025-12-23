@@ -49,6 +49,8 @@ export class ListsDetailComponent implements OnInit {
       error: () => this.listName = 'List'
     });
 
+    this.page.on(Page.navigatedToEvent, () => { this.loadSilent(); });
+
     this.load();
   }
 
@@ -64,7 +66,22 @@ export class ListsDetailComponent implements OnInit {
           this.items = data ?? [];
         },
         error: (err: HttpErrorResponse) => {
-          console.log(err);
+          this.error = 'Failed to load list perfumes.';
+        }
+      });
+  }
+
+  loadSilent(): void {
+    this.error = null;
+
+    this.listsService
+      .getListPerfumes(this.listId)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: data => {
+          this.items = data ?? [];
+        },
+        error: (err: HttpErrorResponse) => {
           this.error = 'Failed to load list perfumes.';
         }
       });
