@@ -30,6 +30,8 @@ export class ListsAddPerfumesComponent extends SearchComponent {
   listId!: number;
   addingIds = new Set<number>();
 
+  listName: string | null = null;
+
   constructor(
     perfumeService: PerfumeService,
     brandService: BrandService,
@@ -37,7 +39,7 @@ export class ListsAddPerfumesComponent extends SearchComponent {
     router: Router,
     page: Page,
     common: CommonService,
-    private readonly lists: PerfumeListService,
+    private readonly listsService: PerfumeListService,
     private readonly route: ActivatedRoute
   ) {
     super(
@@ -52,6 +54,11 @@ export class ListsAddPerfumesComponent extends SearchComponent {
 
   override ngOnInit(): void {
     this.listId = Number(this.route.snapshot.paramMap.get('listId'));
+
+    this.listsService.getList(this.listId).subscribe({
+      next: l => this.listName = l.name,
+      error: () => this.listName = 'List'
+    });
     super.ngOnInit();
   }
 
@@ -60,7 +67,7 @@ export class ListsAddPerfumesComponent extends SearchComponent {
 
     this.addingIds.add(item.perfumeId);
 
-    this.lists.addPerfumeToList(this.listId, item.perfumeId)
+    this.listsService.addPerfumeToList(this.listId, item.perfumeId)
       .subscribe({
         next: () => {
           this.addingIds.delete(item.perfumeId);
