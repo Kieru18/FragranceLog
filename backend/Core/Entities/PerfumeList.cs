@@ -27,6 +27,9 @@ public partial class PerfumeList
     [InverseProperty("PerfumeList")]
     public virtual ICollection<PerfumeListItem> PerfumeListItems { get; set; } = new List<PerfumeListItem>();
 
+    [InverseProperty("PerfumeList")]
+    public virtual SharedList? SharedList { get; set; }
+
     [ForeignKey("UserId")]
     [InverseProperty("PerfumeLists")]
     public virtual User User { get; set; } = null!;

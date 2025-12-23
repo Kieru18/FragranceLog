@@ -60,6 +60,8 @@ public partial class FragranceLogContext : DbContext
 
     public virtual DbSet<Season> Seasons { get; set; }
 
+    public virtual DbSet<SharedList> SharedLists { get; set; }
+
     public virtual DbSet<Sillage> Sillages { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -290,6 +292,17 @@ public partial class FragranceLogContext : DbContext
         modelBuilder.Entity<Season>(entity =>
         {
             entity.Property(e => e.SeasonId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<SharedList>(entity =>
+        {
+            entity.HasIndex(e => e.PerfumeListId, "UX_SharedList_List_Active")
+                .IsUnique()
+                .HasFilter("([ExpirationDate] IS NULL)");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.PerfumeList).WithOne(p => p.SharedList).HasConstraintName("FK_SharedList_PerfumeList");
         });
 
         modelBuilder.Entity<Sillage>(entity =>
