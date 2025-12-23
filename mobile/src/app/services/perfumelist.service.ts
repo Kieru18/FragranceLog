@@ -6,6 +6,7 @@ import { PerfumeListDto } from '../models/perfumelist.dto';
 import { PerfumeListItemDto } from '../models/perfumelistitem.dto';
 import { PerfumeListOverviewDto } from '../models/perfumelistoverview.dto';
 import { PerfumeListMembershipDto } from '../models/perfumelistmembership.dto';
+import { SharedListDto } from '../models/sharedlist.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +65,13 @@ export class PerfumeListService {
   getList(listId: number): Observable<PerfumeListDto> {
     return this.http.get<PerfumeListDto>(
       `${this.baseUrl}/${listId}`
+    );
+  }
+  
+  shareList(listId: number): Observable<SharedListDto> {
+    return this.http.post<SharedListDto>(
+      `${this.baseUrl}/${listId}/share`,
+      {}
     );
   }
 }

@@ -1,4 +1,5 @@
-﻿using Core.Extensions;
+﻿using Core.DTOs;
+using Core.Extensions;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,13 @@ namespace Api.Controllers;
 [Route("api/lists")]
 public class PerfumeListsController : ControllerBase
 {
-    private readonly IPerfumeListService _service;
+    private readonly IPerfumeListService _perfumeListService;
+    private readonly ISharedListService _sharedListService;
 
-    public PerfumeListsController(IPerfumeListService service)
+    public PerfumeListsController(IPerfumeListService perfumeListService, ISharedListService sharedListService)
     {
-        _service = service;
+        _perfumeListService = perfumeListService;
+        _sharedListService = sharedListService;
     }
 
     [HttpGet]
@@ -25,7 +28,7 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        var lists = await _service.GetUserListsAsync(userId ?? 0);
+        var lists = await _perfumeListService.GetUserListsAsync(userId ?? 0);
         return Ok(lists);
     }
 
@@ -36,7 +39,7 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        var result = await _service.GetListsOverviewAsync(userId.Value);
+        var result = await _perfumeListService.GetListsOverviewAsync(userId.Value);
         return Ok(result);
     }
 
@@ -47,7 +50,7 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        var list = await _service.CreateListAsync(userId ?? 0, request.Name);
+        var list = await _perfumeListService.CreateListAsync(userId ?? 0, request.Name);
         return Ok(list);
     }
 
@@ -58,7 +61,7 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        await _service.RenameListAsync(userId ?? 0, id, request.Name);
+        await _perfumeListService.RenameListAsync(userId ?? 0, id, request.Name);
         return NoContent();
     }
 
@@ -70,7 +73,7 @@ public class PerfumeListsController : ControllerBase
             return Unauthorized();
 
 
-        await _service.DeleteListAsync(userId ?? 0, id);
+        await _perfumeListService.DeleteListAsync(userId ?? 0, id);
         return NoContent();
     }
 
@@ -81,7 +84,7 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        var perfumes = await _service.GetListPerfumesAsync(userId ?? 0, id);
+        var perfumes = await _perfumeListService.GetListPerfumesAsync(userId ?? 0, id);
         return Ok(perfumes);
     }
 
@@ -92,7 +95,7 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        await _service.AddPerfumeToListAsync(userId ?? 0, id, perfumeId);
+        await _perfumeListService.AddPerfumeToListAsync(userId ?? 0, id, perfumeId);
         return NoContent();
     }
 
@@ -103,7 +106,7 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        await _service.RemovePerfumeFromListAsync(userId ?? 0, id, perfumeId);
+        await _perfumeListService.RemovePerfumeFromListAsync(userId ?? 0, id, perfumeId);
         return NoContent();
     }
 
@@ -114,7 +117,7 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        var result = await _service.GetListsForPerfumeAsync(
+        var result = await _perfumeListService.GetListsForPerfumeAsync(
             userId.Value,
             perfumeId
         );
@@ -129,8 +132,19 @@ public class PerfumeListsController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
-        var list = await _service.GetListAsync(userId ?? 0, id);
+        var list = await _perfumeListService.GetListAsync(userId ?? 0, id);
         return Ok(list);
+    }
+
+    [HttpPost("{id}/share")]
+    public async Task<ActionResult<SharedListDto>> Share(int id)
+    {
+        var userId = User.GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var result = await _sharedListService.ShareAsync(userId.Value, id);
+        return Ok(result);
     }
 }
 
