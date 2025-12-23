@@ -59,6 +59,10 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.load();
+
+    this.page.on(Page.navigatedToEvent, () => {
+      this.loadSilent();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -77,7 +81,20 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
           this.sortItems(data);
         },
         error: (err: HttpErrorResponse) => {
-          console.log(err);
+          this.error = 'Failed to load lists.';
+        }
+      });
+  }
+
+  loadSilent(): void {
+    this.error = null;
+    this.lists.getListsOverview()
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (data: PerfumeListOverviewDto[]) => {
+          this.sortItems(data);
+        },
+        error: (err: HttpErrorResponse) => {
           this.error = 'Failed to load lists.';
         }
       });
