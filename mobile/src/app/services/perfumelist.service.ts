@@ -60,4 +60,10 @@ export class PerfumeListService {
       `${this.baseUrl}/for-perfume/${perfumeId}`
     );
   }
+
+  getList(listId: number): Observable<PerfumeListDto> {
+    return this.http.get<PerfumeListDto>(
+      `${this.baseUrl}/${listId}`
+    );
+  }
 }

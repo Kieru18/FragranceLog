@@ -14,4 +14,5 @@ public interface IPerfumeListService
     Task AddPerfumeToListAsync(int userId, int perfumeListId, int perfumeId);
     Task RemovePerfumeFromListAsync(int userId, int perfumeListId, int perfumeId);
     Task<IReadOnlyList<PerfumeListMembershipDto>> GetListsForPerfumeAsync(int userId, int perfumeId);
+    Task<PerfumeListDto> GetListAsync(int userId, int perfumeListId);
 }

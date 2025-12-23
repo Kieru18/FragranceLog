@@ -231,4 +231,24 @@ public class PerfumeListService : IPerfumeListService
             .ThenBy(x => x.Name)
             .ToListAsync();
     }
+
+    public async Task<PerfumeListDto> GetListAsync(int userId, int perfumeListId)
+    {
+        var list = await _context.PerfumeLists
+            .AsNoTracking()
+            .Where(l => l.UserId == userId && l.PerfumeListId == perfumeListId)
+            .Select(l => new PerfumeListDto
+            {
+                PerfumeListId = l.PerfumeListId,
+                Name = l.Name,
+                IsSystem = l.IsSystem,
+                CreationDate = l.CreationDate
+            })
+            .FirstOrDefaultAsync();
+
+        if (list == null)
+            throw new UnauthorizedAccessException();
+
+        return list;
+    }
 }

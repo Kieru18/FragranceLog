@@ -35,7 +35,7 @@ export class ListsDetailComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly page: Page,
-    private readonly lists: PerfumeListService
+    private readonly listsService: PerfumeListService
   ) {
     this.page.actionBarHidden = true;
   }
@@ -44,7 +44,10 @@ export class ListsDetailComponent implements OnInit {
     this.listId = Number(this.route.snapshot.paramMap.get('id'));
     if (!this.listId) return;
 
-    this.listName = this.route.snapshot.queryParamMap.get('name');
+    this.listsService.getList(this.listId).subscribe({
+      next: l => this.listName = l.name,
+      error: () => this.listName = 'List'
+    });
 
     this.load();
   }
@@ -53,7 +56,7 @@ export class ListsDetailComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.lists
+    this.listsService
       .getListPerfumes(this.listId)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -68,11 +71,11 @@ export class ListsDetailComponent implements OnInit {
   }
 
   formatRating(item: PerfumeListItemDto): string {
-    const avg = (item as any)?.avgRating ?? 0;
-    const cnt = (item as any)?.ratingCount ?? 0;
+    if (item.avgRating == null || item.ratingCount === 0) {
+      return 'No rating';
+    }
 
-    if (!cnt) return 'No ratings';
-    return `${Number(avg).toFixed(2)} (${cnt})`;
+    return `${item.avgRating.toFixed(2)} · ${item.ratingCount} reviews`;
   }
 
   getThumbSrc(item: PerfumeListItemDto): string {
@@ -96,7 +99,7 @@ export class ListsDetailComponent implements OnInit {
     const backup = [...this.items];
     this.items = this.items.filter(x => x.perfumeId !== item.perfumeId);
 
-    this.lists.removePerfumeFromList(this.listId, item.perfumeId).subscribe({
+    this.listsService.removePerfumeFromList(this.listId, item.perfumeId).subscribe({
       next: () => {
         this.removingIds.delete(item.perfumeId);
       },

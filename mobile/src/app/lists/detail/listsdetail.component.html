@@ -63,7 +63,9 @@
       <ng-template let-item="item">
         <StackLayout>
 
-          <GridLayout columns="*, auto" class="bg-dark-secondary rounded-2xl px-4 py-3">
+          <GridLayout
+            columns="*, auto, auto"
+            class="bg-dark-secondary rounded-2xl px-4 py-3">
 
             <StackLayout col="0" (tap)="onPerfumeTap(item)">
               <Label
@@ -93,49 +95,47 @@
               </StackLayout>
             </StackLayout>
 
-            <GridLayout col="1" rows="auto" class="mr-3">
+            <GridLayout
+              col="1"
+              width="56"
+              height="56"
+              class="mx-3 rounded-2xl bg-dark overflow-hidden"
+              (tap)="onPerfumeTap(item)">
 
-              <GridLayout
-                horizontalAlignment="right"
-                verticalAlignment="top"
-                width="24"
-                height="24"
-                class="bg-dark rounded-full items-center justify-center"
-                (tap)="removeFromList(item)">
+              <Image
+                [src]="getThumbSrc(item)"
+                stretch="aspectFill"
+                opacity="0.35"
+                blurRadius="12"
+                borderRadius="16">
+              </Image>
 
-                <Label
-                  text="&#xf1f8;"
-                  class="fas text-text-secondary text-2xs"
-                  verticalAlignment="center"
-                  horizontalAlignment="center">
-                </Label>
-              </GridLayout>
-
-              <GridLayout
-                marginTop="4"
-                width="56"
-                height="56"
-                class="rounded-2xl bg-dark overflow-hidden"
-                (tap)="onPerfumeTap(item)">
-
-                <Image
-                  [src]="getThumbSrc(item)"
-                  stretch="aspectFill"
-                  opacity="0.35"
-                  blurRadius="12"
-                  borderRadius="16">
-                </Image>
-
-                <Image
-                  [src]="getThumbSrc(item)"
-                  stretch="aspectFit"
-                  loadMode="async"
-                  borderRadius="16">
-                </Image>
-
-              </GridLayout>
+              <Image
+                [src]="getThumbSrc(item)"
+                stretch="aspectFit"
+                loadMode="async"
+                borderRadius="16">
+              </Image>
 
             </GridLayout>
+
+            <StackLayout
+              col="2"
+              width="32"
+              height="32"
+              verticalAlignment="center"
+              horizontalAlignment="center"
+              class="rounded-full bg-danger-dark items-center justify-center"
+              (tap)="removeFromList(item)">
+
+              <Label
+                text="&#xf1f8;"
+                class="fas text-text-secondary text-xs"
+                verticalAlignment="center"
+                horizontalAlignment="center">
+              </Label>
+
+            </StackLayout>
 
           </GridLayout>
 
