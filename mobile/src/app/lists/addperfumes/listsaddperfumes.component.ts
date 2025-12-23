@@ -41,7 +41,7 @@ export class ListsAddPerfumesComponent extends SearchComponent {
     brandService: BrandService,
     groupService: GroupService,
     router: Router,
-    page: Page,
+    pageCore: Page,
     common: CommonService,
     private readonly listsService: PerfumeListService,
     private readonly route: ActivatedRoute
@@ -51,7 +51,7 @@ export class ListsAddPerfumesComponent extends SearchComponent {
       brandService,
       groupService,
       router,
-      page,
+      pageCore,
       common
     );
   }
@@ -68,12 +68,8 @@ export class ListsAddPerfumesComponent extends SearchComponent {
       error: () => this.listName = 'List'
     });
 
-    this.listsService.getListPerfumes(this.listId).subscribe({
-      next: items => {
-        this.addedIds = new Set(items.map(x => x.perfumeId));
-      },
-      error: err => {
-      }
+    this.pageCore.on(Page.navigatedToEvent, () => {
+      this.refreshAddedIds();
     });
 
     super.ngOnInit();
@@ -103,6 +99,17 @@ export class ListsAddPerfumesComponent extends SearchComponent {
       },
       error: err => {
         this.addingIds.delete(id);
+      }
+    });
+  }
+
+  private refreshAddedIds(): void {
+    this.listsService.getListPerfumes(this.listId).subscribe({
+      next: items => {
+        this.addedIds = new Set(items.map(x => x.perfumeId));
+      },
+      error: () => {
+        this.addedIds.clear();
       }
     });
   }
