@@ -2,16 +2,19 @@ import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+
+import { Page } from '@nativescript/core';
+
+import { SearchComponent } from '../../search/search.component';
+import { FooterComponent } from '../../footer/footer.component';
+
 import { PerfumeService } from '../../services/perfume.service';
 import { PerfumeListService } from '../../services/perfumelist.service';
 import { BrandService } from '../../services/brand.service';
 import { GroupService } from '../../services/group.service';
-import { PerfumeSearchResultDto } from '../../models/perfumesearchresult.dto';
 import { CommonService } from '../../services/common.service';
-import { Page } from '@nativescript/core';
-import { FooterComponent } from '../../footer/footer.component';
-import { SearchComponent } from '../../search/search.component';
-import { environment } from '../../../environments/environment';
+
+import { PerfumeSearchResultDto } from '../../models/perfumesearchresult.dto';
 
 @Component({
   standalone: true,
@@ -28,9 +31,10 @@ import { environment } from '../../../environments/environment';
 export class ListsAddPerfumesComponent extends SearchComponent {
 
   listId!: number;
-  addingIds = new Set<number>();
-
   listName: string | null = null;
+
+  addingIds = new Set<number>();
+  addedIds = new Set<number>();
 
   constructor(
     perfumeService: PerfumeService,
@@ -54,31 +58,52 @@ export class ListsAddPerfumesComponent extends SearchComponent {
 
   override ngOnInit(): void {
     this.listId = Number(this.route.snapshot.paramMap.get('listId'));
+    if (!this.listId) {
+      this.listName = 'List';
+      return;
+    }
 
     this.listsService.getList(this.listId).subscribe({
       next: l => this.listName = l.name,
       error: () => this.listName = 'List'
     });
+
+    this.listsService.getListPerfumes(this.listId).subscribe({
+      next: items => {
+        this.addedIds = new Set(items.map(x => x.perfumeId));
+      },
+      error: err => {
+      }
+    });
+
     super.ngOnInit();
-  }
-
-  addToList(item: PerfumeSearchResultDto): void {
-    if (this.addingIds.has(item.perfumeId)) return;
-
-    this.addingIds.add(item.perfumeId);
-
-    this.listsService.addPerfumeToList(this.listId, item.perfumeId)
-      .subscribe({
-        next: () => {
-          this.addingIds.delete(item.perfumeId);
-        },
-        error: () => {
-          this.addingIds.delete(item.perfumeId);
-        }
-      });
   }
 
   isAdding(item: PerfumeSearchResultDto): boolean {
     return this.addingIds.has(item.perfumeId);
+  }
+
+  isAdded(item: PerfumeSearchResultDto): boolean {
+    return this.addedIds.has(item.perfumeId);
+  }
+
+  addToList(item: PerfumeSearchResultDto): void {
+    const id = item.perfumeId;
+
+    if (this.isAdded(item) || this.isAdding(item)) {
+      return;
+    }
+
+    this.addingIds.add(id);
+
+    this.listsService.addPerfumeToList(this.listId, id).subscribe({
+      next: () => {
+        this.addingIds.delete(id);
+        this.addedIds.add(id);
+      },
+      error: err => {
+        this.addingIds.delete(id);
+      }
+    });
   }
 }

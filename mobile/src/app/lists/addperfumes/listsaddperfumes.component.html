@@ -156,12 +156,18 @@
                 [class.opacity-50]="isAdding(row.data)">
 
                 <Label
-                  *ngIf="!isAdding(row.data)"
+                  *ngIf="!isAdding(row.data) && !isAdded(row.data)"
                   text="&#xf067;"
                   class="fas text-black text-sm"
                   verticalAlignment="center"
-                  horizontalAlignment="center">
-                </Label>
+                  horizontalAlignment="center"></Label>
+
+                <Label
+                  *ngIf="!isAdding(row.data) && isAdded(row.data)"
+                  text="&#xf00c;"
+                  class="fas text-black text-sm"
+                  verticalAlignment="center"
+                  horizontalAlignment="center"></Label>
 
                 <ActivityIndicator
                   *ngIf="isAdding(row.data)"
