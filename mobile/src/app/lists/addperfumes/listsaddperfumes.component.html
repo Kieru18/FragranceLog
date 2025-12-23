@@ -3,8 +3,11 @@
 
   <StackLayout row="0"
                class="px-6 pt-10 pb-3 bg-dark">
-    <Label text="Add perfumes to list"
-           class="text-2xl font-semibold text-text-primary mb-1"></Label>
+    <Label
+      [text]="'Add perfumes to list &quot;' + listName + '&quot;'"
+      class="text-2xl font-semibold text-text-primary mb-1">
+    </Label>
+
 
     <Label [text]="filtersSummary"
            class="text-xs text-text-secondary mb-3"></Label>
@@ -77,7 +80,7 @@
         <StackLayout>
 
           <GridLayout
-            columns="*,auto"
+            columns="*, auto"
             class="bg-dark-secondary rounded-2xl px-4 py-3">
 
             <StackLayout col="0">
@@ -91,30 +94,63 @@
                 android:lineSpacingExtra="0">
               </Label>
 
-              <Label [text]="row.data.brand"
-                    class="text-text-secondary text-xs mt-0.5"></Label>
+              <Label
+                [text]="row.data.brand"
+                class="text-text-secondary text-xs mt-0.5">
+              </Label>
 
               <StackLayout orientation="horizontal" class="mt-1 items-center">
                 <Label
                   text="&#xf005;"
-                  class="fas text-brand-gold text-xs mr-1"></Label>
+                  class="fas text-brand-gold text-xs mr-1">
+                </Label>
 
                 <Label
                   [text]="formatRating(row.data)"
-                  class="text-text-secondary text-xs"></Label>
+                  class="text-text-secondary text-xs">
+                </Label>
               </StackLayout>
             </StackLayout>
 
             <GridLayout
               col="1"
-              rows="auto, auto"
-              class="mr-3">
+              columns="auto, auto"
+              verticalAlignment="center"
+              class="ml-3">
 
               <GridLayout
-                row="0"
+                col="0"
+                width="56"
+                height="56"
+                class="rounded-2xl bg-dark overflow-hidden"
+                (tap)="onPerfumeTap(row.data)">
+
+                <Image
+                  [src]="getThumbSrc(row.data)"
+                  stretch="aspectFill"
+                  opacity="0.35"
+                  blurRadius="12"
+                  borderRadius="16">
+                </Image>
+
+                <Image
+                  [src]="getThumbSrc(row.data)"
+                  stretch="aspectFit"
+                  loadMode="async"
+                  borderRadius="16"
+                  (loaded)="onThumbLoaded($event)">
+                </Image>
+
+              </GridLayout>
+
+              <GridLayout
+                col="1"
                 width="32"
                 height="32"
-                class="rounded-full bg-brand-gold items-center justify-center mb-1"
+                marginLeft="8"
+                verticalAlignment="center"
+                horizontalAlignment="center"
+                class="rounded-full bg-brand-gold items-center justify-center"
                 (tap)="addToList(row.data)"
                 [isUserInteractionEnabled]="!isAdding(row.data)"
                 [class.opacity-50]="isAdding(row.data)">
@@ -122,39 +158,24 @@
                 <Label
                   *ngIf="!isAdding(row.data)"
                   text="&#xf067;"
-                  class="fas text-black text-sm"></Label>
+                  class="fas text-black text-sm"
+                  verticalAlignment="center"
+                  horizontalAlignment="center">
+                </Label>
 
                 <ActivityIndicator
                   *ngIf="isAdding(row.data)"
                   busy="true"
                   width="16"
                   height="16"
-                  color="#000000" />
-              </GridLayout>
+                  color="#000000"
+                  horizontalAlignment="center"
+                  verticalAlignment="center">
+                </ActivityIndicator>
 
-              <GridLayout
-                row="1"
-                width="56"
-                height="56"
-                class="rounded-2xl bg-dark overflow-hidden">
-
-                <Image
-                  [src]="getThumbSrc(row.data)"
-                  stretch="aspectFill"
-                  opacity="0.35"
-                  blurRadius="12"
-                  borderRadius="16" />
-
-                <Image
-                  [src]="getThumbSrc(row.data)"
-                  stretch="aspectFit"
-                  loadMode="async"
-                  borderRadius="16" />
               </GridLayout>
 
             </GridLayout>
-
-
           </GridLayout>
 
           <StackLayout height="12"></StackLayout>
