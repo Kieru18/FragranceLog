@@ -11,32 +11,34 @@
       </StackLayout>
       <Label *ngIf="!loading && error" [text]="error" class="text-sm text-red-400 mt-4"></Label>
       <StackLayout *ngIf="!loading && !error">
-        <StackLayout *ngFor="let item of items; trackBy: trackByListId" class="bg-dark-secondary rounded-3xl p-5 mb-4" (tap)="openList(item)">
+        <StackLayout *ngFor="let item of items; trackBy: trackByListId" 
+                     class="bg-dark-secondary rounded-3xl p-5 mb-4"
+                     (tap)="openList(item, $event)">
           <GridLayout columns="*, auto" rows="auto, auto, auto">
             <Label row="0" col="0" [text]="item.name" class="text-lg font-semibold text-text-primary"></Label>
-            <GridLayout row="0" col="1" *ngIf="!item.isSystem" width="32" height="32" class="rounded-full bg-dark items-center justify-center" (tap)="openListMenu(item)">
-              <Label text="&#xf141;" class="fas text-text-secondary text-base" verticalAlignment="center" horizontalAlignment="center"></Label>
+            <GridLayout
+              row="0"
+              col="1"
+              *ngIf="!item.isSystem"
+              width="32"
+              height="32"
+              class="rounded-full bg-dark items-center justify-center"
+              (tap)="openListMenu(item, $event)">
+              <Label text="&#xf141;" class="fas text-text-secondary text-base"
+                    verticalAlignment="center" horizontalAlignment="center"></Label>
             </GridLayout>
-            <Label row="1" col="0" [text]="item.perfumeCount + ' perfumes'" class="text-sm text-text-secondary mt-1"></Label>
+
+            <Label row="1" col="0" [text]="item.perfumeCount + ' perfumes'"
+              class="text-sm text-text-secondary mt-1"></Label>
             <StackLayout *ngIf="item.perfumeCount > 0" row="2" col="0" orientation="horizontal" class="mt-4">
               <ng-container *ngFor="let slot of previewSlots(item); let i = index; trackBy: trackByIndex">
-                <GridLayout
-                  class="w-11 h-11 mr-1 rounded-2xl bg-dark overflow-hidden"
-                  clipToBounds="true">
+                <GridLayout class="w-11 h-11 mr-1 rounded-2xl bg-dark overflow-hidden" clipToBounds="true">
 
-                  <Image
-                    [src]="getThumbSrc(slot.path)"
-                    stretch="aspectFill"
-                    opacity="0.35"
-                    blurRadius="8"
+                  <Image [src]="getThumbSrc(slot.path)" stretch="aspectFill" opacity="0.35" blurRadius="8"
                     borderRadius="16">
                   </Image>
 
-                  <Image
-                    [src]="getThumbSrc(slot.path)"
-                    stretch="aspectFit"
-                    loadMode="async"
-                    borderRadius="16">
+                  <Image [src]="getThumbSrc(slot.path)" stretch="aspectFit" loadMode="async" borderRadius="16">
                   </Image>
 
                 </GridLayout>
@@ -44,9 +46,11 @@
             </StackLayout>
           </GridLayout>
         </StackLayout>
-        <StackLayout width="44" height="44" horizontalAlignment="right" class="rounded-full bg-brand-gold items-center justify-center" (tap)="openCreateDialog()">
+        <StackLayout width="44" height="44" horizontalAlignment="right"
+          class="rounded-full bg-brand-gold items-center justify-center" (tap)="openCreateDialog()">
           <GridLayout width="44" height="44" class="items-center justify-center">
-            <Label text="&#xf067;" class="fas text-black text-lg" verticalAlignment="center" horizontalAlignment="center"></Label>
+            <Label text="&#xf067;" class="fas text-black text-lg" verticalAlignment="center"
+              horizontalAlignment="center"></Label>
           </GridLayout>
         </StackLayout>
       </StackLayout>
@@ -55,12 +59,14 @@
   <app-footer row="2"></app-footer>
   <GridLayout *ngIf="menu.visible" row="0" rowSpan="3" rows="*" columns="*">
     <StackLayout #menuBackdrop row="0" col="0" class="bg-black" opacity="0" (tap)="closeMenu()"></StackLayout>
-    <GridLayout #menuPanel row="0" col="0" width="78%" verticalAlignment="center" horizontalAlignment="center" class="bg-dark-secondary rounded-2xl px-5 py-5" opacity="0">
+    <GridLayout #menuPanel row="0" col="0" width="78%" verticalAlignment="center" horizontalAlignment="center"
+      class="bg-dark-secondary rounded-2xl px-5 py-5" opacity="0">
       <GridLayout rows="auto, auto, auto">
         <GridLayout row="0" columns="*, auto" class="mb-4">
           <Label col="0" [text]="menu.name" class="text-lg font-semibold text-text-primary"></Label>
           <GridLayout col="1" width="32" height="32" class="items-center justify-center" (tap)="closeMenu()">
-            <Label text="&#xf00d;" class="fas text-text-secondary text-sm" verticalAlignment="center" horizontalAlignment="center"></Label>
+            <Label text="&#xf00d;" class="fas text-text-secondary text-sm" verticalAlignment="center"
+              horizontalAlignment="center"></Label>
           </GridLayout>
         </GridLayout>
         <StackLayout row="1" class="bg-brand-gold rounded-2xl px-4 py-3 mb-3" (tap)="chooseRename()">
@@ -74,24 +80,35 @@
   </GridLayout>
   <GridLayout *ngIf="dialog.visible" row="0" rowSpan="3" rows="*" columns="*">
     <StackLayout #dialogBackdrop row="0" col="0" class="bg-black" opacity="0" (tap)="closeDialog()"></StackLayout>
-    <GridLayout #dialogPanel row="0" col="0" width="85%" verticalAlignment="center" horizontalAlignment="center" class="bg-dark-secondary rounded-2xl px-5 py-5" opacity="0">
+    <GridLayout #dialogPanel row="0" col="0" width="85%" verticalAlignment="center" horizontalAlignment="center"
+      class="bg-dark-secondary rounded-2xl px-5 py-5" opacity="0">
       <GridLayout rows="auto, auto, auto">
         <GridLayout row="0" columns="*, auto" class="mb-3">
-          <Label col="0" *ngIf="dialog.mode === 'create'" text="Create list" class="text-lg font-semibold text-text-primary"></Label>
-          <Label col="0" *ngIf="dialog.mode === 'rename'" text="Rename list" class="text-lg font-semibold text-text-primary"></Label>
-          <Label col="0" *ngIf="dialog.mode === 'delete'" text="Delete list" class="text-lg font-semibold text-text-primary"></Label>
+          <Label col="0" *ngIf="dialog.mode === 'create'" text="Create list"
+            class="text-lg font-semibold text-text-primary"></Label>
+          <Label col="0" *ngIf="dialog.mode === 'rename'" text="Rename list"
+            class="text-lg font-semibold text-text-primary"></Label>
+          <Label col="0" *ngIf="dialog.mode === 'delete'" text="Delete list"
+            class="text-lg font-semibold text-text-primary"></Label>
           <GridLayout col="1" width="32" height="32" class="items-center justify-center" (tap)="closeDialog()">
-            <Label text="&#xf00d;" class="fas text-text-secondary text-sm" verticalAlignment="center" horizontalAlignment="center"></Label>
+            <Label text="&#xf00d;" class="fas text-text-secondary text-sm" verticalAlignment="center"
+              horizontalAlignment="center"></Label>
           </GridLayout>
         </GridLayout>
-        <TextField row="1" *ngIf="dialog.mode !== 'delete'" [(ngModel)]="dialog.name" hint="list name" maxLength="40" returnKeyType="done" class="bg-dark rounded-xl text-text-primary text-sm px-4 py-3 mb-5"></TextField>
-        <Label row="1" *ngIf="dialog.mode === 'delete'" [text]="'Delete &quot;' + dialog.name + '&quot;? This cannot be undone.'" textWrap="true" class="text-sm text-text-secondary mb-5"></Label>
+        <TextField row="1" *ngIf="dialog.mode !== 'delete'" [(ngModel)]="dialog.name" hint="list name" maxLength="40"
+          returnKeyType="done" class="bg-dark rounded-xl text-text-primary text-sm px-4 py-3 mb-5"></TextField>
+        <Label row="1" *ngIf="dialog.mode === 'delete'"
+          [text]="'Delete &quot;' + dialog.name + '&quot;? This cannot be undone.'" textWrap="true"
+          class="text-sm text-text-secondary mb-5"></Label>
         <FlexboxLayout row="2" justifyContent="space-between" class="mt-2">
           <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48" (tap)="closeDialog()">
             <Label text="Cancel" class="text-sm text-text-secondary text-center"></Label>
           </StackLayout>
-          <StackLayout class="rounded-2xl px-4 py-3 w-48 ml-3" [class.bg-brand-gold]="dialog.mode !== 'delete'" [class.bg-danger-dark]="dialog.mode === 'delete'" (tap)="confirmDialog()">
-            <Label [text]="dialog.mode === 'delete' ? 'Delete' : 'Save'" class="text-sm font-semibold text-center" [class.text-black]="dialog.mode !== 'delete'" [class.text-text-secondary]="dialog.mode === 'delete'"></Label>
+          <StackLayout class="rounded-2xl px-4 py-3 w-48 ml-3" [class.bg-brand-gold]="dialog.mode !== 'delete'"
+            [class.bg-danger-dark]="dialog.mode === 'delete'" (tap)="confirmDialog()">
+            <Label [text]="dialog.mode === 'delete' ? 'Delete' : 'Save'" class="text-sm font-semibold text-center"
+              [class.text-black]="dialog.mode !== 'delete'"
+              [class.text-text-secondary]="dialog.mode === 'delete'"></Label>
           </StackLayout>
         </FlexboxLayout>
       </GridLayout>

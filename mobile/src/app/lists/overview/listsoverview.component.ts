@@ -61,6 +61,9 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
     this.load();
 
     this.page.on(Page.navigatedToEvent, () => {
+      this.menu.visible = false;
+      this.dialog.visible = false;
+
       this.loadSilent();
     });
   }
@@ -114,14 +117,20 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
     }, 10);
   }
 
-  openListMenu(item: PerfumeListOverviewDto): void {
+  openListMenu(item: PerfumeListOverviewDto, e?: any): void {
+    if (e?.stopPropagation) {
+      e.stopPropagation();
+    }
+
     if (item.isSystem) return;
+
     this.dialog.visible = false;
     this.menu = {
       visible: true,
       listId: item.perfumeListId,
       name: item.name ?? ''
     };
+
     setTimeout(() => {
       this.animateMenuIn();
     }, 10);
@@ -484,7 +493,11 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
     return path;
   }
 
-  openList(item: PerfumeListOverviewDto): void {
+  openList(item: PerfumeListOverviewDto, e?: any): void {
+    if (this.menu.visible || this.dialog.visible) {
+      return;
+    }
+
     this.router.navigate(['/lists', item.perfumeListId]);
   }
 }
