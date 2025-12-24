@@ -9,6 +9,7 @@ import { PerfumeListOverviewDto } from '../../models/perfumelistoverview.dto';
 import { PerfumeListDto } from '../../models/perfumelist.dto';
 import { FooterComponent } from '~/app/footer/footer.component';
 import { environment } from '~/environments/environment';
+import * as SocialShare from '@nativescript/social-share';
 
 type PreviewSlot = { path: string | null };
 type DialogMode = 'create' | 'rename' | 'delete';
@@ -102,6 +103,32 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
         }
       });
   }
+
+  shareList(): void {
+    if (this.isAnimating) return;
+
+    const listId = this.menu.listId;
+    if (!listId) return;
+
+    this.animateMenuOut().then(() => {
+      this.menu.visible = false;
+
+      this.lists.shareList(listId).subscribe({
+        next: dto => {
+          const url = `fragrancelog/shared/${dto.shareToken}`;
+
+          SocialShare.shareText(
+            `Check out my FragranceLog perfume collection:\n${url}`,
+            'Share perfume list'
+          );
+        },
+        error: () => {
+          this.error = 'Failed to share list.';
+        }
+      });
+    });
+  }
+
 
   openCreateDialog(): void {
     Utils.dismissSoftInput();

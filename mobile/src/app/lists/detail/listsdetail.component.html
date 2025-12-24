@@ -16,20 +16,39 @@
         </Label>
       </StackLayout>
 
-      <GridLayout
-        col="1"
-        width="36"
-        height="36"
-        class="rounded-full bg-brand-gold items-center justify-center"
-        verticalAlignment="center"
-        (tap)="openAddMode()">
+      <GridLayout col="1" columns="auto, auto" rows="auto" class="items-center">
 
-        <Label
-          text="&#xf067;"
-          class="fas text-black text-sm"
-          verticalAlignment="center"
-          horizontalAlignment="center">
-        </Label>
+        <GridLayout
+          col="0"
+          width="36"
+          height="36"
+          class="rounded-full bg-dark-secondary items-center justify-center mr-2"
+          (tap)="shareList()">
+
+          <Label
+            text="&#xf1e0;"
+            class="fas text-text-primary text-sm"
+            verticalAlignment="center"
+            horizontalAlignment="center">
+          </Label>
+
+        </GridLayout>
+
+        <GridLayout
+          col="1"
+          width="36"
+          height="36"
+          class="rounded-full bg-brand-gold items-center justify-center mr-1"
+          (tap)="openAddMode()">
+
+          <Label
+            text="&#xf067;"
+            class="fas text-black text-sm"
+            verticalAlignment="center"
+            horizontalAlignment="center">
+          </Label>
+
+        </GridLayout>
 
       </GridLayout>
 

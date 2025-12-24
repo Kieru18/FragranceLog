@@ -61,7 +61,7 @@
     <StackLayout #menuBackdrop row="0" col="0" class="bg-black" opacity="0" (tap)="closeMenu()"></StackLayout>
     <GridLayout #menuPanel row="0" col="0" width="78%" verticalAlignment="center" horizontalAlignment="center"
       class="bg-dark-secondary rounded-2xl px-5 py-5" opacity="0">
-      <GridLayout rows="auto, auto, auto">
+      <GridLayout rows="auto, auto, auto, auto">
         <GridLayout row="0" columns="*, auto" class="mb-4">
           <Label col="0" [text]="menu.name" class="text-lg font-semibold text-text-primary"></Label>
           <GridLayout col="1" width="32" height="32" class="items-center justify-center" (tap)="closeMenu()">
@@ -69,10 +69,20 @@
               horizontalAlignment="center"></Label>
           </GridLayout>
         </GridLayout>
-        <StackLayout row="1" class="bg-brand-gold rounded-2xl px-4 py-3 mb-3" (tap)="chooseRename()">
-          <Label text="Rename" class="text-sm font-semibold text-black text-center"></Label>
+        <StackLayout
+          row="1"
+          class="bg-dark rounded-2xl px-4 py-3 mb-3"
+          (tap)="shareList()">
+
+          <Label
+            text="Share"
+            class="text-sm font-semibold text-text-primary text-center">
+          </Label>
         </StackLayout>
-        <StackLayout row="2" class="bg-danger-dark rounded-2xl px-4 py-3" (tap)="chooseDelete()">
+        <StackLayout row="2" class="bg-dark rounded-2xl px-4 py-3 mb-3" (tap)="chooseRename()">
+          <Label text="Rename" class="text-sm font-semibold text-text-primary text-center"></Label>
+        </StackLayout>
+        <StackLayout row="3" class="bg-danger-dark rounded-2xl px-4 py-3" (tap)="chooseDelete()">
           <Label text="Delete" class="text-sm text-text-secondary text-center"></Label>
         </StackLayout>
       </GridLayout>

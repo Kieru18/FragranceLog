@@ -8,6 +8,7 @@ import { FooterComponent } from '../../footer/footer.component';
 import { PerfumeListItemDto } from '../../models/perfumelistitem.dto';
 import { PerfumeListService } from '../../services/perfumelist.service';
 import { environment } from '../../../environments/environment';
+import * as SocialShare from '@nativescript/social-share';
 
 
 @Component({
@@ -85,6 +86,24 @@ export class ListsDetailComponent implements OnInit {
           this.error = 'Failed to load list perfumes.';
         }
       });
+  }
+
+  shareList(): void {
+    if (!this.listId) return;
+
+    this.listsService.shareList(this.listId).subscribe({
+      next: dto => {
+        const url = `fragrancelog/shared/${dto.shareToken}`;
+
+        SocialShare.shareText(
+          `Check out my FragranceLog perfume collection:\n${url}`,
+          'Share perfume list'
+        );
+      },
+      error: () => {
+        this.error = 'Failed to share list.';
+      }
+    });
   }
 
   formatRating(item: PerfumeListItemDto): string {
