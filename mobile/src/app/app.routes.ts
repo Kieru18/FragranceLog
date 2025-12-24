@@ -51,6 +51,6 @@ export const routes: Routes = [
   },
   {
     path: 'shared/:token',
-    loadComponent: () => import('./shared/sharedpreview.component').then(m => m.SharedPreviewComponent)
+    loadComponent: () => import('./lists/shared/sharedlistpreview.component').then(m => m.SharedListPreviewComponent)
   }
 ];

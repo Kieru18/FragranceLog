@@ -115,7 +115,7 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
 
       this.lists.shareList(listId).subscribe({
         next: dto => {
-          const url = `fragrancelog/shared/${dto.shareToken}`;
+          const url = `fragrancelog://shared/${dto.shareToken}`;
 
           SocialShare.shareText(
             `Check out my FragranceLog perfume collection:\n${url}`,

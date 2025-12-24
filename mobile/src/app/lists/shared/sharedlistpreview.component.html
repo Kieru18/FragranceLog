@@ -1,0 +1,98 @@
+<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
+
+  <StackLayout row="0" class="px-6 pt-10 pb-4 bg-dark">
+
+    <Label
+      text="Shared perfume list"
+      class="text-xs text-text-secondary mb-1">
+    </Label>
+
+    <Label
+      [text]="data?.listName || 'List'"
+      class="text-2xl font-semibold text-text-primary mb-1">
+    </Label>
+
+    <Label
+      *ngIf="data"
+      [text]="'by ' + data.ownerName + ' · ' + data.perfumeCount + ' perfumes'"
+      class="text-xs text-text-secondary">
+    </Label>
+
+    <Label
+      *ngIf="error"
+      [text]="error"
+      class="text-xs text-red-500 mt-2">
+    </Label>
+
+  </StackLayout>
+
+  <StackLayout row="1" class="px-6 pb-6">
+
+    <StackLayout *ngIf="loading" class="items-center mt-10">
+      <ActivityIndicator busy="true" color="#D3A54A"></ActivityIndicator>
+    </StackLayout>
+
+    <StackLayout *ngIf="!loading && data">
+
+      <StackLayout *ngIf="data.previewImages?.length" class="mt-2">
+
+        <Label
+          text="Preview"
+          class="text-sm font-semibold text-text-primary mb-2">
+        </Label>
+
+        <FlexboxLayout flexWrap="wrap">
+          <GridLayout
+            *ngFor="let img of data.previewImages"
+            width="64"
+            height="64"
+            class="mr-2 mb-2 rounded-2xl bg-dark overflow-hidden"
+            clipToBounds="true">
+
+            <Image
+              [src]="getThumbSrc(img)"
+              stretch="aspectFill"
+              opacity="0.35"
+              blurRadius="10"
+              borderRadius="16">
+            </Image>
+
+            <Image
+              [src]="getThumbSrc(img)"
+              stretch="aspectFit"
+              loadMode="async"
+              borderRadius="16">
+            </Image>
+
+          </GridLayout>
+        </FlexboxLayout>
+
+      </StackLayout>
+
+      <StackLayout class="mt-8">
+
+        <StackLayout
+          class="bg-brand-gold rounded-2xl px-6 py-4"
+          (tap)="importList()">
+
+          <Label
+            text="Import this list"
+            class="text-sm font-semibold text-black text-center">
+          </Label>
+
+        </StackLayout>
+
+        <Label
+          text="You will get your own editable copy of this list."
+          class="text-xs text-text-secondary text-center mt-3">
+        </Label>
+
+      </StackLayout>
+
+    </StackLayout>
+
+  </StackLayout>
+
+  <app-footer row="2"></app-footer>
+
+</GridLayout>
