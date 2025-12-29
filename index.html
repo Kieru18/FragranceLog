@@ -1,227 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open in FragranceLog</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-        }
-        body {
-            margin: 0;
-            padding: 2rem 1rem;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #333;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #8a2387, #e94057, #f27121);
-            border-radius: 20px;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            font-weight: bold;
-        }
-        h1 {
-            margin: 0 0 1rem;
-            color: #2d3436;
-            font-weight: 700;
-        }
-        p {
-            color: #636e72;
-            line-height: 1.6;
-            margin: 0 0 1.5rem;
-        }
-        .status {
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin: 1.5rem 0;
-            border-left: 4px solid #6c5ce7;
-        }
-        .button {
-            display: inline-block;
-            background: linear-gradient(135deg, #8a2387, #e94057);
-            color: white;
-            text-decoration: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin: 0.5rem;
-            box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3);
-        }
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(142, 68, 173, 0.4);
-        }
-        .button.secondary {
-            background: #636e72;
-            box-shadow: 0 4px 15px rgba(99, 110, 114, 0.3);
-        }
-        .fallback {
-            display: none;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #dfe6e9;
-            animation: fadeIn 0.5s ease-out;
-        }
-        .instructions {
-            background: #fff9db;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            text-align: left;
-            border-left: 4px solid #ffd43b;
-        }
-        code {
-            background: #2d3436;
-            color: #dfe6e9;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .footer {
-            margin-top: 2rem;
-            color: #b2bec3;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="logo">FL</div>
-        <h1>Opening Your Perfume List</h1>
-        <p>We're trying to open this list in the FragranceLog app...</p>
-        
-        <div class="status" id="status">
-            <p>⏳ Attempting to open app...</p>
-        </div>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open in FragranceLog</title>
 
-        <a href="#" class="button" id="openButton">Open in FragranceLog</a>
-        
-        <div class="fallback" id="fallbackContent">
-            <div class="instructions">
-                <h3>📱 App Not Opening?</h3>
-                <p>Try these steps:</p>
-                <ol>
-                    <li>Make sure FragranceLog is installed</li>
-                    <li>Tap the "Open in FragranceLog" button above</li>
-                    <li>If prompted, select "Open" in the dialog</li>
-                    <li>If you don't have the app, please install it first</li>
-                </ol>
-            </div>
-            
-            <a href="#" class="button secondary" id="directLinkButton">Try Direct Link</a>
-            
-            <p class="footer">
-                If problems persist, restart the app or contact support.
-            </p>
-        </div>
+  <style>
+    :root {
+      --brand-gold: #D3A54A;
+      --brand-gold-dark: #B98E3C;
+      --dark: #0D0D0D;
+      --dark-secondary: #1A1A1A;
+      --text-primary: #F5F5F5;
+      --text-secondary: #B8B8B8;
+      --highlight: #8A7FFF;
+      --danger-dark: #4A1F24;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--dark);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: var(--dark-secondary);
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .logo span {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--brand-gold);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .status {
+      margin: 20px 0;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--dark);
+      border-left: 4px solid var(--brand-gold);
+      font-size: 14px;
+    }
+
+    .button {
+      display: block;
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      background: var(--brand-gold);
+      color: #000;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .button:hover {
+      background: var(--brand-gold-dark);
+      transform: translateY(-1px);
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .button.secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .fallback {
+      display: none;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .instructions {
+      background: var(--dark);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    .instructions h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: var(--brand-gold);
+    }
+
+    .instructions ol {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    code {
+      background: #000;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--brand-gold);
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="logo">
+      <span>FL</span>
     </div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        
-        const deepLink = token ? `fragrancelog://shared/${token}` : 'fragrancelog://shared';
-        
-        const statusEl = document.getElementById('status');
-        const fallbackEl = document.getElementById('fallbackContent');
-        const openButton = document.getElementById('openButton');
-        const directLinkButton = document.getElementById('directLinkButton');
-        
-        openButton.href = deepLink;
-        directLinkButton.href = deepLink;
-        
-        function updateStatus(message, isError = false) {
-            statusEl.innerHTML = `<p>${isError ? '❌' : '⏳'} ${message}</p>`;
-            if (isError) {
-                statusEl.style.borderLeftColor = '#e74c3c';
-            }
+    <h1>Open Shared List</h1>
+    <p>This link will open a perfume list in FragranceLog.</p>
+
+    <div class="status" id="status">
+      Attempting to open the app…
+    </div>
+
+    <a href="#" class="button" id="openButton">Open in FragranceLog</a>
+
+    <div class="fallback" id="fallbackContent">
+      <div class="instructions">
+        <h3>App didn’t open?</h3>
+        <ol>
+          <li>Make sure FragranceLog is installed</li>
+          <li>Tap the button above again</li>
+          <li>Confirm the system dialog if shown</li>
+        </ol>
+      </div>
+
+      <a href="#" class="button secondary" id="directLinkButton">
+        Try direct app link
+      </a>
+
+      <div class="footer">
+        FragranceLog · Android
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    const deepLink = token
+      ? `fragrancelog://shared/${token}`
+      : "fragrancelog://shared";
+
+    const statusEl = document.getElementById("status");
+    const fallbackEl = document.getElementById("fallbackContent");
+    const openButton = document.getElementById("openButton");
+    const directLinkButton = document.getElementById("directLinkButton");
+
+    openButton.href = deepLink;
+    directLinkButton.href = deepLink;
+
+    function showFallback(message) {
+      statusEl.textContent = message;
+      fallbackEl.style.display = "block";
+    }
+
+    function attemptOpen() {
+      window.location.href = deepLink;
+
+      setTimeout(() => {
+        if (!document.hidden) {
+          showFallback("Could not open app automatically.");
         }
-        
-        function showFallback() {
-            fallbackEl.style.display = 'block';
-            updateStatus('Could not open app automatically. Please use the button above.', true);
-        }
-        
-        function attemptOpenApp() {
-            updateStatus('Opening FragranceLog...');
-            
-            window.location.href = deepLink;
-            
-            setTimeout(() => {
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = deepLink;
-                document.body.appendChild(iframe);
-                
-                setTimeout(() => {
-                    if (!document.hidden) {
-                        showFallback();
-                    }
-                    if (iframe.parentNode) {
-                        iframe.parentNode.removeChild(iframe);
-                    }
-                }, 1500);
-            }, 500);
-            
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    updateStatus('Success! Opening app now...');
-                }
-            });
-        }
-        
-        setTimeout(attemptOpenApp, 300);
-        
-        openButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            attemptOpenApp();
-        });
-        
-        directLinkButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            updateStatus('Opening via direct link...');
-            window.location.href = deepLink;
-            setTimeout(showFallback, 2000);
-        });
-        
-        if (!token) {
-            updateStatus('⚠️ No share token provided in URL.', true);
-            showFallback();
-        } else {
-            updateStatus(`Token detected: <code>${token.substring(0, 8)}...</code>`);
-        }
-    </script>
+      }, 1500);
+    }
+
+    setTimeout(attemptOpen, 300);
+
+    openButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      attemptOpen();
+    });
+
+    directLinkButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = deepLink;
+      setTimeout(() => {
+        showFallback("If nothing happened, the app may not be installed.");
+      }, 1500);
+    });
+
+    if (!token) {
+      showFallback("Invalid or missing share token.");
+    } else {
+      statusEl.innerHTML = `Detected link: <code>${token.slice(0, 8)}…</code>`;
+    }
+  </script>
 </body>
 </html>
