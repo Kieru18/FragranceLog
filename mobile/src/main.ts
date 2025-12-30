@@ -5,10 +5,7 @@ import {
   provideNativeScriptRouter,
   runNativeScriptAngularApp,
 } from '@nativescript/angular';
-import {
-  provideExperimentalZonelessChangeDetection,
-  ApplicationRef
-} from '@angular/core';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { HTTP_INTERCEPTORS, withInterceptorsFromDi } from '@angular/common/http';
 import { Application, AndroidApplication } from '@nativescript/core';
 
@@ -21,15 +18,32 @@ const EXPERIMENTAL_ZONELESS = false;
 
 let pendingSharedToken: string | null = null;
 
-function tryExtractSharedToken(intent?: android.content.Intent | null) {
-  const data = intent?.getData?.();
-  if (!data) return;
 
-  const scheme = data.getScheme();
-  const host = data.getHost();
-  const token = data.getLastPathSegment();
+function extractSharedToken(intent?: android.content.Intent | null): string | null {
+  const data = intent?.getData?.();
+  if (!data) return null;
+
+  const scheme = data.getScheme?.();
+  const host = data.getHost?.();
+  const token = data.getLastPathSegment?.();
 
   if (scheme === 'fragrancelog' && host === 'shared' && token) {
+    return String(token);
+  }
+
+  return null;
+}
+
+
+function navigateOrQueue(token: string) {
+  try {
+    const router = (global as any).__routerExt as RouterExtensions | undefined;
+    if (router) {
+      setTimeout(() => router.navigate(['/shared', token]), 0);
+    } else {
+      pendingSharedToken = token;
+    }
+  } catch {
     pendingSharedToken = token;
   }
 }
@@ -37,14 +51,25 @@ function tryExtractSharedToken(intent?: android.content.Intent | null) {
 if (Application.android) {
   const androidApp = Application.android as AndroidApplication;
 
-  // cold start
-  tryExtractSharedToken(androidApp.startActivity?.getIntent());
+  androidApp.on(AndroidApplication.activityCreatedEvent, (args) => {
+    const token = extractSharedToken(args.activity?.getIntent?.());
+    if (token) {
+      pendingSharedToken = token;
+    }
+  });
 
-  // warm start
-  androidApp.on(
-    AndroidApplication.activityNewIntentEvent,
-    (args) => tryExtractSharedToken(args.intent)
-  );
+  androidApp.on(AndroidApplication.activityNewIntentEvent, (args) => {
+    try {
+      args.activity?.setIntent?.(args.intent);
+    } catch {
+      //
+    }
+
+    const token = extractSharedToken(args.intent);
+    if (token) {
+      navigateOrQueue(token);
+    }
+  });
 }
 
 runNativeScriptAngularApp({
@@ -59,14 +84,18 @@ runNativeScriptAngularApp({
         {
           provide: HTTP_INTERCEPTORS,
           useClass: AuthInterceptor,
-          multi: true
-        }
+          multi: true,
+        },
       ],
-    }).then((appRef: ApplicationRef) => {
+    }).then((appRef) => {
+      const routerExt = appRef.injector.get(RouterExtensions);
+      (global as any).__routerExt = routerExt;
+
       if (pendingSharedToken) {
-        const router = appRef.injector.get(RouterExtensions);
-        router.navigate(['/shared', pendingSharedToken]);
+        const token = pendingSharedToken;
         pendingSharedToken = null;
+
+        setTimeout(() => routerExt.navigate(['/shared', token]), 0);
       }
 
       return appRef;
