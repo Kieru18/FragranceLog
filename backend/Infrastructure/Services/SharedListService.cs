@@ -64,37 +64,62 @@ public sealed class SharedListService : ISharedListService
         if (shared == null)
             throw new KeyNotFoundException("Shared list not found or expired.");
 
-        var list = await _context.PerfumeLists
+        var perfumesQuery =
+            from li in _context.PerfumeListItems
+            where li.PerfumeListId == shared.PerfumeListId
+            join p in _context.Perfumes on li.PerfumeId equals p.PerfumeId
+            select new
+            {
+                p.PerfumeId,
+                p.Name,
+                Brand = p.Brand.Name,
+
+                AvgRating = _context.Reviews
+                    .Where(r => r.PerfumeId == p.PerfumeId)
+                    .Select(r => (double?)r.Rating)
+                    .Average(),
+
+                RatingCount = _context.Reviews
+                    .Count(r => r.PerfumeId == p.PerfumeId),
+
+                ImageUrl = _context.PerfumePhotos
+                    .Where(pp => pp.PerfumeId == p.PerfumeId)
+                    .Select(pp => pp.Path)
+                    .FirstOrDefault()
+            };
+
+        var perfumes = await perfumesQuery
+            .OrderByDescending(x => x.AvgRating)
+            .ThenBy(x => x.Name)
+            .Take(50)
+            .Select(x => new SharedListPerfumePreviewDto
+            {
+                PerfumeId = x.PerfumeId,
+                Name = x.Name,
+                Brand = x.Brand,
+                AvgRating = x.AvgRating,
+                RatingCount = x.RatingCount,
+                ImageUrl = x.ImageUrl
+            })
+            .ToListAsync();
+
+        var listMeta = await _context.PerfumeLists
             .AsNoTracking()
             .Where(l => l.PerfumeListId == shared.PerfumeListId)
             .Select(l => new
             {
                 l.Name,
-                OwnerName = l.User.Username,
-
-                PerfumeCount = _context.PerfumeListItems
-                    .Count(li => li.PerfumeListId == l.PerfumeListId),
-
-                PreviewImages = _context.PerfumePhotos
-                    .Where(pp =>
-                        _context.PerfumeListItems
-                            .Where(li => li.PerfumeListId == l.PerfumeListId)
-                            .Select(li => li.PerfumeId)
-                            .Contains(pp.PerfumeId))
-                    .OrderBy(pp => pp.PerfumeId)
-                    .Select(pp => pp.Path)
-                    .Take(6)
-                    .ToList()
+                OwnerName = l.User.Username
             })
             .SingleAsync();
 
         return new SharedListPreviewDto
         {
             ShareToken = shared.ShareToken,
-            ListName = list.Name,
-            OwnerName = list.OwnerName,
-            PerfumeCount = list.PerfumeCount,
-            PreviewImages = list.PreviewImages
+            ListName = listMeta.Name,
+            OwnerName = listMeta.OwnerName,
+            PerfumeCount = perfumes.Count,
+            Perfumes = perfumes
         };
     }
 

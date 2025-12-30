@@ -6,6 +6,6 @@
         public string ListName { get; set; } = null!;
         public string OwnerName { get; set; } = null!;
         public int PerfumeCount { get; set; }
-        public IReadOnlyList<string> PreviewImages { get; set; } = [];
+        public IReadOnlyList<SharedListPerfumePreviewDto> Perfumes { get; set; } = [];
     }
 }
