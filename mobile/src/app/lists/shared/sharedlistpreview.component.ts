@@ -1,20 +1,17 @@
-import { Component, NO_ERRORS_SCHEMA, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { NativeScriptCommonModule } from '@nativescript/angular';
-import { Page } from '@nativescript/core';
+import { Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
+import { NativeScriptCommonModule, ModalDialogParams, RouterExtensions } from '@nativescript/angular';
 import { finalize } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SharedListPreviewDto } from '../../models/sharedlistpreview.dto';
 import { SharedListService } from '../../services/sharedlist.service';
 import { environment } from '../../../environments/environment';
-import { RouterExtensions } from '@nativescript/angular';
 
 @Component({
   standalone: true,
   selector: 'app-shared-list-preview',
   templateUrl: './sharedlistpreview.component.html',
   imports: [NativeScriptCommonModule],
-  schemas: [NO_ERRORS_SCHEMA]
+  schemas: [NO_ERRORS_SCHEMA],
 })
 export class SharedListPreviewComponent implements OnInit {
   loading = false;
@@ -26,50 +23,38 @@ export class SharedListPreviewComponent implements OnInit {
   private readonly contentUrl = environment.contentUrl;
 
   constructor(
-    private readonly route: ActivatedRoute,
-    private readonly page: Page,
-    private readonly sharedService: SharedListService,
-    private readonly routerExtensions: RouterExtensions,
-    private readonly cdr: ChangeDetectorRef
+    private params: ModalDialogParams,
+    private sharedService: SharedListService,
+    private routerExtensions: RouterExtensions
   ) {
-    this.page.actionBarHidden = true;
+    this.token = this.params.context?.token;
   }
 
   ngOnInit(): void {
-    this.token = String(this.route.snapshot.paramMap.get('token'));
-    
     if (!this.token) {
       this.error = 'Invalid share link.';
       return;
     }
 
-    setTimeout(() => {
-      this.load();
-    }, 0);
+    this.load();
   }
 
   load(): void {
     this.loading = true;
     this.error = null;
-    this.cdr.detectChanges();
 
     this.sharedService
       .getSharedListPreview(this.token)
-      .pipe(finalize(() => {
-        this.loading = false;
-        this.cdr.detectChanges();
-      }))
+      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: data => {
           this.data = {
             ...data,
             perfumes: data.perfumes ?? []
           };
-          this.cdr.detectChanges();
         },
         error: (_: HttpErrorResponse) => {
           this.error = 'This shared list is no longer available.';
-          this.cdr.detectChanges();
         }
       });
   }
@@ -91,20 +76,21 @@ export class SharedListPreviewComponent implements OnInit {
   importList(): void {
     this.sharedService.importSharedList(this.token).subscribe({
       next: (newListId) => {
-        this.routerExtensions.navigate(['/lists', newListId], {
-          clearHistory: true
-        });
+        this.params.closeCallback();
+        setTimeout(() => {
+          this.routerExtensions.navigate(['/lists', newListId], {
+            clearHistory: false,
+            animated: true
+          });
+        }, 50);
       },
       error: () => {
         this.error = 'Failed to import list.';
-        this.cdr.detectChanges();
       }
     });
   }
 
   reject(): void {
-    this.routerExtensions.navigate(['/home'], {
-      clearHistory: true
-    });
+    this.params.closeCallback();
   }
 }

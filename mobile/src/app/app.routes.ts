@@ -48,9 +48,5 @@ export const routes: Routes = [
     path: 'lists/:listId/add',
     canActivate: [AuthGuard],
     loadComponent: () => import('./lists/addperfumes/listsaddperfumes.component').then(m => m.ListsAddPerfumesComponent)
-  },
-  {
-    path: 'shared/:token',
-    loadComponent: () => import('./lists/shared/sharedlistpreview.component').then(m => m.SharedListPreviewComponent)
   }
 ];
