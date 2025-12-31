@@ -1,21 +1,19 @@
-import { Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, NO_ERRORS_SCHEMA, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NativeScriptCommonModule } from '@nativescript/angular';
 import { Page } from '@nativescript/core';
 import { finalize } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
-
-import { FooterComponent } from '../../footer/footer.component';
 import { SharedListPreviewDto } from '../../models/sharedlistpreview.dto';
-import { PerfumeListService } from '../../services/perfumelist.service';
 import { SharedListService } from '../../services/sharedlist.service';
 import { environment } from '../../../environments/environment';
+import { RouterExtensions } from '@nativescript/angular';
 
 @Component({
   standalone: true,
   selector: 'app-shared-list-preview',
   templateUrl: './sharedlistpreview.component.html',
-  imports: [NativeScriptCommonModule, FooterComponent],
+  imports: [NativeScriptCommonModule],
   schemas: [NO_ERRORS_SCHEMA]
 })
 export class SharedListPreviewComponent implements OnInit {
@@ -29,51 +27,84 @@ export class SharedListPreviewComponent implements OnInit {
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly router: Router,
     private readonly page: Page,
-    private readonly listsService: PerfumeListService,
-    private readonly sharedService: SharedListService
+    private readonly sharedService: SharedListService,
+    private readonly routerExtensions: RouterExtensions,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.page.actionBarHidden = true;
   }
 
   ngOnInit(): void {
     this.token = String(this.route.snapshot.paramMap.get('token'));
+    
     if (!this.token) {
       this.error = 'Invalid share link.';
       return;
     }
 
-    this.load();
+    setTimeout(() => {
+      this.load();
+    }, 0);
   }
 
   load(): void {
     this.loading = true;
     this.error = null;
+    this.cdr.detectChanges();
 
     this.sharedService
       .getSharedListPreview(this.token)
-      .pipe(finalize(() => (this.loading = false)))
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }))
       .subscribe({
         next: data => {
-          this.data = data;
+          this.data = {
+            ...data,
+            perfumes: data.perfumes ?? []
+          };
+          this.cdr.detectChanges();
         },
         error: (_: HttpErrorResponse) => {
           this.error = 'This shared list is no longer available.';
+          this.cdr.detectChanges();
         }
       });
   }
 
-  getThumbSrc(path?: string | null): string {
-    if (!path) {
+  formatRating(item: any): string {
+    if (item.avgRating == null || item.ratingCount === 0) {
+      return 'No rating';
+    }
+    return `${item.avgRating.toFixed(2)} · ${item.ratingCount} reviews`;
+  }
+
+  getThumbSrc(item: any): string {
+    if (!item?.imageUrl) {
       return '~/assets/images/perfume-placeholder.png';
     }
-    return `${this.contentUrl}${path}`;
+    return `${this.contentUrl}${item.imageUrl}`;
   }
 
   importList(): void {
-    // v1: stub – backend endpoint already exists
-    // next step will wire POST /shared-lists/{token}/import
-    console.log('Import list:', this.token);
+    this.sharedService.importSharedList(this.token).subscribe({
+      next: (newListId) => {
+        this.routerExtensions.navigate(['/lists', newListId], {
+          clearHistory: true
+        });
+      },
+      error: () => {
+        this.error = 'Failed to import list.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  reject(): void {
+    this.routerExtensions.navigate(['/home'], {
+      clearHistory: true
+    });
   }
 }
