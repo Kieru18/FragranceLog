@@ -3,6 +3,8 @@ using Core.Exceptions;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Infrastructure.Services;
 
@@ -10,6 +12,7 @@ public sealed class UserService : IUserService
 {
     private readonly FragranceLogContext _context;
     private readonly PasswordHasher _passwordHasher;
+    private const string DeletedEmailDomain = "fragrance.log";
 
     public UserService(
         FragranceLogContext context,
@@ -95,13 +98,46 @@ public sealed class UserService : IUserService
 
     public async Task DeleteAccountAsync(int userId)
     {
-        var user = await _context.Users
-            .SingleOrDefaultAsync(u => u.UserId == userId);
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.UserId == userId);
 
         if (user == null)
             return;
 
-        _context.Users.Remove(user);
+        await using var tx = await _context.Database.BeginTransactionAsync();
+
+        var lists = await _context.PerfumeLists.Where(l => l.UserId == userId).ToListAsync();
+        if (lists.Count > 0)
+        {
+            _context.PerfumeLists.RemoveRange(lists);
+            await _context.SaveChangesAsync();
+        }
+
+        user.Username = $"deleted_user_{user.UserId}";
+        user.Email = $"deleted+{user.UserId}@{DeletedEmailDomain}";
+        user.Password = GenerateUnusablePassword(64);
+
         await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+    }
+
+    private static string GenerateUnusablePassword(int length)
+    {
+        var bytes = new byte[length];
+        RandomNumberGenerator.Fill(bytes);
+
+        var s = Convert.ToBase64String(bytes);
+
+        if (s.Length >= length)
+            return s.Substring(0, length);
+
+        var sb = new StringBuilder(s, length);
+        while (sb.Length < length)
+        {
+            var extra = new byte[16];
+            RandomNumberGenerator.Fill(extra);
+            sb.Append(Convert.ToBase64String(extra));
+        }
+
+        return sb.ToString(0, length);
     }
 }
