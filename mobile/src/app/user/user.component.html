@@ -1,88 +1,147 @@
-<GridLayout rows="*, auto" class="bg-dark">
+<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
 
-  <ScrollView row="0">
-    <StackLayout class="px-6 py-8">
+  <StackLayout row="0" height="24"></StackLayout>
 
-      <Label
-        text="Account"
-        class="text-2xl font-semibold text-text-primary mb-6">
-      </Label>
+  <ScrollView row="1">
+    <StackLayout class="px-6 pb-10">
 
-      <Label
-        *ngIf="error"
-        [text]="error"
-        class="text-xs text-red-500 mb-4">
-      </Label>
-
-      <StackLayout class="mb-8" [formGroup]="profileForm">
-        <Label
-          text="Profile"
-          class="text-sm text-text-secondary mb-2">
-        </Label>
-
-        <TextField
-          formControlName="displayName"
-          hint="Display name"
-          class="mb-3">
-        </TextField>
-
-        <TextField
-          formControlName="email"
-          hint="Email"
-          keyboardType="email"
-          class="mb-3">
-        </TextField>
-
-        <Button
-          text="Save profile"
-          class="btn btn-primary"
-          (tap)="saveProfile()">
-        </Button>
+      <StackLayout *ngIf="loading"
+                   class="items-center mt-20">
+        <ActivityIndicator busy="true"
+                           color="#D3A54A">
+        </ActivityIndicator>
       </StackLayout>
 
-      <StackLayout class="mb-8" [formGroup]="passwordForm">
-        <Label
-          text="Change password"
-          class="text-sm text-text-secondary mb-2">
+      <ng-container *ngIf="!loading">
+
+        <StackLayout class="pt-4 mb-6">
+          <Label
+            text="Account"
+            class="text-2xl font-semibold text-text-primary mb-1">
+          </Label>
+          <Label
+            text="Manage your profile and security"
+            class="text-sm text-text-secondary">
+          </Label>
+        </StackLayout>
+
+        <Label *ngIf="error"
+               [text]="error"
+               class="text-xs text-red-400 mb-4">
         </Label>
 
-        <TextField
-          formControlName="currentPassword"
-          hint="Current password"
-          secure="true"
-          class="mb-3">
-        </TextField>
+        <StackLayout
+          class="bg-dark-secondary rounded-2xl px-5 py-5 mb-6"
+          [formGroup]="profileForm">
 
-        <TextField
-          formControlName="newPassword"
-          hint="New password"
-          secure="true"
-          class="mb-3">
-        </TextField>
+          <Label
+            text="Profile"
+            class="text-sm font-semibold text-text-primary mb-4">
+          </Label>
 
-        <Button
-          text="Change password"
-          class="btn btn-secondary"
-          (tap)="changePassword()">
-        </Button>
-      </StackLayout>
+          <Label
+            text="Display name"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
+          <TextField
+            formControlName="displayName"
+            hint="Display name"
+            class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-4">
+          </TextField>
 
-      <StackLayout>
-        <Label
-          text="Danger zone"
-          class="text-sm text-red-500 mb-2">
-        </Label>
+          <Label
+            text="Email"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
+          <TextField
+            formControlName="email"
+            hint="Email"
+            keyboardType="email"
+            class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-5">
+          </TextField>
 
-        <Button
-          text="Delete account"
-          class="btn btn-danger"
-          (tap)="deleteAccount()">
-        </Button>
-      </StackLayout>
+          <StackLayout
+            class="bg-brand-gold rounded-2xl px-4 py-3 items-center justify-center"
+            (tap)="saveProfile()">
+            <Label
+              text="Save changes"
+              class="text-sm font-semibold text-black">
+            </Label>
+          </StackLayout>
+
+        </StackLayout>
+
+        <StackLayout
+          class="bg-dark-secondary rounded-2xl px-5 py-5 mb-6"
+          [formGroup]="passwordForm">
+
+          <Label
+            text="Security"
+            class="text-sm font-semibold text-text-primary mb-4">
+          </Label>
+
+          <Label
+            text="Current password"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
+          <TextField
+            formControlName="currentPassword"
+            hint="Current password"
+            secure="true"
+            class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-4">
+          </TextField>
+
+          <Label
+            text="New password"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
+          <TextField
+            formControlName="newPassword"
+            hint="New password"
+            secure="true"
+            class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-5">
+          </TextField>
+
+          <StackLayout
+            class="bg-dark rounded-2xl px-4 py-3 items-center justify-center"
+            (tap)="changePassword()">
+            <Label
+              text="Change password"
+              class="text-sm text-text-secondary">
+            </Label>
+          </StackLayout>
+
+        </StackLayout>
+
+        <StackLayout
+          class="bg-danger-dark rounded-2xl px-5 py-5">
+
+          <Label
+            text="Danger zone"
+            class="text-sm font-semibold text-red-300 mb-3">
+          </Label>
+
+          <Label
+            text="Deleting your account is permanent."
+            class="text-xs text-text-secondary mb-4">
+          </Label>
+
+          <StackLayout
+            class="bg-dark rounded-2xl px-4 py-3 items-center justify-center"
+            (tap)="deleteAccount()">
+            <Label
+              text="Delete account"
+              class="text-sm text-red-400">
+            </Label>
+          </StackLayout>
+
+        </StackLayout>
+
+      </ng-container>
 
     </StackLayout>
   </ScrollView>
 
-  <app-footer row="1"></app-footer>
+  <app-footer row="2"></app-footer>
 
 </GridLayout>
