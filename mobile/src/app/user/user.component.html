@@ -10,7 +10,7 @@
             text="Account"
             class="text-2xl font-semibold text-text-primary mb-1">
           </Label>
-          
+
           <Label
             text="Manage your profile and security"
             class="text-xs text-text-secondary">
@@ -19,19 +19,18 @@
         
         <GridLayout col="1" columns="auto" rows="auto" class="items-center">
           <GridLayout
-            col="0"
             width="36"
             height="36"
             class="rounded-full bg-dark-secondary items-center justify-center"
             (tap)="logout()">
-            
+
             <Label
               text="&#xf2f5;"
               class="fas text-text-secondary text-sm"
               verticalAlignment="center"
               horizontalAlignment="center">
             </Label>
-            
+
           </GridLayout>
         </GridLayout>
         
@@ -116,22 +115,74 @@
             class="text-xs text-text-secondary mb-1">
           </Label>
 
-          <TextField
-            formControlName="currentPassword"
-            secure="true"
-            class="bg-dark rounded-2xl px-4 py-3 text-text-primary mb-4">
-          </TextField>
+          <GridLayout
+            columns="*, auto"
+            class="bg-dark rounded-2xl mb-4">
+
+            <TextField
+              col="0"
+              formControlName="currentPassword"
+              [secure]="!showCurrentPassword"
+              class="px-4 py-3 text-text-primary"
+              backgroundColor="transparent"
+              borderWidth="0"
+              fontFamily="Inter">
+            </TextField>
+
+            <GridLayout
+              col="1"
+              width="40"
+              height="40"
+              class="items-center justify-center"
+              (tap)="toggleCurrentPassword()">
+
+              <Label
+                [text]="showCurrentPassword ? '&#xf070;' : '&#xf06e;'"
+                class="fas text-text-secondary text-sm"
+                verticalAlignment="center"
+                horizontalAlignment="center">
+              </Label>
+
+            </GridLayout>
+
+          </GridLayout>
 
           <Label
             text="New password"
             class="text-xs text-text-secondary mb-1">
           </Label>
 
-          <TextField
-            formControlName="newPassword"
-            secure="true"
-            class="bg-dark rounded-2xl px-4 py-3 text-text-primary mb-5">
-          </TextField>
+          <GridLayout
+            columns="*, auto"
+            class="bg-dark rounded-2xl mb-5">
+
+            <TextField
+              col="0"
+              formControlName="newPassword"
+              [secure]="!showNewPassword"
+              class="px-4 py-3 text-text-primary"
+              backgroundColor="transparent"
+              borderWidth="0"
+              fontFamily="Inter">
+            </TextField>
+
+            <GridLayout
+              col="1"
+              width="40"
+              height="40"
+              class="items-center justify-center"
+              (tap)="toggleNewPassword()">
+
+              <Label
+                [text]="showNewPassword ? '&#xf070;' : '&#xf06e;'"
+                class="fas text-text-secondary text-sm"
+                verticalAlignment="center"
+                horizontalAlignment="center">
+              </Label>
+
+            </GridLayout>
+
+          </GridLayout>
 
           <GridLayout
             class="bg-brand-gold rounded-2xl"
@@ -182,22 +233,22 @@
   </ScrollView>
 
   <GridLayout
-  *ngIf="dialog.visible"
-  row="0"
-  rowSpan="2"
-  rows="*"
-  columns="*">
-
-  <StackLayout
-    #dialogBackdrop
+    *ngIf="dialog.visible"
     row="0"
-    col="0"
-    class="bg-black"
-    opacity="0"
-    (tap)="closeDialog()">
-  </StackLayout>
+    rowSpan="2"
+    rows="*"
+    columns="*">
 
-  <GridLayout
+    <StackLayout
+      #dialogBackdrop
+      row="0"
+      col="0"
+      class="bg-black"
+      opacity="0"
+      (tap)="closeDialog()">
+    </StackLayout>
+
+    <GridLayout
       #dialogPanel
       row="0"
       col="0"
@@ -248,6 +299,7 @@
         </FlexboxLayout>
 
       </GridLayout>
+
     </GridLayout>
   </GridLayout>
 

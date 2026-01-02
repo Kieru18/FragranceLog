@@ -46,6 +46,9 @@ export class UserComponent implements OnInit {
   @ViewChild('dialogBackdrop', { static: false }) dialogBackdropRef?: ElementRef<View>;
   @ViewChild('dialogPanel', { static: false }) dialogPanelRef?: ElementRef<View>;
 
+  showCurrentPassword = false;
+  showNewPassword = false;
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly userService: UserService,
@@ -69,6 +72,14 @@ export class UserComponent implements OnInit {
     });
 
     this.load();
+  }
+
+  toggleCurrentPassword(): void {
+    this.showCurrentPassword = !this.showCurrentPassword;
+  }
+
+  toggleNewPassword(): void {
+    this.showNewPassword = !this.showNewPassword;
   }
 
   load(): void {
