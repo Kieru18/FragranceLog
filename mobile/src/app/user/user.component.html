@@ -1,0 +1,88 @@
+<GridLayout rows="*, auto" class="bg-dark">
+
+  <ScrollView row="0">
+    <StackLayout class="px-6 py-8">
+
+      <Label
+        text="Account"
+        class="text-2xl font-semibold text-text-primary mb-6">
+      </Label>
+
+      <Label
+        *ngIf="error"
+        [text]="error"
+        class="text-xs text-red-500 mb-4">
+      </Label>
+
+      <StackLayout class="mb-8" [formGroup]="profileForm">
+        <Label
+          text="Profile"
+          class="text-sm text-text-secondary mb-2">
+        </Label>
+
+        <TextField
+          formControlName="displayName"
+          hint="Display name"
+          class="mb-3">
+        </TextField>
+
+        <TextField
+          formControlName="email"
+          hint="Email"
+          keyboardType="email"
+          class="mb-3">
+        </TextField>
+
+        <Button
+          text="Save profile"
+          class="btn btn-primary"
+          (tap)="saveProfile()">
+        </Button>
+      </StackLayout>
+
+      <StackLayout class="mb-8" [formGroup]="passwordForm">
+        <Label
+          text="Change password"
+          class="text-sm text-text-secondary mb-2">
+        </Label>
+
+        <TextField
+          formControlName="currentPassword"
+          hint="Current password"
+          secure="true"
+          class="mb-3">
+        </TextField>
+
+        <TextField
+          formControlName="newPassword"
+          hint="New password"
+          secure="true"
+          class="mb-3">
+        </TextField>
+
+        <Button
+          text="Change password"
+          class="btn btn-secondary"
+          (tap)="changePassword()">
+        </Button>
+      </StackLayout>
+
+      <StackLayout>
+        <Label
+          text="Danger zone"
+          class="text-sm text-red-500 mb-2">
+        </Label>
+
+        <Button
+          text="Delete account"
+          class="btn btn-danger"
+          (tap)="deleteAccount()">
+        </Button>
+      </StackLayout>
+
+    </StackLayout>
+  </ScrollView>
+
+  <app-footer row="1"></app-footer>
+
+</GridLayout>

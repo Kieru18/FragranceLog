@@ -26,4 +26,8 @@ export class FooterComponent {
   goToListsOverview() {
     this.routerExtensions.navigate(['/lists-overview']);
   }
+
+  goToProfile() {
+    this.routerExtensions.navigate(['/profile']);
+  }
 }

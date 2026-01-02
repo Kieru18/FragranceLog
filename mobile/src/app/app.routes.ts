@@ -48,5 +48,10 @@ export const routes: Routes = [
     path: 'lists/:listId/add',
     canActivate: [AuthGuard],
     loadComponent: () => import('./lists/addperfumes/listsaddperfumes.component').then(m => m.ListsAddPerfumesComponent)
+  },
+  {
+    path: 'profile',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./user/user.component').then(m => m.UserComponent)
   }
 ];
