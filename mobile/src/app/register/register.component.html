@@ -1,79 +1,131 @@
 <GridLayout rows="*" class="ns-dark bg-dark">
-
   <ScrollView row="0" class="bg-dark mt-16">
     <StackLayout class="px-6 pb-8">
 
-      <Label text="Join FragranceLog"
-             class="text-2xl font-semibold text-text-primary mb-1"></Label>
+      <Label
+        text="Join FragranceLog"
+        class="text-2xl font-semibold text-text-primary mb-1">
+      </Label>
 
-      <Label text="Start building your perfume collection"
-             class="text-sm text-text-secondary mb-6"></Label>
+      <Label
+        text="Start building your perfume collection"
+        class="text-sm text-text-secondary mb-6">
+      </Label>
 
       <StackLayout [formGroup]="form">
 
         <StackLayout class="mb-4">
-          <Label text="Username"
-                 class="text-xs text-text-secondary mb-1"></Label>
+          <Label
+            text="Username"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
 
-          <TextField formControlName="username"
-                     class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
-                     hint="username"></TextField>
+          <TextField
+            formControlName="username"
+            class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
+            hint="username">
+          </TextField>
         </StackLayout>
 
         <StackLayout class="mb-4">
-          <Label text="Email"
-                 class="text-xs text-text-secondary mb-1"></Label>
+          <Label
+            text="Email"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
 
-          <TextField formControlName="email"
-                     keyboardType="email"
-                     class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
-                     hint="you@example.com"></TextField>
+          <TextField
+            formControlName="email"
+            keyboardType="email"
+            class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
+            hint="you@example.com">
+          </TextField>
         </StackLayout>
 
         <StackLayout class="mb-4">
-          <Label text="Password"
-                 class="text-xs text-text-secondary mb-1"></Label>
+          <Label
+            text="Password"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
 
-          <TextField formControlName="password"
-                     secure="true"
-                     class="bg-dark-secondary text-text-primary rounded-2xl px-4 py-3"
-                     hint="Create a strong password"></TextField>
+          <GridLayout
+            columns="*, auto"
+            class="bg-dark-secondary rounded-2xl">
+
+            <TextField
+              col="0"
+              formControlName="password"
+              [secure]="!showPassword"
+              class="px-4 py-3 text-text-primary"
+              backgroundColor="transparent"
+              borderWidth="0"
+              fontFamily="Inter"
+              hint="Create a strong password">
+            </TextField>
+
+            <GridLayout
+              col="1"
+              width="40"
+              height="40"
+              class="items-center justify-center"
+              (tap)="togglePassword()">
+
+              <Label
+                [text]="showPassword ? '&#xf070;' : '&#xf06e;'"
+                class="fas text-text-secondary text-sm"
+                verticalAlignment="center"
+                horizontalAlignment="center">
+              </Label>
+
+            </GridLayout>
+
+          </GridLayout>
         </StackLayout>
 
       </StackLayout>
 
-      <GridLayout class="mt-6 bg-brand-gold rounded-2xl"
-                  [class.opacity-50]="form.invalid || loading"
-                  [isEnabled]="!loading"
-                  (tap)="!loading && onSubmit()">
+      <GridLayout
+        class="mt-6 bg-brand-gold rounded-2xl"
+        [class.opacity-50]="form.invalid || loading"
+        [isEnabled]="!loading"
+        (tap)="!loading && onSubmit()">
 
-        <Label text="Create account"
-               class="text-bg-dark font-semibold uppercase py-3"
-               horizontalAlignment="center"
-               [opacity]="loading ? 0 : 1"></Label>
+        <Label
+          text="Create account"
+          class="text-bg-dark font-semibold uppercase py-3"
+          horizontalAlignment="center"
+          [opacity]="loading ? 0 : 1">
+        </Label>
 
-        <ActivityIndicator [busy]="loading"
-                           color="#0D0D0D"
-                           [opacity]="loading ? 1 : 0"
-                           horizontalAlignment="center"></ActivityIndicator>
+        <ActivityIndicator
+          [busy]="loading"
+          color="#0D0D0D"
+          [opacity]="loading ? 1 : 0"
+          horizontalAlignment="center">
+        </ActivityIndicator>
+
       </GridLayout>
 
-      <Label *ngIf="error"
-             [text]="error"
-             textWrap="true"
-             style="line-height: 8;"
-             class="mt-3 text-xs text-red-500"></Label>
+      <Label
+        *ngIf="error"
+        [text]="error"
+        textWrap="true"
+        style="line-height: 8;"
+        class="mt-3 text-xs text-red-500">
+      </Label>
 
       <StackLayout class="mt-10 items-center">
-        <Label text="Already have an account?"
-               class="text-xs text-text-secondary mb-1"></Label>
+        <Label
+          text="Already have an account?"
+          class="text-xs text-text-secondary mb-1">
+        </Label>
 
-        <Label text="Log in"
-               class="text-sm text-highlight font-semibold"
-               (tap)="goToLogin()"></Label>
+        <Label
+          text="Log in"
+          class="text-sm text-highlight font-semibold"
+          (tap)="goToLogin()">
+        </Label>
       </StackLayout>
 
     </StackLayout>
   </ScrollView>
-
 </GridLayout>

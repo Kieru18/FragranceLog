@@ -24,6 +24,8 @@ export class RegisterComponent {
   loading = false;
   error: string | null = null;
 
+  showPassword = false;
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -70,5 +72,9 @@ export class RegisterComponent {
         curve: 'easeInOut'
       }
     });
+  }
+
+  togglePassword(): void { 
+    this.showPassword = !this.showPassword; 
   }
 }
