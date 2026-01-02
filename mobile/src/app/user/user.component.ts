@@ -10,6 +10,7 @@ import { UpdateProfileDto } from '../models/updateprofile.dto';
 import { ChangePasswordDto } from '../models/changepassword.dto';
 import { Page } from '@nativescript/core';
 import { FooterComponent } from '../footer/footer.component';
+import { CommonService } from '../services/common.service';
 
 @Component({
   standalone: true,
@@ -37,6 +38,7 @@ export class UserComponent implements OnInit {
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly router: Router,
+    private readonly common: CommonService,
     private page: Page
   ) {
     this.page.actionBarHidden = true;
@@ -69,8 +71,8 @@ export class UserComponent implements OnInit {
             email: user.email
           });
         },
-        error: () => {
-          this.error = 'Failed to load profile.';
+        error: err => {
+          this.error = this.common.getErrorMessage(err, 'Failed to load profile.');
         }
       });
   }
@@ -87,8 +89,8 @@ export class UserComponent implements OnInit {
         next: updated => {
           this.profile = updated;
         },
-        error: () => {
-          this.error = 'Failed to update profile.';
+        error: err => {
+          this.error = this.common.getErrorMessage(err, 'Failed to update profile.');
         }
       });
   }
@@ -105,8 +107,8 @@ export class UserComponent implements OnInit {
         next: () => {
           this.passwordForm.reset();
         },
-        error: () => {
-          this.error = 'Failed to change password.';
+        error: err => {
+          this.error = this.common.getErrorMessage(err, 'Failed to change password.');
         }
       });
   }
@@ -121,8 +123,8 @@ export class UserComponent implements OnInit {
           this.authService.logout();
           this.router.navigate(['/login']);
         },
-        error: () => {
-          this.error = 'Failed to delete account.';
+        error: err => {
+          this.error = this.common.getErrorMessage(err, 'Failed to delete account.');
         }
       });
   }

@@ -5,6 +5,7 @@ import { AuthService } from '../services/auth.service';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { RegisterDto } from '../models/register.dto';
 import { Page, Utils } from '@nativescript/core';
+import { CommonService } from '../services/common.service';
 
 @Component({
   standalone: true,
@@ -27,7 +28,8 @@ export class RegisterComponent {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private page: Page
+    private page: Page,
+    private common: CommonService
   ) {
     this.page.actionBarHidden = true;
     this.form = this.fb.group({
@@ -55,8 +57,7 @@ export class RegisterComponent {
       },
       error: err => {
         this.loading = false;
-        console.log(err);
-        this.error = err?.error?.message || err?.error?.error || err?.error?.errors?.Password || 'Registration failed'; // @TODO fix error string aquisition
+        this.error = this.common.getErrorMessage(err, 'Registration failed');
       }
     });
   }
