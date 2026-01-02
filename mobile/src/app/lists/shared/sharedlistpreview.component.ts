@@ -84,7 +84,7 @@ export class SharedListPreviewComponent implements OnInit {
       next: (newListId) => {
         this.params.closeCallback();
         setTimeout(() => {
-          this.routerExtensions.navigateByUrl(`/lists/${newListId}`, {
+          this.routerExtensions.navigate(['lists-overview'], {
             clearHistory: false,
             animated: true
           });

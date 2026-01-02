@@ -69,15 +69,10 @@
       <ActivityIndicator busy="true" color="#D3A54A"></ActivityIndicator>
     </StackLayout>
 
-    <StackLayout *ngIf="!loading && !items.length" class="items-center mt-12">
+    <StackLayout *ngIf="!loading && !items.length" class="items-center mt-6">
       <Label
         text="This list is empty."
         class="text-sm text-text-secondary mb-1">
-      </Label>
-      <Label
-        text="Add perfumes from a perfume screen or later via Add mode."
-        textWrap="true"
-        class="text-xs text-text-secondary text-center px-6">
       </Label>
     </StackLayout>
 
