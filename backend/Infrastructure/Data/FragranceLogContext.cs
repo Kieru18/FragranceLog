@@ -40,6 +40,10 @@ public partial class FragranceLogContext : DbContext
 
     public virtual DbSet<PerfumeGenderVote> PerfumeGenderVotes { get; set; }
 
+    public virtual DbSet<PerfumeList> PerfumeLists { get; set; }
+
+    public virtual DbSet<PerfumeListItem> PerfumeListItems { get; set; }
+
     public virtual DbSet<PerfumeLongevityVote> PerfumeLongevityVotes { get; set; }
 
     public virtual DbSet<PerfumeNote> PerfumeNotes { get; set; }
@@ -56,10 +60,12 @@ public partial class FragranceLogContext : DbContext
 
     public virtual DbSet<Season> Seasons { get; set; }
 
+    public virtual DbSet<SharedList> SharedLists { get; set; }
+
     public virtual DbSet<Sillage> Sillages { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AI");
@@ -123,6 +129,8 @@ public partial class FragranceLogContext : DbContext
                     {
                         j.HasKey("PerfumeId", "GroupId");
                         j.ToTable("PerfumeGroup");
+                        j.HasIndex(new[] { "GroupId" }, "IX_PerfumeGroup_GroupId");
+                        j.HasIndex(new[] { "PerfumeId" }, "IX_PerfumeGroup_PerfumeId");
                     });
         });
 
@@ -162,6 +170,26 @@ public partial class FragranceLogContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.PerfumeGenderVotes)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_GenderVotes_User");
+        });
+
+        modelBuilder.Entity<PerfumeList>(entity =>
+        {
+            entity.Property(e => e.CreationDate).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PerfumeLists)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PerfumeList_User");
+        });
+
+        modelBuilder.Entity<PerfumeListItem>(entity =>
+        {
+            entity.Property(e => e.CreationDate).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Perfume).WithMany(p => p.PerfumeListItems)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PerfumeListItem_Perfume");
+
+            entity.HasOne(d => d.PerfumeList).WithMany(p => p.PerfumeListItems).HasConstraintName("FK_PerfumeListItem_List");
         });
 
         modelBuilder.Entity<PerfumeLongevityVote>(entity =>
@@ -264,6 +292,17 @@ public partial class FragranceLogContext : DbContext
         modelBuilder.Entity<Season>(entity =>
         {
             entity.Property(e => e.SeasonId).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<SharedList>(entity =>
+        {
+            entity.HasIndex(e => e.PerfumeListId, "UX_SharedList_List_Active")
+                .IsUnique()
+                .HasFilter("([ExpirationDate] IS NULL)");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.PerfumeList).WithOne(p => p.SharedList).HasConstraintName("FK_SharedList_PerfumeList");
         });
 
         modelBuilder.Entity<Sillage>(entity =>

@@ -1,7 +1,7 @@
 import { Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
-import { Page, View, Screen, Utils, PanGestureEventData } from '@nativescript/core';
+import { Page, View, Screen, Utils, PanGestureEventData, Color, Label } from '@nativescript/core';
 import { PerfumeService } from '../services/perfume.service';
 import { ReviewService } from '../services/review.service';
 import { VoteService } from '../services/vote.service';
@@ -21,6 +21,9 @@ import { SetGenderVoteRequestDto } from '../models/setgendervoterequest.dto';
 import { SetSillageVoteRequestDto } from '../models/setsillagevoterequest.dto';
 import { SetSeasonVoteRequestDto } from '../models/setseasonvoterequest.dto';
 import { SetDaytimeVoteRequestDto } from '../models/setdaytimevoterequest.dto';
+import { PerfumeListMembershipDto } from '../models/perfumelistmembership.dto';
+import { PerfumeListService } from '../services/perfumelist.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -73,6 +76,17 @@ export class PerfumeComponent implements OnInit {
   private readonly screenHeight = Screen.mainScreen.heightDIPs;
   private panStartY = 0;
 
+  listsModalVisible = false;
+  lists: PerfumeListMembershipDto[] = [];
+  initialListState = new Map<number, boolean>();
+  isSavingLists = false;
+  listsLoading = false;
+  listsError: string | null = null;
+
+  private listsSheetView!: View;
+  private listsBackdropView!: View;
+  listsModalOpacity = 0;
+
   private readonly baseUrl = `${environment.contentUrl}`;
 
   constructor(
@@ -80,7 +94,8 @@ export class PerfumeComponent implements OnInit {
     private perfumeService: PerfumeService,
     private page: Page,
     private reviewService: ReviewService,
-    private voteService: VoteService
+    private voteService: VoteService,
+    private perfumeListService: PerfumeListService
   ) {
     this.page.actionBarHidden = true;
   }
@@ -117,6 +132,201 @@ export class PerfumeComponent implements OnInit {
         this.loading = false;
       }
     });
+
+    this.loadLists();
+  }
+
+  private loadLists(): void {
+    if (!this.perfumeId) return;
+    
+    this.perfumeListService
+      .getListsForPerfume(this.perfumeId)
+      .subscribe({
+        next: lists => {
+          this.lists = lists;
+          
+          this.initialListState.clear();
+          for (const l of lists) {
+            this.initialListState.set(
+              l.perfumeListId,
+              l.containsPerfume
+            );
+          }
+        },
+        error: (err) => {
+          console.error('Error loading lists:', err);
+        }
+      });
+  }
+
+  get isPerfumeInAnyList(): boolean {
+    return this.lists.some(list => list.containsPerfume);
+  }
+
+  openListsModal(): void {
+    if (!this.details || this.listsModalVisible) return;
+
+    Utils.dismissSoftInput();
+    this.listsModalVisible = true;
+    this.listsLoading = true;
+    this.listsError = null;
+
+    this.listsModalOpacity = 0;
+
+    this.perfumeListService
+      .getListsForPerfume(this.details.perfumeId)
+      .subscribe({
+        next: lists => {
+          this.lists = lists;
+          this.listsLoading = false;
+
+          this.initialListState.clear();
+          for (const l of lists) {
+            this.initialListState.set(
+              l.perfumeListId,
+              l.containsPerfume
+            );
+          }
+
+          setTimeout(() => {
+            this.animateListsModalIn();
+          }, 50);
+        },
+        error: (err) => {
+          this.listsLoading = false;
+          this.listsError = 'Failed to load lists';
+          console.error('Error loading lists:', err);
+          
+          setTimeout(() => {
+            this.animateListsModalIn();
+          }, 50);
+        }
+      });
+  }
+
+  private animateListsModalIn(): void {
+    if (!this.listsBackdropView || !this.listsSheetView) {
+      this.listsModalOpacity = 1;
+      return;
+    }
+
+    this.listsBackdropView.animate({
+      opacity: 0.6,
+      duration: 240
+    });
+
+    this.listsSheetView.animate({
+      opacity: 1,
+      duration: 240,
+      curve: 'easeOut'
+    }).then(() => {
+      this.listsModalOpacity = 1;
+    });
+  }
+
+  private animateListsModalOut(): Promise<void> {
+    return new Promise((resolve) => {
+      if (!this.listsBackdropView || !this.listsSheetView) {
+        this.listsModalOpacity = 0;
+        resolve();
+        return;
+      }
+
+      this.listsSheetView.animate({
+        opacity: 0,
+        duration: 180,
+        curve: 'easeIn'
+      });
+
+      this.listsBackdropView.animate({
+        opacity: 0,
+        duration: 150
+      }).then(() => {
+        this.listsModalOpacity = 0;
+        resolve();
+      });
+    });
+  }
+
+  closeListsModal(): void {
+    this.animateListsModalOut().then(() => {
+      this.listsModalVisible = false;
+
+      setTimeout(() => {
+        this.listsError = null;
+        this.listsLoading = false;
+      }, 300);
+    });
+  }
+
+  onListsModalLoaded(args: any): void {
+    this.listsSheetView = args.object as View;
+    const parent = this.listsSheetView.parent as View;
+    this.listsBackdropView = parent.getViewById('listsBackdrop') as View;
+    
+    if (this.listsBackdropView) {
+      this.listsBackdropView.opacity = 0;
+    }
+    if (this.listsSheetView) {
+      this.listsSheetView.opacity = 0;
+    }
+  }
+
+  toggleList(list: PerfumeListMembershipDto): void {
+    list.containsPerfume = !list.containsPerfume;
+  }
+
+  get areListsDirty(): boolean {
+    return this.lists.some(l =>
+      this.initialListState.get(l.perfumeListId) !== l.containsPerfume
+    );
+  }
+
+  saveLists(): void {
+    if (!this.details || this.isSavingLists) return;
+
+    const perfumeId = this.details.perfumeId;
+    const requests = [];
+
+    for (const l of this.lists) {
+      const wasIn = this.initialListState.get(l.perfumeListId);
+      const isIn = l.containsPerfume;
+
+      if (wasIn === isIn) continue;
+
+      if (isIn) {
+        requests.push(
+          this.perfumeListService
+            .addPerfumeToList(l.perfumeListId, perfumeId)
+            .toPromise()
+        );
+      } else {
+        requests.push(
+          this.perfumeListService
+            .removePerfumeFromList(l.perfumeListId, perfumeId)
+            .toPromise()
+        );
+      }
+    }
+
+    if (requests.length === 0) {
+      this.closeListsModal();
+      return;
+    }
+
+    this.isSavingLists = true;
+    this.listsError = null;
+
+    Promise.all(requests)
+      .then(() => {
+        this.isSavingLists = false;
+        this.closeListsModal();
+      })
+      .catch((error) => {
+        this.isSavingLists = false;
+        this.listsError = 'Failed to save changes';
+        console.error('Error saving lists:', error);
+      });
   }
 
   get reviewAction(): 'save' | 'delete' | 'none' {
@@ -590,5 +800,4 @@ export class PerfumeComponent implements OnInit {
       this.details.reviews.splice(idx, 1);
     }
   }
-
 }

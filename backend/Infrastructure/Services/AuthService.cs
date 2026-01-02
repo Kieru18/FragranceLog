@@ -44,6 +44,24 @@ namespace Infrastructure.Services
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            _context.PerfumeLists.AddRange(
+                new PerfumeList
+                {
+                    UserId = user.UserId,
+                    Name = "Owned",
+                    IsSystem = true,
+                    CreationDate = DateTime.Now
+                },
+                new PerfumeList
+                {
+                    UserId = user.UserId,
+                    Name = "Wanted",
+                    IsSystem = true,
+                    CreationDate = DateTime.Now
+                }
+            );
+            await _context.SaveChangesAsync();
+
             var access = _jwt.GenerateAccessToken(user);
             var refresh = _jwt.GenerateRefreshToken(user.UserId);
 

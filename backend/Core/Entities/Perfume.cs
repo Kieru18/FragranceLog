@@ -6,12 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.Entities;
 
+[Index("BrandId", Name = "IX_Perfumes_BrandId")]
+[Index("CountryCode", Name = "IX_Perfumes_CountryCode")]
+[Index("Name", Name = "IX_Perfumes_Name")]
 public partial class Perfume
 {
     [Key]
     public int PerfumeId { get; set; }
 
-    [StringLength(50)]
+    [StringLength(150)]
     public string Name { get; set; } = null!;
 
     [StringLength(2000)]
@@ -37,6 +40,9 @@ public partial class Perfume
 
     [InverseProperty("Perfume")]
     public virtual ICollection<PerfumeGenderVote> PerfumeGenderVotes { get; set; } = new List<PerfumeGenderVote>();
+
+    [InverseProperty("Perfume")]
+    public virtual ICollection<PerfumeListItem> PerfumeListItems { get; set; } = new List<PerfumeListItem>();
 
     [InverseProperty("Perfume")]
     public virtual ICollection<PerfumeLongevityVote> PerfumeLongevityVotes { get; set; } = new List<PerfumeLongevityVote>();

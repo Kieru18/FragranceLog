@@ -55,7 +55,8 @@ export class RegisterComponent {
       },
       error: err => {
         this.loading = false;
-        this.error = err?.error?.message || 'Registration failed';
+        console.log(err);
+        this.error = err?.error?.message || err?.error?.error || err?.error?.errors?.Password || 'Registration failed'; // @TODO fix error string aquisition
       }
     });
   }

@@ -51,6 +51,8 @@ namespace Api
             builder.Services.AddScoped<IPerfumeService, PerfumeService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IPerfumeVoteService, PerfumeVoteService>();
+            builder.Services.AddScoped<IPerfumeListService, PerfumeListService>();
+            builder.Services.AddScoped<ISharedListService, SharedListService>();
 
 
             if (!builder.Environment.IsDevelopment())

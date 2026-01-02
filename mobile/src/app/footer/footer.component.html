@@ -18,8 +18,8 @@
         verticalAlignment="center">
 
         <Label
-            text="&#xf067;"
-            class="fas text-bg-dark text-xl text-center"
+            text="&#xf030;"
+            class="fas text-black text-xl text-center"
             horizontalAlignment="center"
             verticalAlignment="center"
             [nsRouterLink]="['/add']">
@@ -29,7 +29,7 @@
     <Label col="3"
         text="&#xf03a;"
         class="fas text-text-secondary text-lg text-center"
-        [nsRouterLink]="['/collection']"></Label>
+        (tap)="goToListsOverview()"></Label>
 
     <Label col="4"
         text="&#xf007;"

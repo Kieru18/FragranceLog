@@ -152,6 +152,30 @@ CREATE TABLE PerfumeDaytimeVotes (
     VoteDate  DATETIME NOT NULL DEFAULT GETDATE()
 );
 
+CREATE TABLE PerfumeList (
+    PerfumeListId  INT IDENTITY NOT NULL,
+    UserId         INT NOT NULL,
+    Name           NVARCHAR(100) NOT NULL,
+    IsSystem       BIT NOT NULL,
+    CreationDate   DATETIME NOT NULL DEFAULT GETDATE()
+);
+
+CREATE TABLE PerfumeListItem (
+    PerfumeListItemId INT IDENTITY NOT NULL,
+    PerfumeListId     INT NOT NULL,
+    PerfumeId         INT NOT NULL,
+    CreationDate      DATETIME NOT NULL DEFAULT GETDATE()
+);
+
+CREATE TABLE SharedList (
+    SharedListId        INT IDENTITY NOT NULL,
+    PerfumeListId       INT NOT NULL,
+    OwnerUserId         INT NOT NULL,
+    ShareToken          UNIQUEIDENTIFIER NOT NULL,
+    CreatedAt           DATETIME NOT NULL DEFAULT GETDATE(),
+    ExpirationDate      DATETIME NULL
+);
+
 -- Primary Keys
 ALTER TABLE Companies ADD CONSTRAINT PK_Companies PRIMARY KEY (CompanyId);
 ALTER TABLE Countries ADD CONSTRAINT PK_Countries PRIMARY KEY (Code);
@@ -177,6 +201,9 @@ ALTER TABLE PerfumeLongevityVotes ADD CONSTRAINT PK_LongevityVotes PRIMARY KEY (
 ALTER TABLE PerfumeGenderVotes ADD CONSTRAINT PK_GenderVotes PRIMARY KEY (PerfumeId, UserId);
 ALTER TABLE PerfumeSeasonVotes ADD CONSTRAINT PK_SeasonVotes PRIMARY KEY (PerfumeId, UserId);
 ALTER TABLE PerfumeDaytimeVotes ADD CONSTRAINT PK_DaytimeVotes PRIMARY KEY (PerfumeId, UserId);
+ALTER TABLE PerfumeList ADD CONSTRAINT PK_PerfumeList PRIMARY KEY (PerfumeListId);
+ALTER TABLE PerfumeListItem ADD CONSTRAINT PK_PerfumeListItem PRIMARY KEY (PerfumeListItemId);
+ALTER TABLE SharedList ADD CONSTRAINT PK_SharedList PRIMARY KEY (SharedListId);
 
 -- Unique Constraints
 ALTER TABLE Companies ADD CONSTRAINT UQ_Companies_Name UNIQUE (Name);
@@ -195,6 +222,9 @@ ALTER TABLE Daytimes ADD CONSTRAINT UQ_Daytimes_Name UNIQUE (Name);
 ALTER TABLE PerfumePhotos ADD CONSTRAINT UQ_PerfumePhotos_Perfume UNIQUE (PerfumeId);
 ALTER TABLE NotePhotos ADD CONSTRAINT UQ_NotePhotos_Note UNIQUE (NoteId);
 ALTER TABLE ReviewPhotos ADD CONSTRAINT UQ_ReviewPhotos_Review UNIQUE (ReviewId);
+ALTER TABLE PerfumeList ADD CONSTRAINT UQ_PerfumeList_User_Name UNIQUE (UserId, Name);
+ALTER TABLE PerfumeListItem ADD CONSTRAINT UQ_PerfumeListItem_List_Perfume UNIQUE (PerfumeListId, PerfumeId);
+ALTER TABLE SharedList ADD CONSTRAINT UQ_SharedList_ShareToken UNIQUE (ShareToken);
 
 -- Foreign Keys
 ALTER TABLE Brands ADD CONSTRAINT FK_Brands_Company FOREIGN KEY (CompanyId) REFERENCES Companies(CompanyId);
@@ -225,6 +255,10 @@ ALTER TABLE PerfumeSeasonVotes ADD CONSTRAINT FK_SeasonVotes_Season FOREIGN KEY 
 ALTER TABLE PerfumeDaytimeVotes ADD CONSTRAINT FK_DaytimeVotes_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes(PerfumeId);
 ALTER TABLE PerfumeDaytimeVotes ADD CONSTRAINT FK_DaytimeVotes_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
 ALTER TABLE PerfumeDaytimeVotes ADD CONSTRAINT FK_DaytimeVotes_Daytime FOREIGN KEY (DaytimeId) REFERENCES Daytimes(DaytimeId);
+ALTER TABLE PerfumeList ADD CONSTRAINT FK_PerfumeList_User FOREIGN KEY (UserId) REFERENCES Users(UserId);
+ALTER TABLE PerfumeListItem ADD CONSTRAINT FK_PerfumeListItem_List FOREIGN KEY (PerfumeListId) REFERENCES PerfumeList (PerfumeListId) ON DELETE CASCADE;
+ALTER TABLE PerfumeListItem ADD CONSTRAINT FK_PerfumeListItem_Perfume FOREIGN KEY (PerfumeId) REFERENCES Perfumes (PerfumeId);
+ALTER TABLE SharedList ADD CONSTRAINT FK_SharedList_PerfumeList FOREIGN KEY (PerfumeListId) REFERENCES PerfumeList(PerfumeListId) ON DELETE CASCADE;
 
 -- Check Constraints
 ALTER TABLE Companies ADD CONSTRAINT CHK_Companies_Name CHECK (LEN(Name) > 0);
@@ -256,4 +290,7 @@ CREATE INDEX IX_Reviews_PerfumeId ON Reviews(PerfumeId);
 CREATE INDEX IX_PerfumeGroup_PerfumeId ON PerfumeGroup(PerfumeId);
 CREATE INDEX IX_PerfumeGroup_GroupId ON PerfumeGroup(GroupId);
 
+CREATE INDEX IX_PerfumeList_UserId ON PerfumeList (UserId);
+CREATE INDEX IX_PerfumeListItem_ListId ON PerfumeListItem (PerfumeListId);
 
+CREATE UNIQUE INDEX UX_SharedList_List_Active ON SharedList (PerfumeListId) WHERE ExpirationDate IS NULL;

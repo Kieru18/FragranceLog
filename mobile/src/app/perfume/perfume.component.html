@@ -13,16 +13,40 @@
 
       <ng-container *ngIf="!loading && details">
 
-        <StackLayout class="pt-4 mb-4">
-          <Label
-            [text]="details.name"
-            textWrap="true"
-            class="text-2xl font-semibold text-text-primary mb-1"></Label>
+        <GridLayout class="pt-4 mb-4" columns="*, auto">
 
-          <Label
-            [text]="details.brand"
-            class="text-sm text-text-secondary"></Label>
-        </StackLayout>
+          <StackLayout col="0">
+            <Label
+              [text]="details.name"
+              textWrap="true"
+              class="text-2xl font-semibold text-text-primary mb-1"></Label>
+
+            <Label
+              [text]="details.brand"
+              class="text-sm text-text-secondary"></Label>
+          </StackLayout>
+
+          <GridLayout
+            col="1"
+            width="36"
+            height="36"
+            class="rounded-full items-center justify-center"
+            [class.bg-dark-secondary]="!isPerfumeInAnyList"
+            [class.bg-brand-gold]="isPerfumeInAnyList"
+            (tap)="openListsModal()"
+            style="margin-top: -10;">
+
+            <Label
+              text="&#xf02e;"
+              class="fas text-base"
+              [class.text-text-primary]="!isPerfumeInAnyList"
+              [class.text-black]="isPerfumeInAnyList"
+              verticalAlignment="center"
+              horizontalAlignment="center">
+            </Label>
+          </GridLayout>
+
+        </GridLayout>
 
         <GridLayout
           class="rounded-3xl bg-dark-secondary h-56 mb-6 overflow-hidden">
@@ -334,7 +358,9 @@
 
     </StackLayout>
   </ScrollView>
+
   <app-footer row="2"></app-footer>
+
   <GridLayout
     [visibility]="showVotingModal ? 'visible' : 'collapsed'"
     rows="*, auto"
@@ -473,7 +499,7 @@
       </StackLayout>
 
       <FlexboxLayout row="2"
-                     justifyContent="space-between" 
+                     justifyContent="space-between"
                      class="mt-4">
         <StackLayout class="bg-dark rounded-2xl px-4 py-3 w-48 mr-2 items-center justify-center"
                      (tap)="clearAllVotes()">
@@ -490,6 +516,138 @@
         </StackLayout>
       </FlexboxLayout>
 
+    </GridLayout>
+  </GridLayout>
+
+  <GridLayout
+    [visibility]="listsModalVisible ? 'visible' : 'collapsed'"
+    rows="*"
+    columns="*"
+    rowSpan="3"
+    zIndex="120">
+
+    <GridLayout
+      id="listsBackdrop"
+      row="0"
+      col="0"
+      class="bg-black"
+      opacity="0"
+      isUserInteractionEnabled="true"
+      (tap)="closeListsModal()">
+    </GridLayout>
+
+    <GridLayout
+      id="listsPanel"
+      row="0"
+      col="0"
+      width="85%"
+      height="475"
+      verticalAlignment="center"
+      horizontalAlignment="center"
+      class="bg-dark-secondary rounded-2xl"
+      [opacity]="listsModalOpacity"
+      isUserInteractionEnabled="true"
+      (loaded)="onListsModalLoaded($event)">
+
+      <GridLayout rows="auto, auto, *, auto" class="px-5 py-5 h-full">
+        
+        <GridLayout row="0" columns="*, auto" class="mb-4">
+          <Label
+            col="0"
+            text="Add to lists"
+            class="text-lg font-semibold text-text-primary">
+          </Label>
+          
+          <GridLayout col="1" width="32" height="32" class="items-center justify-center" (tap)="closeListsModal()">
+            <Label
+              text="&#xf00d;"
+              class="fas text-text-secondary text-sm"
+              verticalAlignment="center"
+              horizontalAlignment="center">
+            </Label>
+          </GridLayout>
+        </GridLayout>
+
+        <Label
+          row="1"
+          *ngIf="listsError"
+          [text]="listsError"
+          class="text-sm text-red-400 mb-3">
+        </Label>
+
+        <ScrollView 
+          row="2" 
+          class="flex-grow"
+          isUserInteractionEnabled="true">
+          
+          <StackLayout>
+            <StackLayout *ngIf="listsLoading" class="items-center justify-center py-10">
+              <ActivityIndicator busy="true" color="#D3A54A"></ActivityIndicator>
+            </StackLayout>
+
+            <StackLayout *ngIf="!listsLoading">
+              <StackLayout
+                *ngFor="let l of lists"
+                class="bg-dark rounded-2xl px-4 py-3 mb-3"
+                [class.border-brand-gold]="l.containsPerfume"
+                [class.border-dark]="!l.containsPerfume"
+                style="border-width: 2;"
+                (tap)="toggleList(l)">
+
+                <GridLayout columns="auto, *" rows="auto" class="items-center">
+                  <Label
+                    col="0"
+                    [text]="l.containsPerfume ? '&#xf14a;' : '&#xf0c8;'"
+                    class="far text-base mr-3"
+                    [class.text-brand-gold]="l.containsPerfume"
+                    [class.text-text-secondary]="!l.containsPerfume">
+                  </Label>
+
+                  <Label
+                    col="1"
+                    [text]="l.name"
+                    class="text-sm"
+                    [class.text-brand-gold]="l.containsPerfume"
+                    [class.text-text-primary]="!l.containsPerfume">
+                  </Label>
+                </GridLayout>
+              </StackLayout>
+
+              <Label
+                *ngIf="lists.length === 0 && !listsError"
+                text="No lists yet."
+                class="text-sm text-text-secondary py-4 text-center">
+              </Label>
+            </StackLayout>
+          </StackLayout>
+        </ScrollView>
+
+        <FlexboxLayout 
+          row="3" 
+          justifyContent="space-between" 
+          class="mt-4 pt-4">
+          
+          <StackLayout
+            class="bg-dark rounded-2xl px-4 py-3 w-48 items-center justify-center"
+            (tap)="closeListsModal()">
+            <Label
+              text="Cancel"
+              class="text-sm text-text-secondary text-center">
+            </Label>
+          </StackLayout>
+
+          <StackLayout
+            class="bg-brand-gold rounded-2xl px-4 py-3 w-48 ml-3 items-center justify-center"
+            [class.opacity-50]="isSavingLists || !areListsDirty"
+            [isUserInteractionEnabled]="!isSavingLists && areListsDirty"
+            (tap)="saveLists()">
+            <Label
+              text="Save"
+              class="text-sm font-semibold text-black text-center">
+            </Label>
+          </StackLayout>
+        </FlexboxLayout>
+      </GridLayout>
     </GridLayout>
   </GridLayout>
 

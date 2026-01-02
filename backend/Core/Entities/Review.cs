@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core.Entities;
 
+[Index("PerfumeId", Name = "IX_Reviews_PerfumeId")]
 public partial class Review
 {
     [Key]

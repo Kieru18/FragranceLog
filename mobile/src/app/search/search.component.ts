@@ -85,7 +85,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private readonly brandService: BrandService,
     private readonly groupService: GroupService,
     private readonly router: Router,
-    private pageCore: Page,
+    protected pageCore: Page,
     private readonly common: CommonService
   ) {
     this.pageCore.actionBarHidden = true;

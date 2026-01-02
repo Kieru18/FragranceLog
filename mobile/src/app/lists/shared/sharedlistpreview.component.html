@@ -1,0 +1,173 @@
+<GridLayout rows="auto, *"
+            class="ns-dark bg-dark h-full">
+
+  <StackLayout row="0"
+               class="px-6 pt-10 pb-3 bg-dark">
+
+    <GridLayout columns="*, auto"
+                rows="auto"
+                class="items-center">
+
+      <StackLayout col="0">
+        <Label
+          text="Shared list"
+          class="text-xs text-text-secondary mb-1">
+        </Label>
+
+        <Label
+          [text]="data?.listName || 'List'"
+          class="text-2xl font-semibold text-text-primary mb-1">
+        </Label>
+
+        <Label
+          *ngIf="data"
+          [text]="'by ' + data.ownerName + ' · ' + data.perfumeCount + ' perfumes'"
+          class="text-xs text-text-secondary">
+        </Label>
+      </StackLayout>
+
+      <GridLayout col="1"
+                  columns="auto, auto"
+                  rows="auto"
+                  class="items-center">
+
+        <GridLayout
+          *ngIf="isAuthenticated$ | async"
+          col="0"
+          width="36"
+          height="36"
+          class="rounded-full bg-brand-gold items-center justify-center mr-3"
+          verticalAlignment="center"
+          (tap)="importList()">
+
+          <Label
+            text="&#xf019;"
+            class="fas text-black text-sm"
+            verticalAlignment="center"
+            horizontalAlignment="center">
+          </Label>
+
+        </GridLayout>
+
+        <GridLayout
+          col="1"
+          width="36"
+          height="36"
+          class="rounded-full bg-dark-secondary items-center justify-center"
+          verticalAlignment="center"
+          (tap)="reject()">
+
+          <Label
+            text="&#xf00d;"
+            class="fas text-text-secondary text-sm"
+            verticalAlignment="center"
+            horizontalAlignment="center">
+          </Label>
+
+        </GridLayout>
+
+      </GridLayout>
+
+    </GridLayout>
+
+    <Label
+      *ngIf="error"
+      [text]="error"
+      class="text-xs text-red-500 mt-2">
+    </Label>
+
+  </StackLayout>
+
+  <StackLayout row="1"
+               class="px-6 pb-6">
+
+    <StackLayout *ngIf="loading"
+                 class="items-center mt-10">
+      <ActivityIndicator
+        busy="true"
+        color="#D3A54A">
+      </ActivityIndicator>
+    </StackLayout>
+
+    <Label
+      *ngIf="!loading && data && !data.perfumes.length"
+      text="This list is empty."
+      class="mt-6 text-sm text-text-secondary">
+    </Label>
+
+    <ListView
+      *ngIf="!loading && data && data.perfumes.length"
+      [items]="data.perfumes"
+      class="mt-2">
+
+      <ng-template let-item="item">
+        <StackLayout>
+
+          <GridLayout
+            columns="*, auto"
+            class="bg-dark-secondary rounded-2xl px-4 py-3">
+
+            <StackLayout col="0">
+              <Label
+                [text]="item.name"
+                textWrap="true"
+                maxLines="2"
+                class="text-text-primary font-semibold"
+                android:lineSpacingMultiplier="1"
+                android:lineSpacingExtra="0">
+              </Label>
+
+              <Label
+                [text]="item.brand"
+                class="text-text-secondary text-xs mt-0.5">
+              </Label>
+
+              <StackLayout orientation="horizontal"
+                           class="mt-1 items-center">
+                <Label
+                  text="&#xf005;"
+                  class="fas text-brand-gold text-xs mr-1">
+                </Label>
+
+                <Label
+                  [text]="formatRating(item)"
+                  class="text-text-secondary text-xs">
+                </Label>
+              </StackLayout>
+            </StackLayout>
+
+            <GridLayout
+              col="1"
+              width="56"
+              height="56"
+              class="ml-3 rounded-2xl bg-dark overflow-hidden">
+
+              <Image
+                [src]="getThumbSrc(item)"
+                stretch="aspectFill"
+                opacity="0.35"
+                blurRadius="12"
+                borderRadius="16">
+              </Image>
+
+              <Image
+                [src]="getThumbSrc(item)"
+                stretch="aspectFit"
+                loadMode="async"
+                borderRadius="16">
+              </Image>
+
+            </GridLayout>
+
+          </GridLayout>
+
+          <StackLayout height="12"></StackLayout>
+
+        </StackLayout>
+      </ng-template>
+
+    </ListView>
+
+  </StackLayout>
+
+</GridLayout>
