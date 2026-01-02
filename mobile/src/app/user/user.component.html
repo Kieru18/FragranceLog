@@ -7,8 +7,9 @@
 
       <StackLayout *ngIf="loading"
                    class="items-center mt-20">
-        <ActivityIndicator busy="true"
-                           color="#D3A54A">
+        <ActivityIndicator
+          busy="true"
+          color="#D3A54A">
         </ActivityIndicator>
       </StackLayout>
 
@@ -19,15 +20,17 @@
             text="Account"
             class="text-2xl font-semibold text-text-primary mb-1">
           </Label>
+
           <Label
             text="Manage your profile and security"
             class="text-sm text-text-secondary">
           </Label>
         </StackLayout>
 
-        <Label *ngIf="error"
-               [text]="error"
-               class="text-xs text-red-400 mb-4">
+        <Label
+          *ngIf="error"
+          [text]="error"
+          class="text-xs text-red-400 mb-4">
         </Label>
 
         <StackLayout
@@ -40,34 +43,40 @@
           </Label>
 
           <Label
-            text="Display name"
+            text="Username"
             class="text-xs text-text-secondary mb-1">
           </Label>
+
           <TextField
             formControlName="displayName"
-            hint="Display name"
-            class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-4">
+            hint="username"
+            class="bg-dark rounded-2xl px-4 py-3 text-text-primary mb-4">
           </TextField>
 
           <Label
             text="Email"
             class="text-xs text-text-secondary mb-1">
           </Label>
+
           <TextField
             formControlName="email"
-            hint="Email"
+            hint="email"
             keyboardType="email"
-            class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-5">
+            class="bg-dark rounded-2xl px-4 py-3 text-text-primary mb-5">
           </TextField>
 
-          <StackLayout
-            class="bg-brand-gold rounded-2xl px-4 py-3 items-center justify-center"
+          <GridLayout
+            class="bg-brand-gold rounded-2xl"
             (tap)="saveProfile()">
+
             <Label
               text="Save changes"
-              class="text-sm font-semibold text-black">
+              class="text-black font-semibold py-3"
+              horizontalAlignment="center"
+              verticalAlignment="center">
             </Label>
-          </StackLayout>
+
+          </GridLayout>
 
         </StackLayout>
 
@@ -84,32 +93,36 @@
             text="Current password"
             class="text-xs text-text-secondary mb-1">
           </Label>
+
           <TextField
             formControlName="currentPassword"
-            hint="Current password"
             secure="true"
-            class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-4">
+            class="bg-dark rounded-2xl px-4 py-3 text-text-primary mb-4">
           </TextField>
 
           <Label
             text="New password"
             class="text-xs text-text-secondary mb-1">
           </Label>
+
           <TextField
             formControlName="newPassword"
-            hint="New password"
             secure="true"
-            class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-5">
+            class="bg-dark rounded-2xl px-4 py-3 text-text-primary mb-5">
           </TextField>
 
-          <StackLayout
-            class="bg-dark rounded-2xl px-4 py-3 items-center justify-center"
+          <GridLayout
+            class="bg-brand-gold rounded-2xl"
             (tap)="changePassword()">
+
             <Label
               text="Change password"
-              class="text-sm text-text-secondary">
+              class="text-black font-semibold py-3"
+              horizontalAlignment="center"
+              verticalAlignment="center">
             </Label>
-          </StackLayout>
+
+          </GridLayout>
 
         </StackLayout>
 
@@ -117,7 +130,7 @@
           class="bg-danger-dark rounded-2xl px-5 py-5">
 
           <Label
-            text="Danger zone"
+            text="Delete account"
             class="text-sm font-semibold text-red-300 mb-3">
           </Label>
 
@@ -126,14 +139,18 @@
             class="text-xs text-text-secondary mb-4">
           </Label>
 
-          <StackLayout
-            class="bg-dark rounded-2xl px-4 py-3 items-center justify-center"
+          <GridLayout
+            class="bg-dark rounded-2xl"
             (tap)="deleteAccount()">
+
             <Label
               text="Delete account"
-              class="text-sm text-red-400">
+              class="text-red-400 py-3"
+              horizontalAlignment="center"
+              verticalAlignment="center">
             </Label>
-          </StackLayout>
+
+          </GridLayout>
 
         </StackLayout>
 
