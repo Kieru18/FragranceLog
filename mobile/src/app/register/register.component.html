@@ -67,6 +67,8 @@
               width="40"
               height="40"
               class="items-center justify-center"
+              [opacity]="form.get('password')?.value ? 1 : 0"
+              [isUserInteractionEnabled]="!!form.get('password')?.value"
               (tap)="togglePassword()">
 
               <Label

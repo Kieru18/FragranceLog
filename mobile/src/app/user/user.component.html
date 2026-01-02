@@ -134,6 +134,8 @@
               width="40"
               height="40"
               class="items-center justify-center"
+              [opacity]="passwordForm.get('currentPassword')?.value ? 1 : 0"
+              [isUserInteractionEnabled]="!!passwordForm.get('currentPassword')?.value"
               (tap)="toggleCurrentPassword()">
 
               <Label
@@ -171,6 +173,8 @@
               width="40"
               height="40"
               class="items-center justify-center"
+              [opacity]="passwordForm.get('newPassword')?.value ? 1 : 0"
+              [isUserInteractionEnabled]="!!passwordForm.get('newPassword')?.value"
               (tap)="toggleNewPassword()">
 
               <Label
