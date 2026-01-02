@@ -5,6 +5,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { SharedListPreviewDto } from '../../models/sharedlistpreview.dto';
 import { SharedListService } from '../../services/sharedlist.service';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -20,14 +22,18 @@ export class SharedListPreviewComponent implements OnInit {
   token!: string;
   data: SharedListPreviewDto | null = null;
 
+  readonly isAuthenticated$: Observable<boolean>;
+
   private readonly contentUrl = environment.contentUrl;
 
   constructor(
     private params: ModalDialogParams,
     private sharedService: SharedListService,
-    private routerExtensions: RouterExtensions
+    private routerExtensions: RouterExtensions,
+    private authService: AuthService
   ) {
     this.token = this.params.context?.token;
+    this.isAuthenticated$ = this.authService.isAuthenticated();
   }
 
   ngOnInit(): void {
@@ -78,7 +84,7 @@ export class SharedListPreviewComponent implements OnInit {
       next: (newListId) => {
         this.params.closeCallback();
         setTimeout(() => {
-          this.routerExtensions.navigate(['/lists', newListId], {
+          this.routerExtensions.navigateByUrl(`/lists/${newListId}`, {
             clearHistory: false,
             animated: true
           });

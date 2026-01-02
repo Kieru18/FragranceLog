@@ -32,6 +32,7 @@
                   class="items-center">
 
         <GridLayout
+          *ngIf="isAuthenticated$ | async"
           col="0"
           width="36"
           height="36"
