@@ -18,8 +18,8 @@ import { FooterComponent } from '../footer/footer.component';
   imports: [
     NativeScriptCommonModule,
     ReactiveFormsModule,
-    FooterComponent,
-    NativeScriptFormsModule
+    NativeScriptFormsModule,
+    FooterComponent
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
@@ -125,5 +125,10 @@ export class UserComponent implements OnInit {
           this.error = 'Failed to delete account.';
         }
       });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

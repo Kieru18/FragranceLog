@@ -1,9 +1,41 @@
-<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
+<GridLayout rows="*, auto" class="ns-dark bg-dark h-full">
 
-  <StackLayout row="0" height="24"></StackLayout>
+  <ScrollView row="0">
+    <StackLayout class="px-6 pt-10 pb-10">
 
-  <ScrollView row="1">
-    <StackLayout class="px-6 pb-10">
+      <GridLayout columns="*, auto" rows="auto" class="items-center mb-6">
+        
+        <StackLayout col="0">
+          <Label
+            text="Account"
+            class="text-2xl font-semibold text-text-primary mb-1">
+          </Label>
+          
+          <Label
+            text="Manage your profile and security"
+            class="text-xs text-text-secondary">
+          </Label>
+        </StackLayout>
+        
+        <GridLayout col="1" columns="auto" rows="auto" class="items-center">
+          <GridLayout
+            col="0"
+            width="36"
+            height="36"
+            class="rounded-full bg-dark-secondary items-center justify-center"
+            (tap)="logout()">
+            
+            <Label
+              text="&#xf2f5;"
+              class="fas text-text-secondary text-sm"
+              verticalAlignment="center"
+              horizontalAlignment="center">
+            </Label>
+            
+          </GridLayout>
+        </GridLayout>
+        
+      </GridLayout>
 
       <StackLayout *ngIf="loading"
                    class="items-center mt-20">
@@ -14,18 +46,6 @@
       </StackLayout>
 
       <ng-container *ngIf="!loading">
-
-        <StackLayout class="pt-4 mb-6">
-          <Label
-            text="Account"
-            class="text-2xl font-semibold text-text-primary mb-1">
-          </Label>
-
-          <Label
-            text="Manage your profile and security"
-            class="text-sm text-text-secondary">
-          </Label>
-        </StackLayout>
 
         <Label
           *ngIf="error"
@@ -159,6 +179,6 @@
     </StackLayout>
   </ScrollView>
 
-  <app-footer row="2"></app-footer>
+  <app-footer row="1"></app-footer>
 
 </GridLayout>
