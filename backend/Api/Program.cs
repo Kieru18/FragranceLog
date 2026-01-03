@@ -40,6 +40,8 @@ namespace Api
                 }
             }
 
+            builder.Services.AddHttpClient();
+
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 
