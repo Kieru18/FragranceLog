@@ -53,5 +53,10 @@ export const routes: Routes = [
     path: 'profile',
     canActivate: [AuthGuard],
     loadComponent: () => import('./user/user.component').then(m => m.UserComponent)
+  },
+  {
+    path: 'add-perfume',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./addperfume/addperfume.component').then(m => m.AddPerfumeComponent)
   }
 ];

@@ -1,5 +1,5 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { registerElement } from '@nativescript/angular';
+import { registerElement, RouterExtensions } from '@nativescript/angular';
 import { Image, Page } from '@nativescript/core';
 import { NgForOf } from '@angular/common';
 import { FooterComponent } from '../footer/footer.component'
@@ -39,11 +39,15 @@ export class HomeComponent {
     users: 4_200,
   };
 
-  constructor(private page: Page) {
+  constructor(private page: Page, private routerExtensions: RouterExtensions) {
     this.page.actionBarHidden = true;
   }
 
   toFixedRating(r: number) {
     return r.toFixed(1);
+  }
+
+  goToAddPerfume() {
+    this.routerExtensions.navigate(['/add-perfume']);
   }
 }

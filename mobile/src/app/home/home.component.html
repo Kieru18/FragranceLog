@@ -26,12 +26,12 @@
             <GridLayout columns="*, auto, *">
                 <StackLayout col="0" class="rounded-xl p-4 bg-dark-secondary items-center">
                     <Label text="Quick Actions" class="text-text-secondary text-xs mb-3"></Label>
-                    <Button [text]="actions[0].icon + ' ' + actions[0].title" [nsRouterLink]="[actions[0].route]" class="w-full py-3 rounded-lg bg-transparent border border-gray-800 text-text-primary font-medium"></Button>
+                    <Button [text]="actions[0].icon + ' ' + actions[0].title" (tap)="goToAddPerfume()" class="w-full py-3 rounded-lg bg-transparent border border-gray-800 text-text-primary font-medium"></Button>
                 </StackLayout>
 
                 <StackLayout col="1" class="rounded-xl p-4 bg-dark-secondary items-center transform scale-105 shadow-md mx-2" style="border-color: rgba(211,165,74,0.14);">
                     <Label text="Quick Add" class="text-text-secondary text-xs mb-2"></Label>
-                    <Button [text]="actions[0].icon" [nsRouterLink]="[actions[0].route]" class="rounded-full h-14 w-14 text-xl bg-brand-gold text-bg-dark font-bold"></Button>
+                    <Button [text]="actions[0].icon" (tap)="goToAddPerfume()" class="rounded-full h-14 w-14 text-xl bg-brand-gold text-bg-dark font-bold"></Button>
                 </StackLayout>
 
                 <StackLayout col="2" class="rounded-xl p-4 bg-dark-secondary items-center">
