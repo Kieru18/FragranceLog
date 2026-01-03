@@ -1,10 +1,9 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
+import { NativeScriptCommonModule, NativeScriptFormsModule, RouterExtensions } from '@nativescript/angular';
 import { Page } from '@nativescript/core';
 import { PerfumeSuggestionService } from '../services/perfumesuggestion.service';
 import { NoteTypeEnum } from '../enums/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
-import { Router } from '@angular/router';
 import { SnackBar } from '@nativescript-community/ui-material-snackbar';
 
 @Component({
@@ -43,7 +42,7 @@ export class AddPerfumeComponent {
   constructor(
     private service: PerfumeSuggestionService,
     private page: Page,
-    private router: Router
+    private routerExtensions: RouterExtensions
   ) {
     this.page.actionBarHidden = true;
   }
@@ -94,17 +93,28 @@ export class AddPerfumeComponent {
       next: () => {
         this.submitting = false;
 
-        this.snackBar.simple(
-          `Thank you for submitting ${perfumeName}`,
-          '#000000',
-          '#D3A54A',
-          1
+        this.routerExtensions.navigate(
+          ['/'],
+          {
+            clearHistory: true,
+            state: {
+              snackbarMessage: `Perfume "${perfumeName}" submitted successfully!`
+            },
+            transition: { name: 'slideRight' }
+          }
         );
-
-        this.router.navigate(['/']);
       },
-      error: () => {
+      error: (err) => {
         this.submitting = false;
+
+        console.error('Submit failed:', err);
+
+        this.snackBar.simple(
+          'Submission failed. Please try again later.',
+          '#FFFFFF',
+          '#B00020',
+          2
+        );
       }
     });
   }
