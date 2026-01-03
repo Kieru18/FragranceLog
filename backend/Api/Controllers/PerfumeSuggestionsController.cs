@@ -34,24 +34,27 @@ namespace Api.Controllers
                 return StatusCode(500);
 
             var fields = new List<DiscordEmbedField>
-        {
-            new() { Name = "Brand", Value = dto.Brand, Inline = true },
-            new() { Name = "Name", Value = dto.Name, Inline = true }
-        };
+            {
+                new() { Name = "Brand", Value = dto.Brand, Inline = true },
+                new() { Name = "Name", Value = dto.Name, Inline = true }
+            };
 
-            if (dto.Groups.Count > 0)
+            var safeGroups = SanitizeTokens(dto.Groups).ToList();
+
+            if (safeGroups.Count > 0)
             {
                 fields.Add(new DiscordEmbedField
                 {
                     Name = "Olfactory Groups",
-                    Value = string.Join(", ", dto.Groups),
+                    Value = string.Join(", ", safeGroups),
                     Inline = false
                 });
             }
 
             foreach (var ng in dto.NoteGroups)
             {
-                if (ng.Notes.Count == 0) continue;
+                var safeNotes = SanitizeTokens(ng.Notes).ToList();
+                if (safeNotes.Count == 0) continue;
 
                 fields.Add(new DiscordEmbedField
                 {
@@ -62,7 +65,7 @@ namespace Api.Controllers
                         NoteTypeEnum.Base => "Base Notes",
                         _ => "Notes"
                     },
-                    Value = string.Join(", ", ng.Notes),
+                    Value = string.Join(", ", safeNotes),
                     Inline = false
                 });
             }
@@ -105,6 +108,23 @@ namespace Api.Controllers
                 return StatusCode(502);
 
             return Accepted();
+        }
+
+        private static bool IsValidToken(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return false;
+            if (value.Length < 2) return false;
+            if (!char.IsLetterOrDigit(value[0])) return false;
+            return true;
+        }
+
+        private static IEnumerable<string> SanitizeTokens(IEnumerable<string> values)
+        {
+            return values
+                .Where(IsValidToken)
+                .Select(v => v.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Take(20);
         }
     }
 
