@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
 using System.Text;
 
 namespace Api
@@ -53,6 +54,7 @@ namespace Api
             builder.Services.AddScoped<IPerfumeVoteService, PerfumeVoteService>();
             builder.Services.AddScoped<IPerfumeListService, PerfumeListService>();
             builder.Services.AddScoped<ISharedListService, SharedListService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
 
             if (!builder.Environment.IsDevelopment())
@@ -130,6 +132,11 @@ namespace Api
                             .AllowAnyOrigin();
                     });
             });
+
+            ValidatorOptions.Global.LanguageManager = new FluentValidation.Resources.LanguageManager
+            {
+                Culture = new CultureInfo("en-US")
+            };
 
             var app = builder.Build();
 

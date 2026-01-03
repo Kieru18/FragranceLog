@@ -25,6 +25,8 @@ export class LoginComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
+  showPassword = false;
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -84,5 +86,9 @@ export class LoginComponent implements OnInit {
 
   goToForgotPassword() {
     this.router.navigate(['/forgot-password']);
+  }
+
+  togglePassword(): void { 
+    this.showPassword = !this.showPassword; 
   }
 }

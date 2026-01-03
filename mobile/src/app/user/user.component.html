@@ -1,0 +1,374 @@
+<GridLayout rows="*, auto" class="ns-dark bg-dark h-full">
+
+  <ScrollView row="0">
+    <StackLayout class="px-6 pt-10 pb-10">
+
+      <GridLayout columns="*, auto" rows="auto" class="items-center mb-6">
+        
+        <StackLayout col="0">
+          <Label
+            text="Account"
+            class="text-2xl font-semibold text-text-primary mb-1">
+          </Label>
+
+          <Label
+            text="Manage your profile and security"
+            class="text-xs text-text-secondary">
+          </Label>
+        </StackLayout>
+        
+        <GridLayout col="1" columns="auto" rows="auto" class="items-center">
+          <GridLayout
+            width="36"
+            height="36"
+            class="rounded-full bg-dark-secondary items-center justify-center"
+            (tap)="logout()">
+
+            <Label
+              text="&#xf2f5;"
+              class="fas text-text-secondary text-sm"
+              verticalAlignment="center"
+              horizontalAlignment="center">
+            </Label>
+
+          </GridLayout>
+        </GridLayout>
+        
+      </GridLayout>
+
+      <StackLayout *ngIf="loading"
+                   class="items-center mt-20">
+        <ActivityIndicator
+          busy="true"
+          color="#D3A54A">
+        </ActivityIndicator>
+      </StackLayout>
+
+      <ng-container *ngIf="!loading">
+
+        <Label
+          *ngIf="error"
+          [text]="error"
+          textWrap="true"
+          style="line-height: 8;"
+          class="text-xs text-red-400 mb-4">
+        </Label>
+
+        <StackLayout
+          class="bg-dark-secondary rounded-2xl px-5 py-5 mb-6"
+          [formGroup]="profileForm">
+
+          <Label
+            text="Profile"
+            class="text-sm font-semibold text-text-primary mb-4">
+          </Label>
+
+          <Label
+            text="Username"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
+
+          <TextField
+            formControlName="displayName"
+            hint="username"
+            class="bg-dark rounded-2xl px-4 py-3 text-text-primary mb-4">
+          </TextField>
+
+          <Label
+            text="Email"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
+
+          <TextField
+            formControlName="email"
+            hint="email"
+            keyboardType="email"
+            class="bg-dark rounded-2xl px-4 py-3 text-text-primary mb-5">
+          </TextField>
+
+          <GridLayout
+            class="bg-brand-gold rounded-2xl"
+            (tap)="saveProfile()">
+
+            <Label
+              text="Save changes"
+              class="text-black font-semibold py-3"
+              horizontalAlignment="center"
+              verticalAlignment="center">
+            </Label>
+
+          </GridLayout>
+
+        </StackLayout>
+
+        <StackLayout
+          class="bg-dark-secondary rounded-2xl px-5 py-5 mb-6"
+          [formGroup]="passwordForm">
+
+          <Label
+            text="Security"
+            class="text-sm font-semibold text-text-primary mb-4">
+          </Label>
+
+          <Label
+            text="Current password"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
+
+          <GridLayout
+            columns="*, auto"
+            class="bg-dark rounded-2xl mb-4">
+
+            <TextField
+              col="0"
+              formControlName="currentPassword"
+              [secure]="!showCurrentPassword"
+              class="px-4 py-3 text-text-primary"
+              backgroundColor="transparent"
+              borderWidth="0"
+              fontFamily="Inter">
+            </TextField>
+
+            <GridLayout
+              col="1"
+              width="40"
+              height="40"
+              class="items-center justify-center"
+              [opacity]="passwordForm.get('currentPassword')?.value ? 1 : 0"
+              [isUserInteractionEnabled]="!!passwordForm.get('currentPassword')?.value"
+              (tap)="toggleCurrentPassword()">
+
+              <Label
+                [text]="showCurrentPassword ? '&#xf070;' : '&#xf06e;'"
+                class="fas text-text-secondary text-sm"
+                verticalAlignment="center"
+                horizontalAlignment="center">
+              </Label>
+
+            </GridLayout>
+
+          </GridLayout>
+
+          <Label
+            text="New password"
+            class="text-xs text-text-secondary mb-1">
+          </Label>
+
+          <GridLayout
+            columns="*, auto"
+            class="bg-dark rounded-2xl mb-5">
+
+            <TextField
+              col="0"
+              formControlName="newPassword"
+              [secure]="!showNewPassword"
+              class="px-4 py-3 text-text-primary"
+              backgroundColor="transparent"
+              borderWidth="0"
+              fontFamily="Inter">
+            </TextField>
+
+            <GridLayout
+              col="1"
+              width="40"
+              height="40"
+              class="items-center justify-center"
+              [opacity]="passwordForm.get('newPassword')?.value ? 1 : 0"
+              [isUserInteractionEnabled]="!!passwordForm.get('newPassword')?.value"
+              (tap)="toggleNewPassword()">
+
+              <Label
+                [text]="showNewPassword ? '&#xf070;' : '&#xf06e;'"
+                class="fas text-text-secondary text-sm"
+                verticalAlignment="center"
+                horizontalAlignment="center">
+              </Label>
+
+            </GridLayout>
+
+          </GridLayout>
+
+          <StackLayout
+            [visibility]="passwordForm.get('newPassword')?.value ? 'visible' : 'collapse'">
+
+            <GridLayout
+              height="6"
+              class="bg-dark rounded-full mb-3">
+
+              <GridLayout
+                #strengthFill
+                height="6"
+                width="100%"
+                class="rounded-full"
+                scaleX="0"
+                horizontalAlignment="left"
+                [class.bg-red-500]="passwordStrength.score <= 2"
+                [class.bg-yellow-500]="passwordStrength.score === 3"
+                [class.bg-green-500]="passwordStrength.score >= 4">
+              </GridLayout>
+
+            </GridLayout>
+
+            <StackLayout #checklist class="gap-1 mb-4">
+
+              <Label
+                text="• At least 8 characters"
+                class="text-xs"
+                [class.text-green-400]="passwordStrength.length"
+                [class.text-text-secondary]="!passwordStrength.length">
+              </Label>
+
+              <Label
+                text="• Lowercase letter"
+                class="text-xs"
+                [class.text-green-400]="passwordStrength.lowercase"
+                [class.text-text-secondary]="!passwordStrength.lowercase">
+              </Label>
+
+              <Label
+                text="• Uppercase letter"
+                class="text-xs"
+                [class.text-green-400]="passwordStrength.uppercase"
+                [class.text-text-secondary]="!passwordStrength.uppercase">
+              </Label>
+
+              <Label
+                text="• Digit"
+                class="text-xs"
+                [class.text-green-400]="passwordStrength.digit"
+                [class.text-text-secondary]="!passwordStrength.digit">
+              </Label>
+
+              <Label
+                text="• Special character"
+                class="text-xs"
+                [class.text-green-400]="passwordStrength.special"
+                [class.text-text-secondary]="!passwordStrength.special">
+              </Label>
+
+            </StackLayout>
+
+          </StackLayout>
+
+          <GridLayout
+            class="bg-brand-gold rounded-2xl"
+            (tap)="changePassword()">
+
+            <Label
+              text="Change password"
+              class="text-black font-semibold py-3"
+              horizontalAlignment="center"
+              verticalAlignment="center">
+            </Label>
+
+          </GridLayout>
+
+        </StackLayout>
+
+        <StackLayout
+          class="bg-danger-dark rounded-2xl px-5 py-5">
+
+          <Label
+            text="Delete account"
+            class="text-sm font-semibold text-red-300 mb-3">
+          </Label>
+
+          <Label
+            text="Deleting your account is permanent."
+            class="text-xs text-text-secondary mb-4">
+          </Label>
+
+          <GridLayout
+            class="bg-dark rounded-2xl"
+            (tap)="openDeleteDialog()">
+
+            <Label
+              text="Delete account"
+              class="text-red-400 py-3"
+              horizontalAlignment="center"
+              verticalAlignment="center">
+            </Label>
+
+          </GridLayout>
+
+        </StackLayout>
+
+      </ng-container>
+
+    </StackLayout>
+  </ScrollView>
+
+  <GridLayout
+    *ngIf="dialog.visible"
+    row="0"
+    rowSpan="2"
+    rows="*"
+    columns="*">
+
+    <StackLayout
+      #dialogBackdrop
+      row="0"
+      col="0"
+      class="bg-black"
+      opacity="0"
+      (tap)="closeDialog()">
+    </StackLayout>
+
+    <GridLayout
+      #dialogPanel
+      row="0"
+      col="0"
+      width="85%"
+      verticalAlignment="center"
+      horizontalAlignment="center"
+      class="bg-dark-secondary rounded-2xl px-5 py-5"
+      opacity="0">
+
+      <GridLayout rows="auto, auto, auto">
+
+        <Label
+          row="0"
+          text="Delete account"
+          class="text-lg font-semibold text-text-primary mb-3">
+        </Label>
+
+        <Label
+          row="1"
+          text="This action is permanent. Reviews will be anonymised and you will be logged out."
+          textWrap="true"
+          style="line-height: 8;"
+          class="text-sm text-text-secondary mb-5">
+        </Label>
+
+        <FlexboxLayout
+          row="2"
+          justifyContent="space-between">
+
+          <StackLayout
+            class="bg-dark rounded-2xl px-4 py-3 w-48"
+            (tap)="closeDialog()">
+            <Label
+              text="Cancel"
+              class="text-sm text-text-secondary text-center">
+            </Label>
+          </StackLayout>
+
+          <StackLayout
+            class="bg-danger-dark rounded-2xl px-4 py-3 w-48 ml-3"
+            (tap)="confirmDelete()">
+            <Label
+              text="Delete"
+              class="text-sm text-red-300 text-center">
+            </Label>
+          </StackLayout>
+
+        </FlexboxLayout>
+
+      </GridLayout>
+
+    </GridLayout>
+  </GridLayout>
+
+  <app-footer row="1"></app-footer>
+
+</GridLayout>

@@ -1,6 +1,6 @@
 <GridLayout row="2"
             columns="*,*,*,*,*"
-            class="py-3 px-4 bg-dark-secondary border-t border-gray-800">
+            class="py-3 px-4 bg-dark-secondary border-t border-brand-gold-dark">
 
     <Label col="0"
         text="&#xf015;"
@@ -34,6 +34,6 @@
     <Label col="4"
         text="&#xf007;"
         class="fas text-text-secondary text-lg text-center"
-        [nsRouterLink]="['/profile']"></Label>
+        (tap)="goToProfile()"></Label>
 
 </GridLayout>
