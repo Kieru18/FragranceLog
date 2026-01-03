@@ -83,12 +83,74 @@
           </GridLayout>
         </StackLayout>
 
+        <StackLayout
+          #strengthWrapper
+          [visibility]="showStrength ? 'visible' : 'collapse'"
+          class="mb-1">
+
+          <GridLayout
+            height="6"
+            class="bg-dark rounded-full mb-3">
+
+            <GridLayout
+              #strengthFill
+              height="6"
+              scaleX="0"
+              originX="0"
+              class="rounded-full"
+              [class.bg-red-500]="passwordStrength.score <= 2"
+              [class.bg-yellow-500]="passwordStrength.score === 3"
+              [class.bg-green-500]="passwordStrength.score >= 4">
+            </GridLayout>
+          </GridLayout>
+
+          <StackLayout #checklist class="gap-1 mb-4">
+
+            <Label
+              text="• At least 8 characters"
+              class="text-xs"
+              [class.text-green-400]="passwordStrength.length"
+              [class.text-text-secondary]="!passwordStrength.length">
+            </Label>
+
+            <Label
+              text="• Lowercase letter"
+              class="text-xs"
+              [class.text-green-400]="passwordStrength.lowercase"
+              [class.text-text-secondary]="!passwordStrength.lowercase">
+            </Label>
+
+            <Label
+              text="• Uppercase letter"
+              class="text-xs"
+              [class.text-green-400]="passwordStrength.uppercase"
+              [class.text-text-secondary]="!passwordStrength.uppercase">
+            </Label>
+
+            <Label
+              text="• Digit"
+              class="text-xs"
+              [class.text-green-400]="passwordStrength.digit"
+              [class.text-text-secondary]="!passwordStrength.digit">
+            </Label>
+
+            <Label
+              text="• Special character"
+              class="text-xs"
+              [class.text-green-400]="passwordStrength.special"
+              [class.text-text-secondary]="!passwordStrength.special">
+            </Label>
+
+          </StackLayout>
+
+        </StackLayout>
+
       </StackLayout>
 
       <GridLayout
         class="mt-6 bg-brand-gold rounded-2xl"
-        [class.opacity-50]="form.invalid || loading"
-        [isEnabled]="!loading"
+        [class.opacity-50]="form.invalid || loading || passwordStrength.score < 5"
+        [isEnabled]="!loading && passwordStrength.score === 5"
         (tap)="!loading && onSubmit()">
 
         <Label
