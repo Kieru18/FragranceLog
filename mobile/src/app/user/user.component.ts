@@ -1,4 +1,4 @@
-import { Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
@@ -11,9 +11,7 @@ import { ChangePasswordDto } from '../models/changepassword.dto';
 import { Page, Utils, View } from '@nativescript/core';
 import { FooterComponent } from '../footer/footer.component';
 import { CommonService } from '../services/common.service';
-import { alert, confirm } from '@nativescript/core';
-import { ViewChild } from '@angular/core';
-import { ElementRef } from '@angular/core';
+import { PasswordStrengthService, PasswordStrengthState } from '../services/passwordstrength.service';
 
 @Component({
   standalone: true,
@@ -49,15 +47,23 @@ export class UserComponent implements OnInit {
   showCurrentPassword = false;
   showNewPassword = false;
 
+  passwordStrength: PasswordStrengthState;
+  private strengthVisible = false;
+
+  @ViewChild('strengthFill', { static: false }) strengthFillRef?: ElementRef<View>;
+  @ViewChild('checklist', { static: false }) checklistRef?: ElementRef<View>;
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly common: CommonService,
+    private readonly passwordStrengthService: PasswordStrengthService,
     private page: Page
   ) {
     this.page.actionBarHidden = true;
+    this.passwordStrength = this.passwordStrengthService.evaluate('');
   }
 
   ngOnInit(): void {
@@ -71,6 +77,12 @@ export class UserComponent implements OnInit {
       newPassword: ['', Validators.required]
     });
 
+    this.passwordForm.get('newPassword')!.valueChanges.subscribe(value => {
+      this.passwordStrength = this.passwordStrengthService.evaluate(value ?? '');
+      this.updateStrengthVisibility(!!value);
+      this.animateStrengthBar();
+    });
+
     this.load();
   }
 
@@ -82,9 +94,53 @@ export class UserComponent implements OnInit {
     this.showNewPassword = !this.showNewPassword;
   }
 
+  private updateStrengthVisibility(show: boolean): void {
+    const checklist = this.checklistRef?.nativeElement;
+    if (!checklist) return;
+
+    if (show && !this.strengthVisible) {
+      this.strengthVisible = true;
+      checklist.opacity = 0;
+      checklist.translateY = 6;
+      checklist.animate({
+        opacity: 1,
+        translate: { x: 0, y: 0 },
+        duration: 220,
+        curve: 'easeOut'
+      });
+    }
+
+    if (!show && this.strengthVisible) {
+      this.strengthVisible = false;
+      checklist.animate({
+        opacity: 0,
+        translate: { x: 0, y: 6 },
+        duration: 160,
+        curve: 'easeIn'
+      });
+    }
+  }
+
+  private animateStrengthBar(): void {
+    const fill = this.strengthFillRef?.nativeElement;
+    if (!fill) return;
+
+    fill.originX = 0;
+    fill.scaleY = 1;
+
+    fill.animate({
+      scale: {
+        x: this.passwordStrength.percent / 100,
+        y: 1
+      },
+      duration: 180,
+      curve: 'easeOut'
+    });
+  }
+
+
   load(): void {
     this.loading = true;
-
     this.userService.getMe()
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -104,15 +160,13 @@ export class UserComponent implements OnInit {
   saveProfile(): void {
     if (this.profileForm.invalid) return;
 
-    const dto: UpdateProfileDto = this.profileForm.value as UpdateProfileDto;
-
+    const dto: UpdateProfileDto = this.profileForm.value;
     this.loading = true;
+
     this.userService.updateProfile(dto)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
-        next: updated => {
-          this.profile = updated;
-        },
+        next: updated => this.profile = updated,
         error: err => {
           this.error = this.common.getErrorMessage(err, 'Failed to update profile.');
         }
@@ -120,16 +174,18 @@ export class UserComponent implements OnInit {
   }
 
   changePassword(): void {
-    if (this.passwordForm.invalid) return;
+    if (this.passwordForm.invalid || this.passwordStrength.score < 5) return;
 
-    const dto: ChangePasswordDto = this.passwordForm.value as ChangePasswordDto;
-
+    const dto: ChangePasswordDto = this.passwordForm.value;
     this.loading = true;
+
     this.userService.changePassword(dto)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: () => {
           this.passwordForm.reset();
+          this.passwordStrength = this.passwordStrengthService.evaluate('');
+          this.strengthVisible = false;
         },
         error: err => {
           this.error = this.common.getErrorMessage(err, 'Failed to change password.');
@@ -137,7 +193,7 @@ export class UserComponent implements OnInit {
       });
   }
 
-  openDeleteDialog(): void {
+   openDeleteDialog(): void {
     if (this.dialog.visible || this.isAnimating) return;
 
     Utils.dismissSoftInput();
