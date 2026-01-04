@@ -11,6 +11,7 @@ import { UserContextService } from '../services/usercontext.service';
 import { HomeService } from '../services/home.service';
 import { environment } from '~/environments/environment';
 import { HomeRecentReviewDto } from '../models/homerecentreview.dto';
+import { ShortNumberPipe } from '../pipes/shortnumber.pipe';
 
 registerElement('Image', () => Image);
 
@@ -18,7 +19,7 @@ registerElement('Image', () => Image);
   standalone: true,
   selector: 'app-home',
   templateUrl: './home.component.html',
-  imports: [NgIf, NgForOf, FooterComponent],
+  imports: [NgIf, NgForOf, FooterComponent, ShortNumberPipe],
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class HomeComponent implements OnInit, AfterViewInit {

@@ -224,7 +224,7 @@
 
                     <StackLayout col="0" class="items-center">
                         <Label
-                            [text]="stats.perfumes"
+                            [text]="stats.perfumes | shortNumber"
                             class="text-text-primary text-xl font-semibold">
                         </Label>
                         <Label
@@ -235,7 +235,7 @@
 
                     <StackLayout col="1" class="items-center">
                         <Label
-                            [text]="stats.reviews"
+                            [text]="stats.reviews | shortNumber"
                             class="text-text-primary text-xl font-semibold">
                         </Label>
                         <Label
@@ -246,7 +246,7 @@
 
                     <StackLayout col="2" class="items-center">
                         <Label
-                            [text]="stats.users"
+                            [text]="stats.users | shortNumber"
                             class="text-text-primary text-xl font-semibold">
                         </Label>
                         <Label
