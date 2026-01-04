@@ -1,5 +1,4 @@
 ﻿using Core.DTOs;
-using Core.Entities;
 using Core.Enums;
 using Core.Interfaces;
 using Infrastructure.Data;
@@ -26,6 +25,34 @@ public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
          ?? await TryWindow(now.AddDays(-7), PerfumeHighlightType.Week, "Perfume of the Week")
          ?? await GetCommunityFavorite()
          ?? await GetSpotlightPerfume();
+    }
+
+    public async Task<IReadOnlyList<HomeRecentReviewDto>> GetRecentReviewsAsync(
+        int take,
+        CancellationToken ct)
+    {
+        return await _context.Reviews
+            .AsNoTracking()
+            .Where(r => !string.IsNullOrWhiteSpace(r.Comment))
+            .OrderByDescending(r => r.ReviewDate)
+            .Take(take)
+            .Select(r => new HomeRecentReviewDto
+            {
+                ReviewId = r.ReviewId,
+                PerfumeId = r.PerfumeId,
+
+                PerfumeName = r.Perfume.Name,
+                Brand = r.Perfume.Brand.Name,
+                PerfumeImageUrl = r.Perfume.PerfumePhoto == null
+                    ? null
+                    : r.Perfume.PerfumePhoto.Path,
+
+                Author = r.User.Username,
+                Rating = r.Rating,
+                Comment = r.Comment!,
+                CreatedAt = r.ReviewDate
+            })
+            .ToListAsync(ct);
     }
 
     private async Task<PerfumeOfTheDayDto?> TryWindow(

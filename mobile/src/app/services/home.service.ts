@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { PerfumeOfTheDayDto } from '../models/perfumeoftheday.dto';
+import { HomeRecentReviewDto } from '../models/homerecentreview.dto';
 
 @Injectable({ providedIn: 'root' })
 export class HomeService {
@@ -12,6 +13,13 @@ export class HomeService {
   getPerfumeOfTheDay() {
     return this.http.get<PerfumeOfTheDayDto>(
       `${this.baseUrl}/perfume-of-the-day`
+    );
+  }
+
+  getRecentReviews(take = 3) {
+    return this.http.get<HomeRecentReviewDto[]>(
+      `${this.baseUrl}/recent-reviews`,
+      { params: { take } }
     );
   }
 }

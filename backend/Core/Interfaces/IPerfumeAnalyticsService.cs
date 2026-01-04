@@ -5,5 +5,6 @@ namespace Core.Interfaces
     public interface IPerfumeAnalyticsService
     {
         Task<PerfumeOfTheDayDto?> GetPerfumeOfTheDayAsync();
+        Task<IReadOnlyList<HomeRecentReviewDto>> GetRecentReviewsAsync(int take, CancellationToken ct);
     }
 }

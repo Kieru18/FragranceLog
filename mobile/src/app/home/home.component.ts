@@ -10,6 +10,7 @@ import { PerfumeOfTheDayDto } from '../models/perfumeoftheday.dto';
 import { UserContextService } from '../services/usercontext.service';
 import { HomeService } from '../services/home.service';
 import { environment } from '~/environments/environment';
+import { HomeRecentReviewDto } from '../models/homerecentreview.dto';
 
 registerElement('Image', () => Image);
 
@@ -34,12 +35,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     { id: 'explore', title: 'Explore', icon: '🔍', route: '/explore' },
   ];
 
-  recentReviews = [
-    { id: 1, perfume: 'Dior Sauvage', rating: 4.5, excerpt: 'Amazing projection, compliments all day.', image: '~/assets/images/dior_sauvage.png' },
-    { id: 2, perfume: 'Aventus by Creed', rating: 5.0, excerpt: 'A true classic. Timeless masculine scent.', image: '~/assets/images/aventus.png' },
-    { id: 3, perfume: 'Awaan', rating: 4.2, excerpt: 'Nice sweetness and woody base.', image: '~/assets/images/awaan.png' }
-  ];
-
   stats = {
     perfumes: 128,
     reviews: 342,
@@ -56,6 +51,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
   showGreeting = false;
 
   potd: PerfumeOfTheDayDto | null = null;
+
+  recentReviews: HomeRecentReviewDto[] = [];
 
   constructor(
     private page: Page,
@@ -89,6 +86,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
       next: r => this.potd = r,
       error: () => this.potd = null
     });
+
+    this.homeService.getRecentReviews(3).subscribe({
+      next: r => this.recentReviews = r,
+      error: () => this.recentReviews = []
+    });
   }
 
 
@@ -112,6 +114,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
       return '~/assets/images/perfume-placeholder.png';
     }
     return `${this.contentUrl}${this.potd.imageUrl}`;
+  }
+
+  getReviewImageSrc(r: HomeRecentReviewDto): string {
+    if (!r.perfumeImageUrl) {
+      return '~/assets/images/perfume-placeholder.png';
+    }
+    return `${this.contentUrl}${r.perfumeImageUrl}`;
   }
 
   toFixedRating(r: number) {

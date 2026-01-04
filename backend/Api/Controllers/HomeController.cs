@@ -24,5 +24,13 @@ namespace Api.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("recent-reviews")]
+        public async Task<ActionResult<IReadOnlyList<HomeRecentReviewDto>>> GetRecentReviews(
+            [FromQuery] int take = 3,
+            CancellationToken ct = default)
+        {
+            return Ok(await _service.GetRecentReviewsAsync(take, ct));
+        }
     }
 }
