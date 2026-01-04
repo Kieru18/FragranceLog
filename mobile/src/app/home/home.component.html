@@ -8,13 +8,13 @@
                 class="px-2 pt-10 pb-1">
 
                 <Label
-                [text]="greetingLine"
-                class="text-text-secondary text-sm mb-1">
+                    [text]="greetingLine"
+                    class="text-text-secondary text-sm mb-1">
                 </Label>
 
                 <Label
-                [text]="welcomeLine"
-                class="text-text-primary text-2xl font-semibold">
+                    [text]="welcomeLine"
+                    class="text-text-primary text-2xl font-semibold">
                 </Label>
 
             </StackLayout>
@@ -23,7 +23,7 @@
 
             <StackLayout
                 *ngIf="potd"
-                class="rounded-3xl bg-dark-secondary mb-4 overflow-hidden"
+                class="rounded-3xl bg-dark-secondary mb-2 overflow-hidden"
                 (tap)="goToPerfume(potd.perfumeId)">
 
                 <GridLayout
@@ -74,68 +74,70 @@
 
                     <StackLayout orientation="horizontal" class="items-center">
 
-                    <Label
-                        text="&#xf005;"
-                        class="fas text-brand-gold text-sm mr-1">
-                    </Label>
+                        <Label
+                            text="&#xf005;"
+                            class="fas text-brand-gold text-sm mr-1">
+                        </Label>
 
-                    <Label
-                        [text]="potd.avgRating.toFixed(2)"
-                        class="text-text-secondary text-sm">
-                    </Label>
+                        <Label
+                            [text]="potd.avgRating.toFixed(2)"
+                            class="text-text-secondary text-sm">
+                        </Label>
 
-                    <Label
-                        text=" · "
-                        class="text-text-secondary text-sm">
-                    </Label>
+                        <Label
+                            text=" · "
+                            class="text-text-secondary text-sm">
+                        </Label>
 
-                    <Label
-                        [text]="potd.ratingCount + ' reviews'"
-                        class="text-text-secondary text-sm">
-                    </Label>
+                        <Label
+                            [text]="potd.ratingCount + ' reviews'"
+                            class="text-text-secondary text-sm">
+                        </Label>
 
                     </StackLayout>
 
                 </StackLayout>
-                </StackLayout>
-
-            <StackLayout
-                class="rounded-2xl bg-dark-secondary p-4"
-                (tap)="goToAddPerfume()">
-
-                <GridLayout columns="auto, *" class="items-center">
-
-                    <GridLayout
-                        col="0"
-                        width="40"
-                        height="40"
-                        class="rounded-full bg-brand-gold items-center justify-center">
-
-                        <Label
-                            text="&#xf067;"
-                            class="fas text-black text-base"
-                            verticalAlignment="center"
-                            horizontalAlignment="center">
-                        </Label>
-
-                    </GridLayout>
-
-                    <StackLayout col="1" class="ml-4">
-                        <Label
-                            text="Suggest a perfume"
-                            class="text-text-primary font-semibold">
-                        </Label>
-
-                        <Label
-                            text="Help expand FragranceLog collection"
-                            class="text-text-secondary text-xs">
-                        </Label>
-                    </StackLayout>
-
-                </GridLayout>
             </StackLayout>
 
-            <StackLayout class="rounded-xl p-4 bg-dark-secondary">
+            <GridLayout
+                columns="*, auto"
+                class="px-4 items-center"
+                (tap)="goToAddPerfume()">
+
+                <StackLayout
+                    col="0"
+                    verticalAlignment="center">
+
+                    <Label
+                        text="Missing a fragrance?"
+                        class="text-text-primary font-semibold mb-0.5">
+                    </Label>
+
+                    <Label
+                        text="Help expand FragranceLog database"
+                        class="text-text-secondary text-xs">
+                    </Label>
+
+                </StackLayout>
+
+                <GridLayout
+                    col="1"
+                    width="48"
+                    height="48"
+                    class="rounded-full bg-brand-gold items-center justify-center">
+
+                    <Label
+                        text="&#xf067;"
+                        class="fas text-black text-base"
+                        verticalAlignment="center"
+                        horizontalAlignment="center">
+                    </Label>
+
+                </GridLayout>
+
+            </GridLayout>
+
+            <StackLayout class="rounded-xl p-4 bg-dark-secondary mt-2">
                 <Label text="Recent Reviews" class="text-text-secondary text-sm font-semibold mb-3"></Label>
 
                 <StackLayout *ngFor="let r of recentReviews" class="mb-3 rounded-lg p-3 bg-dark items-start">
