@@ -7,6 +7,7 @@ import { LoginDto } from '../models/login.dto';
 import { RegisterDto } from '../models/register.dto';
 import { AuthResponseDto } from '../models/authresponse.dto';
 import { environment } from '../../environments/environment';
+import { UserContextService } from './usercontext.service';
 
 
 @Injectable({
@@ -23,7 +24,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private zone: NgZone
+    private zone: NgZone,
+    private readonly userContext: UserContextService
   ) {
     const token = this.getAccessToken();
     if (token) {
@@ -78,6 +80,7 @@ export class AuthService {
   logout() {
     ApplicationSettings.remove(this.accessTokenKey);
     ApplicationSettings.remove(this.refreshTokenKey);
+    this.userContext.clear();
     if (this.refreshTimerId) {
       clearTimeout(this.refreshTimerId);
       this.refreshTimerId = null;

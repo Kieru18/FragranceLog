@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { CommonService } from '../services/common.service';
+import { SessionStateService } from '../services/sessionstate.service';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { LoginDto } from '../models/login.dto';
 import { Page, Utils } from '@nativescript/core';
@@ -32,7 +33,8 @@ export class LoginComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private page: Page,
-    private common: CommonService
+    private common: CommonService,
+    private session: SessionStateService
   ) {
     this.page.actionBarHidden = true;
     this.form = this.fb.group({
@@ -65,6 +67,7 @@ export class LoginComponent implements OnInit {
     this.auth.login(dto).subscribe({
       next: () => {
         this.loading = false;
+        this.session.reset();
         this.router.navigate(['/home']);
       },
       error: err => {

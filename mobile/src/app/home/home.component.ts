@@ -1,10 +1,13 @@
 import { AfterViewInit, Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
 import { registerElement, RouterExtensions } from '@nativescript/angular';
 import { Image, Page } from '@nativescript/core';
-import { NgForOf } from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 import { FooterComponent } from '../footer/footer.component';
 import { Router } from '@angular/router';
 import { SnackBar } from '@nativescript-community/ui-material-snackbar';
+import { SessionStateService } from '../services/sessionstate.service';
+import { AuthService } from '../services/auth.service';
+import { UserContextService } from '../services/usercontext.service';
 
 registerElement('Image', () => Image);
 
@@ -12,7 +15,7 @@ registerElement('Image', () => Image);
   standalone: true,
   selector: 'app-home',
   templateUrl: './home.component.html',
-  imports: [NgForOf, FooterComponent],
+  imports: [NgIf, NgForOf, FooterComponent],
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class HomeComponent implements OnInit, AfterViewInit {
@@ -44,10 +47,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
   private snackBar = new SnackBar();
   private pendingMessage?: string;
 
+  greetingLine = '';
+  welcomeLine = '';
+  showGreeting = false;
+
   constructor(
     private page: Page,
     private routerExtensions: RouterExtensions,
-    private router: Router
+    private router: Router,
+    private readonly session: SessionStateService,
+    private readonly userContext: UserContextService
   ) {
     this.page.actionBarHidden = true;
   }
@@ -55,6 +64,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const nav = this.router.getCurrentNavigation();
     this.pendingMessage = nav?.extras?.state?.['snackbarMessage'];
+
+    if (!this.session.consumeHomeGreeting()) {
+      return;
+    }
+
+    this.greetingLine = this.resolveGreeting();
+    this.showGreeting = true;
+
+    this.userContext.getProfile().subscribe(profile => {
+      this.welcomeLine = profile
+        ? `Welcome back, ${profile.displayName}`
+        : 'Welcome back';
+    });
   }
 
   ngAfterViewInit(): void {
@@ -79,4 +101,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
   goToAddPerfume() {
     this.routerExtensions.navigate(['/add-perfume']);
   }
+
+  private resolveGreeting(): string {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  }
+
 }

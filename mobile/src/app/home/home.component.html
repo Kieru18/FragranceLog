@@ -1,12 +1,25 @@
-<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
+<GridLayout rows="*, auto" class="ns-dark bg-dark h-full">
 
-    <StackLayout row="0" class="px-4 pt-6 pb-3">
-        <Label text="Good evening" class="text-text-secondary text-sm mb-1"></Label>
-        <Label [text]="'Welcome back'" class="text-text-primary text-2xl font-semibold"></Label>
-    </StackLayout>
-
-    <ScrollView row="1">
+    <ScrollView row="0">
         <StackLayout class="px-4 pb-6 space-y-6">
+
+            <StackLayout
+                *ngIf="showGreeting"
+                class="px-2 pt-10 pb-1">
+
+                <Label
+                [text]="greetingLine"
+                class="text-text-secondary text-sm mb-1">
+                </Label>
+
+                <Label
+                [text]="welcomeLine"
+                class="text-text-primary text-2xl font-semibold">
+                </Label>
+
+            </StackLayout>
+
+            <StackLayout *ngIf="!showGreeting" height="16"></StackLayout>
 
             <StackLayout class="rounded-xl overflow-hidden" style="background-color: rgba(255,255,255,0.02)">
                 <GridLayout columns="auto, *" rows="auto" class="p-4 items-center">
@@ -70,5 +83,5 @@
         </StackLayout>
     </ScrollView>
 
-    <app-footer row="2"></app-footer>
+    <app-footer row="1"></app-footer>
 </GridLayout>
