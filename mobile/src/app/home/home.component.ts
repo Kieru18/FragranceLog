@@ -9,6 +9,7 @@ import { SessionStateService } from '../services/sessionstate.service';
 import { PerfumeOfTheDayDto } from '../models/perfumeoftheday.dto';
 import { UserContextService } from '../services/usercontext.service';
 import { HomeService } from '../services/home.service';
+import { environment } from '~/environments/environment';
 
 registerElement('Image', () => Image);
 
@@ -44,6 +45,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     reviews: 342,
     users: 4_200,
   };
+
+  private readonly contentUrl = `${environment.contentUrl}`;
 
   private snackBar = new SnackBar();
   private pendingMessage?: string;
@@ -104,8 +107,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
     });
   }
 
+  get potdImageSrc(): string {
+    if (!this.potd?.imageUrl) {
+      return '~/assets/images/perfume-placeholder.png';
+    }
+    return `${this.contentUrl}${this.potd.imageUrl}`;
+  }
+
   toFixedRating(r: number) {
     return r.toFixed(1);
+  }
+
+  goToPerfume(id: number) {
+    this.router.navigate(['/perfume', id]);
   }
 
   goToAddPerfume() {
@@ -118,5 +132,4 @@ export class HomeComponent implements OnInit, AfterViewInit {
     if (hour < 18) return 'Good afternoon';
     return 'Good evening';
   }
-
 }
