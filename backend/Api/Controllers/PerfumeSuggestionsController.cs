@@ -1,9 +1,13 @@
 ﻿using Core.DTOs;
 using Core.Enums;
+using Core.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 using System.Security.Claims;
-using Core.Extensions;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Api.Controllers
 {
@@ -85,9 +89,9 @@ namespace Api.Controllers
                 Title = "New Perfume Suggestion",
                 Color = 0xD3A54A,
                 Fields = fields,
-                Image = string.IsNullOrWhiteSpace(dto.ImageUrl)
+                Image = string.IsNullOrWhiteSpace(dto.ImageBase64)
                     ? null
-                    : new DiscordEmbedImage { Url = dto.ImageUrl },
+                    : new DiscordEmbedImage { Url = "attachment://image.jpg" },
                 Footer = new DiscordEmbedFooter
                 {
                     Text = $"UserId: {User.GetUserId()}"
@@ -101,8 +105,40 @@ namespace Api.Controllers
                 Embeds = [embed]
             };
 
+            using var content = new MultipartFormDataContent();
+
+            var payloadJson = JsonSerializer.Serialize(
+                payload,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                }
+            );
+
+            content.Add(
+                new StringContent(payloadJson, Encoding.UTF8),
+                "payload_json"
+            );
+
+            if (!string.IsNullOrWhiteSpace(dto.ImageBase64))
+            {
+                var base64 = dto.ImageBase64;
+                var comma = base64.IndexOf(',');
+                if (comma >= 0)
+                    base64 = base64[(comma + 1)..];
+
+                var bytes = Convert.FromBase64String(base64);
+
+                var fileContent = new ByteArrayContent(bytes);
+                fileContent.Headers.ContentType =
+                    new MediaTypeHeaderValue("image/jpeg");
+
+                content.Add(fileContent, "file", "image.jpg");
+            }
+
             var client = _httpClientFactory.CreateClient();
-            var response = await client.PostAsJsonAsync(webhookUrl, payload);
+            var response = await client.PostAsync(webhookUrl, content);
 
             if (!response.IsSuccessStatusCode)
                 return StatusCode(502);
