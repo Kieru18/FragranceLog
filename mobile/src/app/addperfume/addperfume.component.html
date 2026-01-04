@@ -169,19 +169,33 @@
         </TextView>
       </StackLayout>
 
-      <StackLayout
-        class="bg-brand-gold rounded-2xl px-6 py-4 items-center justify-center"
-        [opacity]="(submitting || !brand || !name) ? 0.5 : 1"
-        (tap)="submit()">
-        <Label text="Submit"
-               class="text-sm font-semibold text-black"
-               verticalAlignment="center"
-               horizontalAlignment="center"></Label>
-      </StackLayout>
+      <GridLayout
+        class="mt-2 bg-brand-gold rounded-2xl"
+        [class.opacity-50]="submitting || !brand || !name"
+        [isEnabled]="!(submitting || !brand || !name)"
+        (tap)="!submitting && submit()">
 
-      <Label *ngIf="success"
-             text="Thank you. Your suggestion was submitted."
-             class="text-sm text-green-400 text-center mt-4"></Label>
+        <GridLayout height="48">
+
+          <Label
+            text="Submit"
+            class="text-bg-dark font-semibold uppercase"
+            horizontalAlignment="center"
+            verticalAlignment="center"
+            [opacity]="submitting ? 0 : 1">
+          </Label>
+
+          <ActivityIndicator
+            [busy]="submitting"
+            color="#0D0D0D"
+            [opacity]="submitting ? 1 : 0"
+            horizontalAlignment="center"
+            verticalAlignment="center">
+          </ActivityIndicator>
+
+        </GridLayout>
+
+      </GridLayout>
 
     </StackLayout>
   </ScrollView>

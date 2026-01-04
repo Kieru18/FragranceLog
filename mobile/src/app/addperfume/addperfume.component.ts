@@ -1,5 +1,9 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { NativeScriptCommonModule, NativeScriptFormsModule, RouterExtensions } from '@nativescript/angular';
+import {
+  NativeScriptCommonModule,
+  NativeScriptFormsModule,
+  RouterExtensions
+} from '@nativescript/angular';
 import { Page } from '@nativescript/core';
 import { PerfumeSuggestionService } from '../services/perfumesuggestion.service';
 import { NoteTypeEnum } from '../enums/notetype.enum';
@@ -35,7 +39,6 @@ export class AddPerfumeComponent {
   newBase = '';
 
   submitting = false;
-  success = false;
 
   private snackBar = new SnackBar();
 
@@ -75,7 +78,6 @@ export class AddPerfumeComponent {
     if (!this.brand.trim() || !this.name.trim() || this.submitting) return;
 
     this.submitting = true;
-
     const perfumeName = this.name.trim();
 
     this.service.submit({
@@ -106,8 +108,7 @@ export class AddPerfumeComponent {
       },
       error: (err) => {
         this.submitting = false;
-
-        console.error('Submit failed:', err);
+        console.error(err);
 
         this.snackBar.simple(
           'Submission failed. Please try again later.',
