@@ -84,42 +84,9 @@ namespace Api.Controllers
                 });
             }
 
-            var embed = new DiscordEmbed
-            {
-                Title = "New Perfume Suggestion",
-                Color = 0xD3A54A,
-                Fields = fields,
-                Image = string.IsNullOrWhiteSpace(dto.ImageBase64)
-                    ? null
-                    : new DiscordEmbedImage { Url = "attachment://image.jpg" },
-                Footer = new DiscordEmbedFooter
-                {
-                    Text = $"UserId: {User.GetUserId()}"
-                },
-                Timestamp = DateTimeOffset.UtcNow.ToString("O")
-            };
-
-            var payload = new DiscordWebhookPayload
-            {
-                Username = "FragranceLog",
-                Embeds = [embed]
-            };
-
             using var content = new MultipartFormDataContent();
 
-            var payloadJson = JsonSerializer.Serialize(
-                payload,
-                new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                }
-            );
-
-            content.Add(
-                new StringContent(payloadJson, Encoding.UTF8),
-                "payload_json"
-            );
+            string? attachedImageFileName = null;
 
             if (!string.IsNullOrWhiteSpace(dto.ImageBase64))
             {
@@ -134,16 +101,66 @@ namespace Api.Controllers
                 var bytes = Convert.FromBase64String(base64);
 
                 const int MaxBytes = 8 * 1024 * 1024;
-
                 if (bytes.Length > MaxBytes)
                     return BadRequest("Maximum size of image is 8MB.");
 
-                var fileContent = new ByteArrayContent(bytes);
-                fileContent.Headers.ContentType =
-                    new MediaTypeHeaderValue("image/jpeg");
+                var mime = DetectMime(bytes);
+                if (mime == "application/octet-stream")
+                    return BadRequest("Unsupported image format.");
 
-                content.Add(fileContent, "file", "image.jpg");
+                var extension = mime switch
+                {
+                    "image/png" => "png",
+                    "image/webp" => "webp",
+                    "image/gif" => "gif",
+                    _ => "jpg"
+                };
+
+                attachedImageFileName = $"image.{extension}";
+
+                var fileContent = new ByteArrayContent(bytes);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(mime);
+
+                content.Add(fileContent, "file", attachedImageFileName);
             }
+
+            var embed = new DiscordEmbed
+            {
+                Title = "New Perfume Suggestion",
+                Color = 0xD3A54A,
+                Fields = fields,
+                Image = attachedImageFileName == null
+                    ? null
+                    : new DiscordEmbedImage
+                    {
+                        Url = $"attachment://{attachedImageFileName}"
+                    },
+                Footer = new DiscordEmbedFooter
+                {
+                    Text = $"UserId: {User.GetUserId()}"
+                },
+                Timestamp = DateTimeOffset.UtcNow.ToString("O")
+            };
+
+            var payload = new DiscordWebhookPayload
+            {
+                Username = "FragranceLog",
+                Embeds = [embed]
+            };
+
+            var payloadJson = JsonSerializer.Serialize(
+                payload,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                }
+            );
+
+            content.Add(
+                new StringContent(payloadJson, Encoding.UTF8),
+                "payload_json"
+            );
 
             var client = _httpClientFactory.CreateClient();
             var response = await client.PostAsync(webhookUrl, content);
@@ -170,6 +187,15 @@ namespace Api.Controllers
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Take(20);
         }
-    }
 
+        static string DetectMime(byte[] bytes)
+        {
+            if (bytes.Length < 4) return "application/octet-stream";
+            if (bytes[0] == 0xFF && bytes[1] == 0xD8) return "image/jpeg";
+            if (bytes[0] == 0x89 && bytes[1] == 0x50) return "image/png";
+            if (bytes[0] == 0x47 && bytes[1] == 0x49) return "image/gif";
+            if (bytes[0] == 0x52 && bytes[1] == 0x49) return "image/webp";
+            return "application/octet-stream";
+        }
+    }
 }

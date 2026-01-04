@@ -4,7 +4,7 @@ import {
   NativeScriptFormsModule,
   RouterExtensions
 } from '@nativescript/angular';
-import { Page, ImageSource } from '@nativescript/core';
+import { Page, ImageSource, Utils } from '@nativescript/core';
 import { PerfumeSuggestionService } from '../services/perfumesuggestion.service';
 import { NoteTypeEnum } from '../enums/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
@@ -78,7 +78,7 @@ export class AddPerfumeComponent {
 
   pickImage(): void {
     const context = ImagePicker.create({ mode: 'single' });
-
+    Utils.dismissSoftInput();
     context.authorize()
       .then(() => context.present())
       .then(selection => {
@@ -145,5 +145,21 @@ export class AddPerfumeComponent {
         );
       }
     });
+  }
+
+  removeGroup(value: string): void {
+    this.groups = this.groups.filter(g => g !== value);
+  }
+
+  removeTop(value: string): void {
+    this.topNotes = this.topNotes.filter(n => n !== value);
+  }
+
+  removeHeart(value: string): void {
+    this.heartNotes = this.heartNotes.filter(n => n !== value);
+  }
+
+  removeBase(value: string): void {
+    this.baseNotes = this.baseNotes.filter(n => n !== value);
   }
 }

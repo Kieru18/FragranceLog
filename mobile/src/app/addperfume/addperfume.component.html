@@ -85,7 +85,8 @@
           <StackLayout
             *ngFor="let g of groups"
             class="rounded-xl px-3 py-2 mr-2 mb-2"
-            style="border-width:1; border-color:#444;">
+            style="border-width:1; border-color:#444;"
+            (tap)="removeGroup(g)">
             <Label
               [text]="g"
               class="text-xs text-text-primary">
@@ -129,7 +130,8 @@
         <FlexboxLayout flexWrap="wrap" class="mb-2">
           <StackLayout
             *ngFor="let n of topNotes"
-            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2">
+            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2"
+            (tap)="removeTop(n)">
             <Label [text]="n" class="text-xs text-text-primary"></Label>
           </StackLayout>
         </FlexboxLayout>
@@ -163,7 +165,8 @@
         <FlexboxLayout flexWrap="wrap" class="mb-2">
           <StackLayout
             *ngFor="let n of heartNotes"
-            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2">
+            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2"
+            (tap)="removeHeart(n)">
             <Label [text]="n" class="text-xs text-text-primary"></Label>
           </StackLayout>
         </FlexboxLayout>
@@ -197,7 +200,8 @@
         <FlexboxLayout flexWrap="wrap" class="mb-2">
           <StackLayout
             *ngFor="let n of baseNotes"
-            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2">
+            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2"
+            (tap)="removeBase(n)">
             <Label [text]="n" class="text-xs text-text-primary"></Label>
           </StackLayout>
         </FlexboxLayout>
