@@ -1,8 +1,10 @@
-import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { registerElement } from '@nativescript/angular';
+import { AfterViewInit, Component, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
+import { registerElement, RouterExtensions } from '@nativescript/angular';
 import { Image, Page } from '@nativescript/core';
 import { NgForOf } from '@angular/common';
-import { FooterComponent } from '../footer/footer.component'
+import { FooterComponent } from '../footer/footer.component';
+import { Router } from '@angular/router';
+import { SnackBar } from '@nativescript-community/ui-material-snackbar';
 
 registerElement('Image', () => Image);
 
@@ -13,7 +15,7 @@ registerElement('Image', () => Image);
   imports: [NgForOf, FooterComponent],
   schemas: [NO_ERRORS_SCHEMA],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, AfterViewInit {
   featured = {
     image: '~/assets/images/bleu.jpg',
     name: 'Bleu de Chanel',
@@ -39,11 +41,42 @@ export class HomeComponent {
     users: 4_200,
   };
 
-  constructor(private page: Page) {
+  private snackBar = new SnackBar();
+  private pendingMessage?: string;
+
+  constructor(
+    private page: Page,
+    private routerExtensions: RouterExtensions,
+    private router: Router
+  ) {
     this.page.actionBarHidden = true;
+  }
+
+  ngOnInit(): void {
+    const nav = this.router.getCurrentNavigation();
+    this.pendingMessage = nav?.extras?.state?.['snackbarMessage'];
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.pendingMessage) return;
+
+    this.page.on(Page.navigatedToEvent, () => {
+      this.snackBar.simple(
+        this.pendingMessage!,
+        '#000000',
+        '#D3A54A',
+        1
+      );
+
+      this.pendingMessage = undefined;
+    });
   }
 
   toFixedRating(r: number) {
     return r.toFixed(1);
+  }
+
+  goToAddPerfume() {
+    this.routerExtensions.navigate(['/add-perfume']);
   }
 }

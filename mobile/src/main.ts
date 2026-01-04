@@ -67,7 +67,7 @@ runNativeScriptAngularApp({
           useClass: AuthInterceptor,
           multi: true,
         },
-        ModalDialogService,
+        ModalDialogService
       ],
     }),
 });

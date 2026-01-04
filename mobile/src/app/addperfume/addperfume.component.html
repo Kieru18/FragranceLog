@@ -1,0 +1,280 @@
+<GridLayout rows="auto, *, auto" class="ns-dark bg-dark h-full">
+
+  <StackLayout row="0" height="24"></StackLayout>
+
+  <ScrollView row="1">
+    <StackLayout class="px-6 pb-10">
+
+      <StackLayout class="pt-4 mb-6">
+        <Label
+          text="Suggest a perfume"
+          class="text-2xl font-semibold text-text-primary mb-1">
+        </Label>
+
+        <Label
+          text="Low quality entries will result in restrictions."
+          class="text-sm text-text-secondary">
+        </Label>
+      </StackLayout>
+
+      <StackLayout class="bg-dark-secondary rounded-2xl p-4 mb-6">
+        <Label
+          text="Basic information"
+          class="text-sm font-semibold text-text-primary mb-4">
+        </Label>
+
+        <TextField
+          hint="Brand"
+          [(ngModel)]="brand"
+          class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-3">
+        </TextField>
+
+        <TextField
+          hint="Name"
+          [(ngModel)]="name"
+          class="bg-dark rounded-xl px-4 py-3 text-text-primary mb-3">
+        </TextField>
+
+        <GridLayout
+          class="bg-dark rounded-2xl mb-4 overflow-hidden"
+          (tap)="pickImage()">
+
+          <GridLayout
+            *ngIf="!selectedImage"
+            height="88"
+            class="bg-dark rounded-2xl"
+            style="border-width: 1; border-color: #333333;">
+
+            <GridLayout rows="auto, auto" class="px-4 py-3 items-center justify-center">
+              <Label
+                text="&#xf03e;"
+                class="far text-text-secondary text-lg"
+                horizontalAlignment="center">
+              </Label>
+
+              <Label
+                row="1"
+                text="Tap to select image"
+                class="text-text-secondary text-sm mt-1"
+                horizontalAlignment="center">
+              </Label>
+            </GridLayout>
+
+          </GridLayout>
+
+          <GridLayout *ngIf="selectedImage" class="bg-dark rounded-2xl">
+            <Image
+              [src]="selectedImage"
+              stretch="aspectFit"
+              loadMode="async"
+              class="rounded-2xl">
+            </Image>
+          </GridLayout>
+
+        </GridLayout>
+
+      </StackLayout>
+
+      <StackLayout class="bg-dark-secondary rounded-2xl p-4 mb-6">
+        <Label
+          text="Olfactory groups"
+          class="text-sm font-semibold text-text-primary mb-3">
+        </Label>
+
+        <FlexboxLayout flexWrap="wrap" class="mb-3">
+          <StackLayout
+            *ngFor="let g of groups"
+            class="rounded-xl px-3 py-2 mr-2 mb-2"
+            style="border-width:1; border-color:#444;"
+            (tap)="removeGroup(g)">
+            <Label
+              [text]="g"
+              class="text-xs text-text-primary">
+            </Label>
+          </StackLayout>
+        </FlexboxLayout>
+
+        <GridLayout columns="*, auto">
+          <TextField
+            col="0"
+            hint="Add group"
+            [(ngModel)]="newGroup"
+            class="bg-dark rounded-xl px-4 py-3 text-text-primary mr-3">
+          </TextField>
+
+          <GridLayout
+            col="1"
+            width="40"
+            height="40"
+            borderRadius="20"
+            class="bg-brand-gold items-center justify-center"
+            (tap)="addGroup()">
+            <Label
+              text="&#xf067;"
+              class="fas text-black"
+              horizontalAlignment="center"
+              verticalAlignment="center">
+            </Label>
+          </GridLayout>
+        </GridLayout>
+      </StackLayout>
+
+      <StackLayout class="bg-dark-secondary rounded-2xl p-4 mb-6">
+        <Label
+          text="Notes"
+          class="text-sm font-semibold text-text-primary mb-4">
+        </Label>
+
+        <Label text="Top notes" class="text-xs text-text-secondary mb-2"></Label>
+
+        <FlexboxLayout flexWrap="wrap" class="mb-2">
+          <StackLayout
+            *ngFor="let n of topNotes"
+            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2"
+            (tap)="removeTop(n)">
+            <Label [text]="n" class="text-xs text-text-primary"></Label>
+          </StackLayout>
+        </FlexboxLayout>
+
+        <GridLayout columns="*, auto" class="mb-4">
+          <TextField
+            col="0"
+            hint="Add note"
+            [(ngModel)]="newTop"
+            class="bg-dark rounded-xl px-4 py-3 text-text-primary mr-3">
+          </TextField>
+
+          <GridLayout
+            col="1"
+            width="40"
+            height="40"
+            borderRadius="20"
+            class="bg-brand-gold items-center justify-center"
+            (tap)="addNote(1)">
+            <Label
+              text="&#xf067;"
+              class="fas text-black"
+              horizontalAlignment="center"
+              verticalAlignment="center">
+            </Label>
+          </GridLayout>
+        </GridLayout>
+
+        <Label text="Heart notes" class="text-xs text-text-secondary mb-2"></Label>
+
+        <FlexboxLayout flexWrap="wrap" class="mb-2">
+          <StackLayout
+            *ngFor="let n of heartNotes"
+            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2"
+            (tap)="removeHeart(n)">
+            <Label [text]="n" class="text-xs text-text-primary"></Label>
+          </StackLayout>
+        </FlexboxLayout>
+
+        <GridLayout columns="*, auto" class="mb-4">
+          <TextField
+            col="0"
+            hint="Add note"
+            [(ngModel)]="newHeart"
+            class="bg-dark rounded-xl px-4 py-3 text-text-primary mr-3">
+          </TextField>
+
+          <GridLayout
+            col="1"
+            width="40"
+            height="40"
+            borderRadius="20"
+            class="bg-brand-gold items-center justify-center"
+            (tap)="addNote(2)">
+            <Label
+              text="&#xf067;"
+              class="fas text-black"
+              horizontalAlignment="center"
+              verticalAlignment="center">
+            </Label>
+          </GridLayout>
+        </GridLayout>
+
+        <Label text="Base notes" class="text-xs text-text-secondary mb-2"></Label>
+
+        <FlexboxLayout flexWrap="wrap" class="mb-2">
+          <StackLayout
+            *ngFor="let n of baseNotes"
+            class="bg-dark rounded-xl px-3 py-2 mr-2 mb-2"
+            (tap)="removeBase(n)">
+            <Label [text]="n" class="text-xs text-text-primary"></Label>
+          </StackLayout>
+        </FlexboxLayout>
+
+        <GridLayout columns="*, auto">
+          <TextField
+            col="0"
+            hint="Add note"
+            [(ngModel)]="newBase"
+            class="bg-dark rounded-xl px-4 py-3 text-text-primary mr-3">
+          </TextField>
+
+          <GridLayout
+            col="1"
+            width="40"
+            height="40"
+            borderRadius="20"
+            class="bg-brand-gold items-center justify-center"
+            (tap)="addNote(3)">
+            <Label
+              text="&#xf067;"
+              class="fas text-black"
+              horizontalAlignment="center"
+              verticalAlignment="center">
+            </Label>
+          </GridLayout>
+        </GridLayout>
+      </StackLayout>
+
+      <StackLayout class="bg-dark-secondary rounded-2xl p-4 mb-6">
+        <Label
+          text="Comment"
+          class="text-sm font-semibold text-text-primary mb-3">
+        </Label>
+
+        <TextView
+          hint="Optional comment for moderators..."
+          [(ngModel)]="comment"
+          class="bg-dark rounded-xl text-text-primary"
+          style="min-height:120; padding:16; placeholder-color:#B8B8B8;">
+        </TextView>
+      </StackLayout>
+
+      <GridLayout
+        class="mt-2 bg-brand-gold rounded-2xl"
+        [class.opacity-50]="submitting || !brand || !name"
+        [isEnabled]="!(submitting || !brand || !name)"
+        (tap)="!submitting && submit()">
+
+        <GridLayout height="48">
+
+          <Label
+            text="Submit"
+            class="text-bg-dark font-semibold uppercase"
+            horizontalAlignment="center"
+            verticalAlignment="center"
+            [opacity]="submitting ? 0 : 1">
+          </Label>
+
+          <ActivityIndicator
+            [busy]="submitting"
+            color="#0D0D0D"
+            [opacity]="submitting ? 1 : 0"
+            horizontalAlignment="center"
+            verticalAlignment="center">
+          </ActivityIndicator>
+
+        </GridLayout>
+
+      </GridLayout>
+
+    </StackLayout>
+  </ScrollView>
+
+  <app-footer row="2"></app-footer>
+</GridLayout>
