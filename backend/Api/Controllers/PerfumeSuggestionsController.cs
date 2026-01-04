@@ -123,12 +123,20 @@ namespace Api.Controllers
 
             if (!string.IsNullOrWhiteSpace(dto.ImageBase64))
             {
+                if (dto.ImageBase64.Length > 12_000_000)
+                    return BadRequest("Maximum size of image is 8MB.");
+
                 var base64 = dto.ImageBase64;
                 var comma = base64.IndexOf(',');
                 if (comma >= 0)
                     base64 = base64[(comma + 1)..];
 
                 var bytes = Convert.FromBase64String(base64);
+
+                const int MaxBytes = 8 * 1024 * 1024;
+
+                if (bytes.Length > MaxBytes)
+                    return BadRequest("Maximum size of image is 8MB.");
 
                 var fileContent = new ByteArrayContent(bytes);
                 fileContent.Headers.ContentType =
