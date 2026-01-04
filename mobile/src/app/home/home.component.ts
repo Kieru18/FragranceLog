@@ -6,8 +6,9 @@ import { FooterComponent } from '../footer/footer.component';
 import { Router } from '@angular/router';
 import { SnackBar } from '@nativescript-community/ui-material-snackbar';
 import { SessionStateService } from '../services/sessionstate.service';
-import { AuthService } from '../services/auth.service';
+import { PerfumeOfTheDayDto } from '../models/perfumeoftheday.dto';
 import { UserContextService } from '../services/usercontext.service';
+import { HomeService } from '../services/home.service';
 
 registerElement('Image', () => Image);
 
@@ -51,12 +52,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
   welcomeLine = '';
   showGreeting = false;
 
+  potd: PerfumeOfTheDayDto | null = null;
+
   constructor(
     private page: Page,
     private routerExtensions: RouterExtensions,
     private router: Router,
     private readonly session: SessionStateService,
-    private readonly userContext: UserContextService
+    private readonly userContext: UserContextService,
+    private readonly homeService: HomeService
   ) {
     this.page.actionBarHidden = true;
   }
@@ -65,19 +69,25 @@ export class HomeComponent implements OnInit, AfterViewInit {
     const nav = this.router.getCurrentNavigation();
     this.pendingMessage = nav?.extras?.state?.['snackbarMessage'];
 
-    if (!this.session.consumeHomeGreeting()) {
-      return;
+    if (this.session.consumeHomeGreeting()) {
+      this.greetingLine = this.resolveGreeting();
+      this.showGreeting = true;
+
+      this.userContext.getProfile().subscribe(profile => {
+        this.welcomeLine = profile
+          ? `Welcome back, ${profile.displayName}`
+          : 'Welcome back';
+      });
+    } else {
+      this.showGreeting = false;
     }
 
-    this.greetingLine = this.resolveGreeting();
-    this.showGreeting = true;
-
-    this.userContext.getProfile().subscribe(profile => {
-      this.welcomeLine = profile
-        ? `Welcome back, ${profile.displayName}`
-        : 'Welcome back';
+    this.homeService.getPerfumeOfTheDay().subscribe({
+      next: r => this.potd = r,
+      error: () => this.potd = null
     });
   }
+
 
   ngAfterViewInit(): void {
     if (!this.pendingMessage) return;

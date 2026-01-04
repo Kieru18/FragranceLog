@@ -21,17 +21,48 @@
 
             <StackLayout *ngIf="!showGreeting" height="16"></StackLayout>
 
-            <StackLayout class="rounded-xl overflow-hidden" style="background-color: rgba(255,255,255,0.02)">
-                <GridLayout columns="auto, *" rows="auto" class="p-4 items-center">
-                    <Image src="{{ featured.image }}" stretch="aspectFill" col="0" class="h-36 w-36 rounded-lg mr-4"></Image>
-                    <StackLayout col="1">
-                        <Label [text]="featured.name" class="text-text-primary text-xl font-bold mb-1"></Label>
-                        <Label [text]="featured.tagline" class="text-text-secondary text-sm mb-3" textWrap="true"></Label>
-                        <StackLayout orientation="horizontal" class="items-center">
-                            <Label [text]="'⭐ ' + toFixedRating(featured.rating)" class="text-brand-gold font-semibold mr-3"></Label>
-                            <Button [text]="'Save'" class="px-3 py-2 rounded-lg bg-dark-secondary border border-brand-gold text-brand-gold font-medium mr-2"></Button>
-                            <Button [text]="'Share'" class="px-3 py-2 rounded-lg bg-transparent border border-gray-800 text-text-secondary font-medium"></Button>
-                        </StackLayout>
+            <StackLayout
+                *ngIf="potd"
+                class="rounded-xl overflow-hidden bg-dark-secondary p-4">
+
+                <Label
+                    text="Perfume of the day"
+                    class="text-xs text-text-secondary uppercase mb-1">
+                </Label>
+
+                <GridLayout columns="auto,*" class="items-center">
+                    <Image
+                    [src]="potd.imageUrl"
+                    class="h-32 w-32 rounded-lg mr-4"
+                    stretch="aspectFill">
+                    </Image>
+
+                    <StackLayout>
+                    <Label
+                        [text]="potd.name"
+                        class="text-text-primary text-xl font-semibold">
+                    </Label>
+
+                    <Label
+                        [text]="potd.brand"
+                        class="text-text-secondary text-sm mb-2">
+                    </Label>
+
+                    <Label
+                        [text]="potd.reason"
+                        class="text-text-secondary text-xs mb-3">
+                    </Label>
+
+                    <Label
+                        [text]="'⭐ ' + potd.avgRating.toFixed(2) + ' · ' + potd.ratingCount + ' reviews'"
+                        class="text-brand-gold text-sm">
+                    </Label>
+
+                    <Button
+                        text="View perfume"
+                        class="mt-3 px-4 py-2 rounded-lg bg-brand-gold text-dark font-semibold"
+                        (tap)="goToPerfume(potd.perfumeId)">
+                    </Button>
                     </StackLayout>
                 </GridLayout>
             </StackLayout>
