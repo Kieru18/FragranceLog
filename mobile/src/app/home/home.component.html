@@ -99,22 +99,41 @@
                 </StackLayout>
                 </StackLayout>
 
-            <GridLayout columns="*, auto, *">
-                <StackLayout col="0" class="rounded-xl p-4 bg-dark-secondary items-center">
-                    <Label text="Quick Actions" class="text-text-secondary text-xs mb-3"></Label>
-                    <Button [text]="actions[0].icon + ' ' + actions[0].title" (tap)="goToAddPerfume()" class="w-full py-3 rounded-lg bg-transparent border border-gray-800 text-text-primary font-medium"></Button>
-                </StackLayout>
+            <StackLayout
+                class="rounded-2xl bg-dark-secondary p-4"
+                (tap)="goToAddPerfume()">
 
-                <StackLayout col="1" class="rounded-xl p-4 bg-dark-secondary items-center transform scale-105 shadow-md mx-2" style="border-color: rgba(211,165,74,0.14);">
-                    <Label text="Quick Add" class="text-text-secondary text-xs mb-2"></Label>
-                    <Button [text]="actions[0].icon" (tap)="goToAddPerfume()" class="rounded-full h-14 w-14 text-xl bg-brand-gold text-bg-dark font-bold"></Button>
-                </StackLayout>
+                <GridLayout columns="auto, *" class="items-center">
 
-                <StackLayout col="2" class="rounded-xl p-4 bg-dark-secondary items-center">
-                    <Label text="Collection" class="text-text-secondary text-xs mb-3"></Label>
-                    <Button [text]="actions[1].icon + ' ' + actions[1].title" [nsRouterLink]="[actions[1].route]" class="w-full py-3 rounded-lg bg-transparent border border-gray-800 text-text-primary font-medium"></Button>
-                </StackLayout>
-            </GridLayout>
+                    <GridLayout
+                        col="0"
+                        width="40"
+                        height="40"
+                        class="rounded-full bg-brand-gold items-center justify-center">
+
+                        <Label
+                            text="&#xf067;"
+                            class="fas text-black text-base"
+                            verticalAlignment="center"
+                            horizontalAlignment="center">
+                        </Label>
+
+                    </GridLayout>
+
+                    <StackLayout col="1" class="ml-4">
+                        <Label
+                            text="Suggest a perfume"
+                            class="text-text-primary font-semibold">
+                        </Label>
+
+                        <Label
+                            text="Help expand FragranceLog collection"
+                            class="text-text-secondary text-xs">
+                        </Label>
+                    </StackLayout>
+
+                </GridLayout>
+            </StackLayout>
 
             <StackLayout class="rounded-xl p-4 bg-dark-secondary">
                 <Label text="Recent Reviews" class="text-text-secondary text-sm font-semibold mb-3"></Label>
