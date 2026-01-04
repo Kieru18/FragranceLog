@@ -1,0 +1,9 @@
+﻿using Core.DTOs;
+
+namespace Core.Interfaces
+{
+    public interface IPerfumeAnalyticsService
+    {
+        Task<PerfumeOfTheDayDto?> GetPerfumeOfTheDayAsync();
+    }
+}
