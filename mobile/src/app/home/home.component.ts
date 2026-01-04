@@ -22,26 +22,13 @@ registerElement('Image', () => Image);
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class HomeComponent implements OnInit, AfterViewInit {
-  featured = {
-    image: '~/assets/images/bleu.jpg',
-    name: 'Bleu de Chanel',
-    tagline: 'Masculine, fresh and timeless',
-    rating: 4.6,
-  };
-
-  actions = [
-    { id: 'add', title: 'Add Perfume', icon: '➕', route: '/add', primary: true },
-    { id: 'collection', title: 'My Collection', icon: '📚', route: '/collection' },
-    { id: 'explore', title: 'Explore', icon: '🔍', route: '/explore' },
-  ];
+  private readonly contentUrl = `${environment.contentUrl}`;
 
   stats = {
-    perfumes: 128,
-    reviews: 342,
-    users: 4_200,
+    perfumes: 0,
+    reviews: 0,
+    users: 0
   };
-
-  private readonly contentUrl = `${environment.contentUrl}`;
 
   private snackBar = new SnackBar();
   private pendingMessage?: string;
@@ -90,6 +77,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.homeService.getRecentReviews(3).subscribe({
       next: r => this.recentReviews = r,
       error: () => this.recentReviews = []
+    });
+
+    this.homeService.getStats().subscribe({
+      next: s => this.stats = s,
+      error: () => {}
     });
   }
 

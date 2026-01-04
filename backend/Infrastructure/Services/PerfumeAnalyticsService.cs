@@ -55,6 +55,20 @@ public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
             .ToListAsync(ct);
     }
 
+    public async Task<HomeStatsDto> GetStatsAsync(CancellationToken ct)
+    {
+        var totalPerfumes = await _context.Perfumes.CountAsync(ct);
+        var totalReviews = await _context.Reviews.CountAsync(ct);
+        var totalUsers = await _context.Users.CountAsync(ct);
+
+        return new HomeStatsDto
+        {
+            Perfumes = totalPerfumes,
+            Reviews = totalReviews,
+            Users = totalUsers
+        };
+    }
+
     private async Task<PerfumeOfTheDayDto?> TryWindow(
         DateTime from,
         PerfumeHighlightType type,

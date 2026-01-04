@@ -32,5 +32,11 @@ namespace Api.Controllers
         {
             return Ok(await _service.GetRecentReviewsAsync(take, ct));
         }
+
+        [HttpGet("stats")]
+        public async Task<ActionResult<HomeStatsDto>> GetStats()
+        {
+            return Ok(await _service.GetStatsAsync(default));
+        }
     }
 }
