@@ -15,6 +15,7 @@
     "@nativescript-community/ui-material-snackbar": "^7.2.78",
     "@nativescript/angular": "^19.0.0",
     "@nativescript/core": "~8.9.2",
+    "@nativescript/imagepicker": "^5.0.0",
     "@nativescript/social-share": "^2.3.0",
     "rxjs": "~7.8.0",
     "zone.js": "~0.15.0"

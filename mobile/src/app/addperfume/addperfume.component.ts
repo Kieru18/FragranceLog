@@ -4,11 +4,12 @@ import {
   NativeScriptFormsModule,
   RouterExtensions
 } from '@nativescript/angular';
-import { Page } from '@nativescript/core';
+import { Page, ImageSource } from '@nativescript/core';
 import { PerfumeSuggestionService } from '../services/perfumesuggestion.service';
 import { NoteTypeEnum } from '../enums/notetype.enum';
 import { FooterComponent } from '../footer/footer.component';
 import { SnackBar } from '@nativescript-community/ui-material-snackbar';
+import * as ImagePicker from '@nativescript/imagepicker';
 
 @Component({
   standalone: true,
@@ -26,6 +27,9 @@ export class AddPerfumeComponent {
   name = '';
   imageUrl = '';
   comment = '';
+
+  selectedImage?: ImageSource;
+  selectedImageBase64?: string;
 
   groups: string[] = [];
   newGroup = '';
@@ -62,16 +66,38 @@ export class AddPerfumeComponent {
       this.topNotes.push(this.newTop.trim());
       this.newTop = '';
     }
-
     if (type === NoteTypeEnum.Middle && this.newHeart.trim()) {
       this.heartNotes.push(this.newHeart.trim());
       this.newHeart = '';
     }
-
     if (type === NoteTypeEnum.Base && this.newBase.trim()) {
       this.baseNotes.push(this.newBase.trim());
       this.newBase = '';
     }
+  }
+
+  pickImage(): void {
+    const context = ImagePicker.create({ mode: 'single' });
+
+    context.authorize()
+      .then(() => context.present())
+      .then(selection => {
+        if (!selection || selection.length === 0) return;
+
+        const sel = selection[0];
+        const asset = sel.asset;
+
+        return ImageSource.fromAsset(asset);
+      })
+      .then(image => {
+        if (!image) return;
+
+        this.selectedImage = image;
+        this.selectedImageBase64 = image.toBase64String('jpeg', 80);
+      })
+      .catch(err => {
+        console.error('Image pick failed:', err);
+      });
   }
 
   submit() {
@@ -84,6 +110,7 @@ export class AddPerfumeComponent {
       brand: this.brand.trim(),
       name: perfumeName,
       imageUrl: this.imageUrl?.trim() || undefined,
+      imageBase64: this.selectedImageBase64,
       comment: this.comment?.trim() || undefined,
       groups: this.groups,
       noteGroups: [

@@ -7,4 +7,5 @@ export interface PerfumeSuggestionRequestDto {
   noteGroups: NoteGroupDto[];
   comment?: string;
   imageUrl?: string;
+  imageBase64?: string;
 }
