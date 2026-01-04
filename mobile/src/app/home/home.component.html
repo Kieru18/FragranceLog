@@ -137,9 +137,7 @@
 
             </GridLayout>
 
-            <StackLayout
-                *ngIf="recentReviews.length > 0"
-                class="rounded-xl p-4 bg-dark-secondary mt-2">
+            <StackLayout class="rounded-xl p-4 bg-dark-secondary mt-2">
 
                 <Label
                     text="Recent Reviews"
@@ -147,20 +145,14 @@
                 </Label>
 
                 <StackLayout
-                    *ngFor="let r of recentReviews"
-                    class="mb-3 rounded-lg p-3 bg-dark"
+                    *ngFor="let r of recentReviews; let last = last"
                     (tap)="goToPerfume(r.perfumeId)">
 
-                    <GridLayout columns="auto, *">
+                    <GridLayout
+                        columns="*, auto"
+                        class="bg-dark rounded-2xl px-4 py-3">
 
-                        <Image
-                            [src]="getReviewImageSrc(r)"
-                            class="h-14 w-14 rounded-md mr-3"
-                            stretch="aspectFill"
-                            col="0">
-                        </Image>
-
-                        <StackLayout col="1">
+                        <StackLayout col="0">
 
                             <Label
                                 [text]="r.perfumeName"
@@ -169,10 +161,10 @@
 
                             <Label
                                 [text]="r.brand"
-                                class="text-text-secondary text-xs mb-1">
+                                class="text-text-secondary text-xs mt-0.5">
                             </Label>
 
-                            <StackLayout orientation="horizontal" class="items-center mb-1">
+                            <StackLayout orientation="horizontal" class="mt-1 items-center">
 
                                 <Label
                                     text="&#xf005;"
@@ -181,16 +173,6 @@
 
                                 <Label
                                     [text]="r.rating"
-                                    class="text-brand-gold text-xs">
-                                </Label>
-
-                                <Label
-                                    text=" · "
-                                    class="text-text-secondary text-xs">
-                                </Label>
-
-                                <Label
-                                    [text]="r.author"
                                     class="text-text-secondary text-xs">
                                 </Label>
 
@@ -198,14 +180,40 @@
 
                             <Label
                                 [text]="r.comment"
-                                class="text-text-secondary text-sm"
+                                class="text-text-secondary text-sm mt-1"
                                 textWrap="true"
                                 maxLines="3">
                             </Label>
 
                         </StackLayout>
 
+                        <GridLayout
+                            col="1"
+                            width="64"
+                            height="64"
+                            class="ml-3 rounded-2xl bg-dark overflow-hidden">
+
+                            <Image
+                                [src]="r.perfumeImageUrl ? contentUrl + r.perfumeImageUrl : '~/assets/images/perfume-placeholder.png'"
+                                stretch="aspectFill"
+                                opacity="0.35"
+                                blurRadius="12"
+                                borderRadius="16">
+                            </Image>
+
+                            <Image
+                                [src]="r.perfumeImageUrl ? contentUrl + r.perfumeImageUrl : '~/assets/images/perfume-placeholder.png'"
+                                stretch="aspectFit"
+                                loadMode="async"
+                                borderRadius="16">
+                            </Image>
+
+                        </GridLayout>
+
                     </GridLayout>
+
+                    <StackLayout *ngIf="!last" height="12"></StackLayout>
+
                 </StackLayout>
 
             </StackLayout>
