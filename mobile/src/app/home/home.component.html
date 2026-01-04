@@ -218,16 +218,46 @@
 
             </StackLayout>
 
-            <GridLayout columns="*, *" class="rounded-xl p-4 bg-dark-secondary">
-                <StackLayout>
-                    <Label text="Perfumes" class="text-text-secondary text-xs"></Label>
-                    <Label [text]="stats.perfumes" class="text-text-primary text-xl font-semibold"></Label>
-                </StackLayout>
-                <StackLayout>
-                    <Label text="Reviews" class="text-text-secondary text-xs"></Label>
-                    <Label [text]="stats.reviews" class="text-text-primary text-xl font-semibold"></Label>
-                </StackLayout>
-            </GridLayout>
+            <StackLayout class="rounded-xl p-4 bg-dark-secondary mt-4">
+
+                <GridLayout columns="*, *, *">
+
+                    <StackLayout col="0" class="items-center">
+                        <Label
+                            [text]="stats.perfumes"
+                            class="text-text-primary text-xl font-semibold">
+                        </Label>
+                        <Label
+                            text="Perfumes"
+                            class="text-text-secondary text-xs">
+                        </Label>
+                    </StackLayout>
+
+                    <StackLayout col="1" class="items-center">
+                        <Label
+                            [text]="stats.reviews"
+                            class="text-text-primary text-xl font-semibold">
+                        </Label>
+                        <Label
+                            text="Reviews"
+                            class="text-text-secondary text-xs">
+                        </Label>
+                    </StackLayout>
+
+                    <StackLayout col="2" class="items-center">
+                        <Label
+                            [text]="stats.users"
+                            class="text-text-primary text-xl font-semibold">
+                        </Label>
+                        <Label
+                            text="Users"
+                            class="text-text-secondary text-xs">
+                        </Label>
+                    </StackLayout>
+
+                </GridLayout>
+
+            </StackLayout>
 
         </StackLayout>
     </ScrollView>
