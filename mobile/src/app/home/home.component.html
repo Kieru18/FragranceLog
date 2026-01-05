@@ -219,34 +219,82 @@
 
             </StackLayout>
 
-            <StackLayout
-                *ngIf="insight"
-                class="rounded-xl p-4 bg-dark-secondary mt-2">
-
+            <StackLayout *ngIf="globalInsights.length" class="mt-2">
                 <Label
-                    text="Insights"
-                    class="text-text-secondary text-sm font-semibold mb-3">
+                    text="Community insights"
+                    class="text-text-secondary text-sm font-semibold mb-2">
                 </Label>
 
-                <GridLayout columns="auto, *" class="items-center">
+                <ng-container *ngFor="let insight of globalInsights">
+                    <StackLayout class="rounded-xl p-4 bg-dark-secondary mb-2">
+                    <GridLayout columns="auto, *" class="items-center">
 
-                    <GridLayout
+                        <GridLayout
                         col="0"
                         width="36"
                         height="36"
-                        class="rounded-full bg-dark items-center justify-center mr-3">
+                        class="rounded-full bg-dark mr-3"
+                        horizontalAlignment="center"
+                        verticalAlignment="center">
 
                         <Label
-                            [text]="insight.icon === 'chart-line' ? '&#xf201;' : '&#xf0eb;'"
+                            [text]="getInsightIcon(insight.icon)"
                             class="fas text-brand-gold text-sm"
+                            horizontalAlignment="center"
                             verticalAlignment="center"
-                            horizontalAlignment="center">
+                            textAlignment="center"
+                            lineHeight="36">
                         </Label>
 
+                        </GridLayout>
+
+                        <StackLayout col="1">
+                        <Label
+                            [text]="insight.title"
+                            class="text-text-primary font-semibold">
+                            </Label>
+
+                        <Label
+                            [text]="insight.subtitle"
+                            class="text-text-secondary text-xs mt-0.5">
+                        </Label>
+                        </StackLayout>
+
                     </GridLayout>
+                    </StackLayout>
+                </ng-container>
+                </StackLayout>
 
-                    <StackLayout col="1">
+                <StackLayout *ngIf="personalInsights.length" class="mt-2">
+                <Label
+                    text="Your insights"
+                    class="text-text-secondary text-sm font-semibold mb-2">
+                </Label>
 
+                <ng-container *ngFor="let insight of personalInsights">
+                    <StackLayout class="rounded-xl p-4 bg-dark-secondary mb-2">
+                    <GridLayout columns="auto, *" class="items-center">
+
+                        <GridLayout
+                        col="0"
+                        width="36"
+                        height="36"
+                        class="rounded-full bg-dark mr-3"
+                        horizontalAlignment="center"
+                        verticalAlignment="center">
+
+                        <Label
+                            [text]="getInsightIcon(insight.icon)"
+                            class="fas text-brand-gold text-sm"
+                            horizontalAlignment="center"
+                            verticalAlignment="center"
+                            textAlignment="center"
+                            lineHeight="36">
+                        </Label>
+
+                        </GridLayout>
+
+                        <StackLayout col="1">
                         <Label
                             [text]="insight.title"
                             class="text-text-primary font-semibold">
@@ -256,11 +304,11 @@
                             [text]="insight.subtitle"
                             class="text-text-secondary text-xs mt-0.5">
                         </Label>
+                        </StackLayout>
 
+                    </GridLayout>
                     </StackLayout>
-
-                </GridLayout>
-
+                </ng-container>
             </StackLayout>
 
             <StackLayout class="rounded-xl p-4 bg-dark-secondary mt-4">

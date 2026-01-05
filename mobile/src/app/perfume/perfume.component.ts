@@ -405,6 +405,7 @@ export class PerfumeComponent implements OnInit {
         this.applyLocalAggregates(rating, text);
         this.initialRating = this.details?.myRating ?? null;
         this.initialText = this.details?.myReview ?? '';
+        Utils.dismissSoftInput();
         this.recomputeDirty();
         this.refreshCurrentUserReview();
       },
@@ -745,6 +746,7 @@ export class PerfumeComponent implements OnInit {
     this.reviewService.delete(this.details.perfumeId).subscribe({
       next: () => {
         this.applyLocalReviewDelete();
+        Utils.dismissSoftInput();
         this.isSubmitting = false;
       },
       error: () => {

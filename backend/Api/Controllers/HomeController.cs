@@ -1,24 +1,29 @@
 ﻿using Core.DTOs;
+using Core.Extensions;
 using Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/home")]
     public sealed class HomeController : ControllerBase
     {
-        private readonly IPerfumeAnalyticsService _service;
+        private readonly IPerfumeAnalyticsService _perfumeAnalyticsService;
+        private readonly IHomeInsightService _homeInsightService;
 
-        public HomeController(IPerfumeAnalyticsService service)
+        public HomeController(IPerfumeAnalyticsService perfumeAnalyticsService, IHomeInsightService homeInsightService)
         {
-            _service = service;
+            _perfumeAnalyticsService = perfumeAnalyticsService;
+            _homeInsightService = homeInsightService;
         }
 
         [HttpGet("perfume-of-the-day")]
         public async Task<ActionResult<PerfumeOfTheDayDto>> GetPerfumeOfTheDay()
         {
-            var result = await _service.GetPerfumeOfTheDayAsync();
+            var result = await _perfumeAnalyticsService.GetPerfumeOfTheDayAsync();
             if (result == null)
                 return NoContent();
 
@@ -30,23 +35,28 @@ namespace Api.Controllers
             [FromQuery] int take = 3,
             CancellationToken ct = default)
         {
-            return Ok(await _service.GetRecentReviewsAsync(take, ct));
+            return Ok(await _perfumeAnalyticsService.GetRecentReviewsAsync(take, ct));
         }
 
         [HttpGet("stats")]
         public async Task<ActionResult<HomeStatsDto>> GetStats()
         {
-            return Ok(await _service.GetStatsAsync(default));
+            return Ok(await _perfumeAnalyticsService.GetStatsAsync(default));
         }
 
-        [HttpGet("insight")]
-        public async Task<ActionResult<HomeInsightDto>> GetInsight(CancellationToken ct)
+        [HttpGet("insights")]
+        public async Task<ActionResult<IReadOnlyList<HomeInsightDto>>> GetInsights(
+            CancellationToken ct)
         {
-            var insight = await _service.GetHomeInsightAsync(ct);
-            if (insight == null)
-                return NoContent();
+            var userId = User.GetUserId();
+            if (userId == null)
+                return Unauthorized();
 
-            return Ok(insight);
+            var insights = await _homeInsightService.GetInsightsAsync(userId.Value, ct);
+
+            return insights.Count == 0
+                ? NoContent()
+                : Ok(insights);
         }
     }
 }

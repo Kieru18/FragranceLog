@@ -13,6 +13,9 @@ import { environment } from '~/environments/environment';
 import { HomeRecentReviewDto } from '../models/homerecentreview.dto';
 import { ShortNumberPipe } from '../pipes/shortnumber.pipe';
 import { HomeInsightDto } from '../models/homeinsight.dto';
+import { InsightScopeEnum } from '../enums/insightscope.enum';
+import { HomeInsightIconEnum } from '../enums/homeinsighticon.enum';
+import { HOME_INSIGHT_ICONS } from '../const/HOME_INSIGHT_ICONS';
 
 registerElement('Image', () => Image);
 
@@ -24,6 +27,8 @@ registerElement('Image', () => Image);
   schemas: [NO_ERRORS_SCHEMA],
 })
 export class HomeComponent implements OnInit, AfterViewInit {
+  readonly InsightScopeEnum = InsightScopeEnum;
+
   private readonly contentUrl = `${environment.contentUrl}`;
 
   stats = {
@@ -43,7 +48,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   recentReviews: HomeRecentReviewDto[] = [];
 
-  insight: HomeInsightDto | null = null;
+  insights: HomeInsightDto[] = [];
+  globalInsights: HomeInsightDto[] = [];
+  personalInsights: HomeInsightDto[] = [];
 
   constructor(
     private page: Page,
@@ -88,12 +95,29 @@ export class HomeComponent implements OnInit, AfterViewInit {
       error: () => {}
     });
 
-    this.homeService.getInsight().subscribe({
-      next: i => this.insight = i,
-      error: () => this.insight = null
+    this.homeService.getInsights().subscribe({
+      next: insights => {
+        this.insights = insights;
+
+        this.globalInsights = insights.filter(
+          i => i.scope === InsightScopeEnum.Global
+        );
+
+        this.personalInsights = insights.filter(
+          i => i.scope === InsightScopeEnum.Personal
+        );
+      },
+      error: () => {
+        this.insights = [];
+        this.globalInsights = [];
+        this.personalInsights = [];
+      }
     });
   }
 
+  getInsightIcon(icon: HomeInsightIconEnum): string {
+    return HOME_INSIGHT_ICONS[icon] ?? '\uf128';
+  }
 
   ngAfterViewInit(): void {
     if (!this.pendingMessage) return;

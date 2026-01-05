@@ -29,9 +29,7 @@ export class HomeService {
     return this.http.get<HomeStatsDto>(`${this.baseUrl}/stats`);
   }
 
-  getInsight() {
-    return this.http.get<HomeInsightDto | null>(
-      `${this.baseUrl}/insight`
-    );
+  getInsights() {
+    return this.http.get<HomeInsightDto[]>(`${this.baseUrl}/insights`);
   }
 }
