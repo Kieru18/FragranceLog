@@ -71,8 +71,16 @@ namespace Api
 
             builder.Services.AddScoped<IHomeInsightProvider, CommunityMoodInsightProvider>();
             builder.Services.AddScoped<IHomeInsightProvider, TrendingPerfumeInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, GlobalTasteInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, BrandMomentumInsightProvider>();
+
+
             builder.Services.AddScoped<IHomeInsightProvider, PersonalRatingBiasInsightProvider>();
             builder.Services.AddScoped<IHomeInsightProvider, PersonalReviewActivityInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, RatingStyleInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, FavoriteBrandInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, TasteProfileInsightProvider>();
+
             builder.Services.AddScoped<IHomeInsightService, HomeInsightService>();
            
             if (!builder.Environment.IsDevelopment())

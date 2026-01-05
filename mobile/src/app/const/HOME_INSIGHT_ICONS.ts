@@ -1,5 +1,6 @@
 import { HomeInsightIconEnum } from "../enums/homeinsighticon.enum";
 
+
 export const HOME_INSIGHT_ICONS: Record<HomeInsightIconEnum, string> = {
   [HomeInsightIconEnum.ChartLine]: '\uf201',
   [HomeInsightIconEnum.ChartBar]: '\uf080',
@@ -20,9 +21,6 @@ export const HOME_INSIGHT_ICONS: Record<HomeInsightIconEnum, string> = {
   [HomeInsightIconEnum.Heart]: '\uf004',
   [HomeInsightIconEnum.Heartbeat]: '\uf21e',
 
-  [HomeInsightIconEnum.ThumbsUp]: '\uf164',
-  [HomeInsightIconEnum.ThumbsDown]: '\uf165',
-
   [HomeInsightIconEnum.Clock]: '\uf017',
   [HomeInsightIconEnum.History]: '\uf1da',
   [HomeInsightIconEnum.Calendar]: '\uf073',
@@ -42,5 +40,10 @@ export const HOME_INSIGHT_ICONS: Record<HomeInsightIconEnum, string> = {
   [HomeInsightIconEnum.Moon]: '\uf186',
   [HomeInsightIconEnum.Snowflake]: '\uf2dc',
 
-  [HomeInsightIconEnum.BalanceScale]: '\uf24e'
+  [HomeInsightIconEnum.BalanceScale]: '\uf24e',
+
+  [HomeInsightIconEnum.Sliders]: '\uf1de',
+
+  [HomeInsightIconEnum.Flask]: '\uf0c3',
+  [HomeInsightIconEnum.Building]: '\uf1ad'
 };

@@ -21,9 +21,6 @@
         Heart,
         Heartbeat,
 
-        ThumbsUp,
-        ThumbsDown,
-
         Clock,
         History,
         Calendar,
@@ -43,6 +40,11 @@
         Moon,
         Snowflake,
 
-        BalanceScale
+        BalanceScale,
+
+        Sliders,
+
+        Flask,
+        Building
     }
 }
