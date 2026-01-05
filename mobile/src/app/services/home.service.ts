@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { PerfumeOfTheDayDto } from '../models/perfumeoftheday.dto';
 import { HomeRecentReviewDto } from '../models/homerecentreview.dto';
 import { HomeStatsDto } from '../models/homestats.dto';
+import { HomeInsightDto } from '../models/homeinsight.dto';
 
 @Injectable({ providedIn: 'root' })
 export class HomeService {
@@ -26,5 +27,11 @@ export class HomeService {
 
   getStats() {
     return this.http.get<HomeStatsDto>(`${this.baseUrl}/stats`);
+  }
+
+  getInsight() {
+    return this.http.get<HomeInsightDto | null>(
+      `${this.baseUrl}/insight`
+    );
   }
 }

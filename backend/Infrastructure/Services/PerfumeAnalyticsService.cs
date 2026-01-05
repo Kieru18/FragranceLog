@@ -69,6 +69,33 @@ public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
         };
     }
 
+    public async Task<HomeInsightDto?> GetHomeInsightAsync(CancellationToken ct)
+    {
+        var since = DateTime.UtcNow.AddHours(-24);
+
+        var stats = await _context.Reviews
+            .AsNoTracking()
+            .Where(r => r.ReviewDate >= since)
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Avg = g.Average(r => (double)r.Rating),
+                Count = g.Count()
+            })
+            .SingleOrDefaultAsync(ct);
+
+        if (stats == null || stats.Count == 0)
+            return null;
+
+        return new HomeInsightDto
+        {
+            Title = "Community mood",
+            Subtitle = $"Average rating {stats.Avg:F2} based on {stats.Count} recent reviews",
+            Icon = "chart-line"
+        };
+    }
+
+
     private async Task<PerfumeOfTheDayDto?> TryWindow(
         DateTime from,
         PerfumeHighlightType type,

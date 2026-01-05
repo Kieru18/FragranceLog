@@ -12,6 +12,7 @@ import { HomeService } from '../services/home.service';
 import { environment } from '~/environments/environment';
 import { HomeRecentReviewDto } from '../models/homerecentreview.dto';
 import { ShortNumberPipe } from '../pipes/shortnumber.pipe';
+import { HomeInsightDto } from '../models/homeinsight.dto';
 
 registerElement('Image', () => Image);
 
@@ -41,6 +42,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
   potd: PerfumeOfTheDayDto | null = null;
 
   recentReviews: HomeRecentReviewDto[] = [];
+
+  insight: HomeInsightDto | null = null;
 
   constructor(
     private page: Page,
@@ -83,6 +86,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.homeService.getStats().subscribe({
       next: s => this.stats = s,
       error: () => {}
+    });
+
+    this.homeService.getInsight().subscribe({
+      next: i => this.insight = i,
+      error: () => this.insight = null
     });
   }
 

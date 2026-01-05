@@ -219,6 +219,50 @@
 
             </StackLayout>
 
+            <StackLayout
+                *ngIf="insight"
+                class="rounded-xl p-4 bg-dark-secondary mt-2">
+
+                <Label
+                    text="Insights"
+                    class="text-text-secondary text-sm font-semibold mb-3">
+                </Label>
+
+                <GridLayout columns="auto, *" class="items-center">
+
+                    <GridLayout
+                        col="0"
+                        width="36"
+                        height="36"
+                        class="rounded-full bg-dark items-center justify-center mr-3">
+
+                        <Label
+                            [text]="insight.icon === 'chart-line' ? '&#xf201;' : '&#xf0eb;'"
+                            class="fas text-brand-gold text-sm"
+                            verticalAlignment="center"
+                            horizontalAlignment="center">
+                        </Label>
+
+                    </GridLayout>
+
+                    <StackLayout col="1">
+
+                        <Label
+                            [text]="insight.title"
+                            class="text-text-primary font-semibold">
+                        </Label>
+
+                        <Label
+                            [text]="insight.subtitle"
+                            class="text-text-secondary text-xs mt-0.5">
+                        </Label>
+
+                    </StackLayout>
+
+                </GridLayout>
+
+            </StackLayout>
+
             <StackLayout class="rounded-xl p-4 bg-dark-secondary mt-4">
 
                 <GridLayout columns="*, *, *">

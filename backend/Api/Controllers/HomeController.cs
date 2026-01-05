@@ -38,5 +38,15 @@ namespace Api.Controllers
         {
             return Ok(await _service.GetStatsAsync(default));
         }
+
+        [HttpGet("insight")]
+        public async Task<ActionResult<HomeInsightDto>> GetInsight(CancellationToken ct)
+        {
+            var insight = await _service.GetHomeInsightAsync(ct);
+            if (insight == null)
+                return NoContent();
+
+            return Ok(insight);
+        }
     }
 }
