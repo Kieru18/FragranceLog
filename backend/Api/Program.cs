@@ -4,12 +4,14 @@ using Api.Validators;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Core.Enums;
 using Core.Interfaces;
 using Core.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data;
 using Infrastructure.Services;
+using Infrastructure.Services.InsightProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -45,7 +47,15 @@ namespace Api
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 
-            builder.Services.AddControllers();
+            builder.Services
+                .AddControllers()
+                .AddJsonOptions(o =>
+                {
+                    o.JsonSerializerOptions.Converters.Add(
+                        new KebabCaseEnumConverter<InsightIconEnum>()
+                    );
+                });
+
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -57,8 +67,23 @@ namespace Api
             builder.Services.AddScoped<IPerfumeListService, PerfumeListService>();
             builder.Services.AddScoped<ISharedListService, SharedListService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IPerfumeAnalyticsService, PerfumeAnalyticsService>();
+            builder.Services.AddScoped<IGeoService, GeoService>();
+
+            builder.Services.AddScoped<IHomeInsightProvider, CommunityMoodInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, TrendingPerfumeInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, GlobalTasteInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, BrandMomentumInsightProvider>();
 
 
+            builder.Services.AddScoped<IHomeInsightProvider, PersonalRatingBiasInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, PersonalReviewActivityInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, RatingStyleInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, FavoriteBrandInsightProvider>();
+            builder.Services.AddScoped<IHomeInsightProvider, TasteProfileInsightProvider>();
+
+            builder.Services.AddScoped<IHomeInsightService, HomeInsightService>();
+           
             if (!builder.Environment.IsDevelopment())
             {
                 builder.Services.AddDbContext<FragranceLogContext>(options =>
