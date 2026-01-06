@@ -2,6 +2,7 @@
 using Core.Enums;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Services;
@@ -9,10 +10,12 @@ namespace Core.Services;
 public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
 {
     private readonly FragranceLogContext _context;
+    private readonly IGeoService _geoService;
 
-    public PerfumeAnalyticsService(FragranceLogContext context)
+    public PerfumeAnalyticsService(FragranceLogContext context, IGeoService geoService)
     {
         _context = context;
+        _geoService = geoService;
     }
 
     public async Task<PerfumeOfTheDayDto?> GetPerfumeOfTheDayAsync()
@@ -67,6 +70,71 @@ public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
             Reviews = totalReviews,
             Users = totalUsers
         };
+    }
+
+    public async Task<IReadOnlyList<HomeCountryPerfumeDto>> GetTopFromCountryAsync(
+        double lat,
+        double lng,
+        int take,
+        CancellationToken ct)
+    {
+        var alpha2 = await _geoService.ResolveCountryAsync(lat, lng, ct);
+        var alpha3 = CountryCodeMapper.ToAlpha3(alpha2);
+
+        if (alpha3 == null)
+            return Array.Empty<HomeCountryPerfumeDto>();
+
+        return await GetTopFromCountryCoreAsync(alpha3, take, ct);
+    }
+
+    private async Task<IReadOnlyList<HomeCountryPerfumeDto>> GetTopFromCountryCoreAsync(
+        string alpha3,
+        int take,
+        CancellationToken ct)
+    {
+        var query =
+            from p in _context.Perfumes.AsNoTracking()
+            where p.CountryCode == alpha3
+
+            join r in _context.Reviews
+                on p.PerfumeId equals r.PerfumeId into ratings
+
+            join photo in _context.PerfumePhotos
+                on p.PerfumeId equals photo.PerfumeId into photos
+            from photo in photos.DefaultIfEmpty()
+
+            select new
+            {
+                PerfumeId = p.PerfumeId,
+                Name = p.Name,
+                Brand = p.Brand.Name,
+                ImagePath = photo.Path,
+                AvgRating = ratings.Any()
+                    ? ratings.Average(x => x.Rating)
+                    : 0,
+                RatingCount = ratings.Count()
+            };
+
+        var sql = query.ToQueryString();
+        Console.WriteLine(sql);
+
+        var rows = await query
+            .Where(x => x.RatingCount >= 2)
+            .OrderByDescending(x => x.AvgRating)
+            .ThenByDescending(x => x.RatingCount)
+            .Take(take)
+            .Select(x => new HomeCountryPerfumeDto
+            {
+                PerfumeId = x.PerfumeId,
+                Name = x.Name,
+                Brand = x.Brand,
+                ImageUrl = x.ImagePath,
+                AvgRating = Math.Round(x.AvgRating, 2),
+                RatingCount = x.RatingCount
+            })
+            .ToListAsync(ct);
+
+        return rows;
     }
 
     private async Task<PerfumeOfTheDayDto?> TryWindow(

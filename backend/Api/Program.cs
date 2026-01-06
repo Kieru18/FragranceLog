@@ -68,6 +68,7 @@ namespace Api
             builder.Services.AddScoped<ISharedListService, SharedListService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IPerfumeAnalyticsService, PerfumeAnalyticsService>();
+            builder.Services.AddScoped<IGeoService, GeoService>();
 
             builder.Services.AddScoped<IHomeInsightProvider, CommunityMoodInsightProvider>();
             builder.Services.AddScoped<IHomeInsightProvider, TrendingPerfumeInsightProvider>();

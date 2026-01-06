@@ -5,6 +5,7 @@ import { PerfumeOfTheDayDto } from '../models/perfumeoftheday.dto';
 import { HomeRecentReviewDto } from '../models/homerecentreview.dto';
 import { HomeStatsDto } from '../models/homestats.dto';
 import { HomeInsightDto } from '../models/homeinsight.dto';
+import { HomeCountryPerfumeDto } from '../models/homecountryperfume.dto';
 
 @Injectable({ providedIn: 'root' })
 export class HomeService {
@@ -31,5 +32,17 @@ export class HomeService {
 
   getInsights() {
     return this.http.get<HomeInsightDto[]>(`${this.baseUrl}/insights`);
+  }
+
+  getTopPerfumesByCountry(lat: number, lng: number) {
+    return this.http.get<HomeCountryPerfumeDto[]>(
+      `${this.baseUrl}/top-from-country`,
+      {
+        params: {
+          lat: lat.toString(),
+          lng: lng.toString()
+        }
+      }
+    );
   }
 }

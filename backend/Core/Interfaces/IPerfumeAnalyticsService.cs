@@ -7,5 +7,10 @@ namespace Core.Interfaces
         Task<PerfumeOfTheDayDto?> GetPerfumeOfTheDayAsync();
         Task<IReadOnlyList<HomeRecentReviewDto>> GetRecentReviewsAsync(int take, CancellationToken ct);
         Task<HomeStatsDto> GetStatsAsync(CancellationToken ct);
+        Task<IReadOnlyList<HomeCountryPerfumeDto>> GetTopFromCountryAsync(
+            double lat,
+            double lng,
+            int take,
+            CancellationToken ct);
     }
 }

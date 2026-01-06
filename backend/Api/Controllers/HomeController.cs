@@ -58,5 +58,15 @@ namespace Api.Controllers
                 ? NoContent()
                 : Ok(insights);
         }
+
+        [HttpGet("top-from-country")]
+        public async Task<IActionResult> GetTopFromCountry(
+            [FromQuery] double lat,
+            [FromQuery] double lng,
+            CancellationToken ct)
+        {
+            var result = await _perfumeAnalyticsService.GetTopFromCountryAsync(lat, lng, 3, ct);
+            return Ok(result);
+        }
     }
 }

@@ -321,6 +321,114 @@
                 </ng-container>
             </StackLayout>
 
+            <StackLayout class="rounded-xl p-4 bg-dark-secondary mt-2">
+                <Label
+                    text="Top perfumes from your country"
+                    class="text-text-secondary text-sm font-semibold mb-2">
+                </Label>
+
+                <ng-container *ngIf="locationConsent !== 'granted'">
+                    <Label
+                        text="Enable location to discover local top-rated perfumes."
+                        class="text-text-secondary text-xs mb-3">
+                    </Label>
+
+                    <StackLayout
+                        class="bg-dark rounded-xl px-4 py-3 items-center justify-center border border-dark-secondary"
+                        (tap)="enableLocationAndLoad()">
+
+                        <StackLayout orientation="horizontal" class="items-center">
+                            <Label
+                                text="&#xf3c5;"
+                                class="fas text-text-secondary text-sm mr-2">
+                            </Label>
+
+                            <Label
+                                text="Use my location"
+                                class="text-text-secondary text-sm font-semibold">
+                            </Label>
+                        </StackLayout>
+
+                    </StackLayout>
+                </ng-container>
+
+                <ng-container *ngIf="locationConsent === 'granted'">
+                    <ActivityIndicator
+                        *ngIf="countryLoading"
+                        busy="true"
+                        color="#D3A54A"
+                        horizontalAlignment="center">
+                    </ActivityIndicator>
+
+                    <Label
+                        *ngIf="!countryLoading && !countryPerfumes.length"
+                        text="No perfumes to show. This may be result of GPS failure."
+                        class="text-text-secondary text-xs">
+                    </Label>
+
+                    <StackLayout
+                        *ngFor="let p of countryPerfumes; let last = last"
+                        (tap)="goToPerfume(p.perfumeId)">
+
+                        <GridLayout
+                            columns="*, auto"
+                            class="bg-dark rounded-2xl px-4 py-3">
+
+                            <StackLayout col="0">
+                                <Label
+                                    [text]="p.name"
+                                    class="text-text-primary font-semibold"
+                                    textWrap="true"
+                                    maxLines="2">
+                                </Label>
+
+                                <Label
+                                    [text]="p.brand"
+                                    class="text-text-secondary text-xs mt-0.5">
+                                </Label>
+
+                                <StackLayout orientation="horizontal" class="mt-1 items-center">
+                                    <Label
+                                        text="&#xf005;"
+                                        class="fas text-brand-gold text-xs mr-1">
+                                    </Label>
+
+                                    <Label
+                                        [text]="p.avgRating.toFixed(2) + ' · ' + p.ratingCount + ' reviews'"
+                                        class="text-text-secondary text-xs">
+                                    </Label>
+                                </StackLayout>
+                            </StackLayout>
+
+                            <GridLayout
+                                col="1"
+                                width="56"
+                                height="56"
+                                class="ml-3 rounded-2xl bg-dark overflow-hidden">
+
+                                <Image
+                                    [src]="getCountryPerfumeImage(p)"
+                                    stretch="aspectFill"
+                                    opacity="0.35"
+                                    blurRadius="12"
+                                    borderRadius="16">
+                                </Image>
+
+                                <Image
+                                    [src]="getCountryPerfumeImage(p)"
+                                    stretch="aspectFit"
+                                    loadMode="async"
+                                    borderRadius="16">
+                                </Image>
+                            </GridLayout>
+
+                        </GridLayout>
+
+                        <StackLayout *ngIf="!last" height="12"></StackLayout>
+                    </StackLayout>
+                </ng-container>
+            </StackLayout>
+
             <StackLayout class="rounded-xl p-4 bg-dark-secondary mt-4">
 
                 <GridLayout columns="*, *, *">
