@@ -23,7 +23,7 @@ public sealed class PerfumeRecognitionService
         int topK)
     {
         var raw = _extractor.Extract(imagePath);
-        //var normalized = EmbeddingNormalizer.Normalize(raw);
+        var normalized = EmbeddingNormalizer.Normalize(raw);
         return _search.FindTopK(raw, _index, topK);
     }
 }
