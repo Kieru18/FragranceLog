@@ -104,6 +104,7 @@ class ResNet101APGeM(nn.Module):
         x = self.gem(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
+        x = F.normalize(x, p=2, dim=1)
         return x
 
 model = ResNet101APGeM()
@@ -143,8 +144,13 @@ torch.onnx.export(
     opset_version=18,
     input_names=["input"],
     output_names=["embedding"],
+    dynamic_axes={
+        "input": {0: "batch"},
+        "embedding": {0: "batch"}
+    },
     do_constant_folding=True
 )
+
 
 onnx_model = onnx.load(OUT_ONNX)
 onnx.checker.check_model(onnx_model)
