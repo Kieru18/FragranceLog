@@ -69,3 +69,4 @@ test-results/
 *.coverage
 *.coveragexml
 /backend/Api/wwwroot/perfume-images
+backend/Api/Embeddings/embeddings.json

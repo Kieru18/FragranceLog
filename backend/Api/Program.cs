@@ -10,12 +10,14 @@ using Core.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data;
+using Infrastructure.Helpers;
 using Infrastructure.Services;
 using Infrastructure.Services.InsightProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using PerfumeRecognition.Services;
 using System.Globalization;
 using System.Text;
 
@@ -83,7 +85,30 @@ namespace Api
             builder.Services.AddScoped<IHomeInsightProvider, TasteProfileInsightProvider>();
 
             builder.Services.AddScoped<IHomeInsightService, HomeInsightService>();
-           
+
+
+            var modelPath = Path.Combine(
+                AppContext.BaseDirectory,
+                "Assets",
+                "resnet50_embeddings.onnx");
+
+            builder.Services.AddSingleton<IEmbeddingExtractor>(sp => new EmbeddingExtractor(modelPath));
+
+            var embeddingsPath = Path.Combine(
+                AppContext.BaseDirectory,
+                "Embeddings",
+                "embeddings.json");
+
+            var embeddings = EmbeddingJsonLoader.Load(embeddingsPath);
+
+            builder.Services.AddSingleton(new EmbeddingIndex(embeddings));
+
+            builder.Services.AddSingleton<SimilaritySearch>();
+            builder.Services.AddSingleton<PerfumeRecognition.Services.PerfumeRecognitionService>();
+
+            builder.Services.AddScoped<IPerfumeRecognitionService, Infrastructure.Services.PerfumeRecognitionService>();
+
+
             if (!builder.Environment.IsDevelopment())
             {
                 builder.Services.AddDbContext<FragranceLogContext>(options =>
