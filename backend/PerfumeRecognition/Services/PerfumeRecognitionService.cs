@@ -24,6 +24,6 @@ public sealed class PerfumeRecognitionService
     {
         var raw = _extractor.Extract(imagePath);
         var normalized = EmbeddingNormalizer.Normalize(raw);
-        return _search.FindTopK(raw, _index, topK);
+        return _search.FindTopK(normalized, _index, topK);
     }
 }
