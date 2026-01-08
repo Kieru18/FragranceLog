@@ -65,7 +65,6 @@ using var db = new FragranceLogContext(
 var photos = await db.PerfumePhotos
     .AsNoTracking()
     .Select(p => new { p.PhotoId, p.Path })
-    .Take(50)
     .ToListAsync();
 
 int processed = 0;
