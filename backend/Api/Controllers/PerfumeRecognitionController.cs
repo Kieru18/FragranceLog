@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using Core.DTOs;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,16 +19,16 @@ namespace Api.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Recognize(
-            IFormFile image,
-            [FromQuery] int topK = 3,
-            CancellationToken ct = default)
+            [FromBody] PerfumeRecognitionRequestDto dto,
+            CancellationToken ct)
         {
-            if (image == null || image.Length == 0)
+            if (string.IsNullOrWhiteSpace(dto.ImageBase64))
                 return BadRequest();
 
-            await using var stream = image.OpenReadStream();
+            var bytes = Convert.FromBase64String(dto.ImageBase64);
+            using var ms = new MemoryStream(bytes);
 
-            var results = await _service.RecognizeAsync(stream, topK, ct);
+            var results = await _service.RecognizeAsync(ms, dto.TopK, ct);
             return Ok(results);
         }
     }

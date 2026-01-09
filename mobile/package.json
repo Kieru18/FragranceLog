@@ -1,5 +1,5 @@
 {
-  "name": "FragranceLog",
+  "name": "com.kieru.fragrancelog",
   "main": "src/main.ts",
   "version": "1.0.0",
   "private": true,
@@ -14,6 +14,7 @@
     "@angular/router": "~19.0.0",
     "@nativescript-community/ui-material-snackbar": "^7.2.78",
     "@nativescript/angular": "^19.0.0",
+    "@nativescript/camera": "^7.0.0",
     "@nativescript/core": "~8.9.2",
     "@nativescript/geolocation": "^9.0.0",
     "@nativescript/imagepicker": "^5.0.0",
@@ -24,7 +25,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "~19.0.0",
     "@angular/compiler-cli": "~19.0.0",
-    "@nativescript/android": "^8.9.2",
+    "@nativescript/android": "8.9.2",
     "@nativescript/tailwind": "^2.1.0",
     "@nativescript/types": "~8.9.0",
     "@nativescript/webpack": "~5.0.0",

@@ -36,5 +36,16 @@ export class AppComponent implements AfterViewInit {
       (global as any).pendingSharedToken = null;
       setTimeout(() => (global as any).openSharedModal(token), 0);
     }
+
+    (global as any).openRecognitionModal = (component: any, context?: any) => {
+      if (!this.ready) return;
+
+      this.modalService.showModal(component, {
+        viewContainerRef: this.vcRef,
+        fullscreen: true,
+        animated: false,
+        context
+      });
+    };
   }
 }
