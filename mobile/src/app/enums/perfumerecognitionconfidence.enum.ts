@@ -1,5 +1,5 @@
 export enum PerfumeRecognitionConfidence {
-  High = 'High',
-  Medium = 'Medium',
-  Low = 'Low'
+  Low = 0,
+  Medium = 1,
+  High = 2
 }

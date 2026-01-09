@@ -2,7 +2,7 @@
 
 public enum PerfumeRecognitionConfidence
 {
-    High,
-    Medium,
-    Low
+    Low = 0,
+    Medium = 1,
+    High = 2
 }

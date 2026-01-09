@@ -90,10 +90,10 @@ public sealed class PerfumeRecognitionService : IPerfumeRecognitionService
 
     private static PerfumeRecognitionConfidence MapConfidence(float score)
     {
-        if (score >= 0.85f)
+        if (score >= 0.92f)
             return PerfumeRecognitionConfidence.High;
 
-        if (score >= 0.60f)
+        if (score >= 0.85f)
             return PerfumeRecognitionConfidence.Medium;
 
         return PerfumeRecognitionConfidence.Low;
