@@ -31,5 +31,21 @@ namespace Api.Controllers
             var results = await _service.RecognizeAsync(ms, dto.TopK, ct);
             return Ok(results);
         }
+
+        [HttpPost("swagger")]
+        public async Task<IActionResult> Recognize(
+            IFormFile image,
+            [FromQuery] int topK = 3,
+            CancellationToken ct = default)
+        {
+            if (image == null || image.Length == 0)
+                return BadRequest();
+
+            await using var stream = image.OpenReadStream();
+
+
+            var results = await _service.RecognizeAsync(stream, topK, ct);
+            return Ok(results);
+        }
     }
 }
