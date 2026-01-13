@@ -38,7 +38,7 @@ export class RecognitionFlowService {
       const results = await firstValueFrom(
         this.api.recognize({
           imageBase64: imageBase64,
-          topK: 3
+          topK: 5
         })
       );
 
