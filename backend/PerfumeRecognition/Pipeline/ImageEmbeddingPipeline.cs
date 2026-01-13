@@ -23,9 +23,9 @@ public static class ImageEmbeddingPipeline
             .Append(ml.Transforms.ApplyOnnxModel(
                 modelFile: modelPath,
                 inputColumnNames: new[] { "input" },
-                outputColumnNames: new[] { "output" }));
+                outputColumnNames: new[] { "embedding" }));
 
-        var emptyData = ml.Data.LoadFromEnumerable(Array.Empty<ImageInput>());
-        return pipeline.Fit(emptyData);
+        var empty = ml.Data.LoadFromEnumerable(Array.Empty<ImageInput>());
+        return pipeline.Fit(empty);
     }
 }

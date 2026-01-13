@@ -82,12 +82,11 @@ foreach (var p in photos)
     try
     {
         var vector = extractor.Extract(imagePath);
-        var normalized = EmbeddingNormalizer.Normalize(vector);
 
         embeddings.Add(new PerfumeEmbedding
         {
             PerfumeId = p.PerfumeId,
-            Vector = normalized
+            Vector = vector
         });
 
         processed++;

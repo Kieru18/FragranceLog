@@ -20,6 +20,8 @@ using Microsoft.IdentityModel.Tokens;
 using PerfumeRecognition.Services;
 using System.Globalization;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+
 
 namespace Api
 {
@@ -86,11 +88,28 @@ namespace Api
 
             builder.Services.AddScoped<IHomeInsightService, HomeInsightService>();
 
+            builder.Services.AddSingleton<IBackgroundRemover>(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+
+                var solutionRoot = FindSolutionRoot();
+
+                var modelPath = Path.GetFullPath(Path.Combine(
+                    solutionRoot,
+                    config["PerfumeRecognition:BackgroundRemoverModelPath"]!));
+
+                var outputRoot = Path.Combine(
+                    Path.GetTempPath(),
+                    "bg-removed");
+
+                return new BackgroundRemover(modelPath, outputRoot);
+            });
+
 
             var modelPath = Path.Combine(
                 AppContext.BaseDirectory,
                 "Assets",
-                "resnet50_embeddings.onnx");
+                "resnet101_ap_gem.onnx");
 
             builder.Services.AddSingleton<IEmbeddingExtractor>(sp => new EmbeddingExtractor(modelPath));
 
@@ -221,6 +240,20 @@ namespace Api
             app.MapControllers();
 
             app.Run();
+        }
+
+        static string FindSolutionRoot()
+        {
+            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (dir != null)
+            {
+                if (dir.GetFiles("*.sln").Any())
+                    return dir.FullName;
+
+                dir = dir.Parent;
+            }
+
+            throw new InvalidOperationException("Solution root not found");
         }
     }
 }

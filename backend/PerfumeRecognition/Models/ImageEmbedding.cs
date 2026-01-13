@@ -4,7 +4,7 @@ namespace PerfumeRecognition.Models;
 
 public sealed class ImageEmbedding
 {
-    [ColumnName("output")]
+    [ColumnName("embedding")]
     [VectorType(2048)]
     public float[] Features { get; set; } = default!;
 }
