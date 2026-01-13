@@ -93,6 +93,9 @@ class ResNet101APGeM(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        mean = torch.tensor([0.485, 0.456, 0.406], device=x.device).view(1, 3, 1, 1)
+        std  = torch.tensor([0.229, 0.224, 0.225], device=x.device).view(1, 3, 1, 1)
+        x = (x - mean) / std
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -133,31 +136,36 @@ else:
 model.eval()
 
 with torch.no_grad():
-    dummy = torch.randn(1, 3, 224, 224)
-    output = model(dummy)
-    print(f"Output shape: {output.shape}")
+    img = torch.randn(1, 3, 224, 224)
+    emb = model(img)
+    norm = emb.norm(dim=1).item()
+    print("Norm:", norm)
+
+    sim_self = torch.matmul(emb, emb.T).item()
+    print("Self similarity:", sim_self)
+
+    noisy = img + torch.randn_like(img) * 0.01
+    emb_noisy = model(noisy)
+    sim_noise = torch.matmul(emb, emb_noisy.T).item()
+    print("Perturb similarity:", sim_noise)
 
 torch.onnx.export(
     model,
-    dummy,
+    img,
     OUT_ONNX,
     opset_version=18,
     input_names=["input"],
     output_names=["embedding"],
-    dynamic_axes={
-        "input": {0: "batch"},
-        "embedding": {0: "batch"}
-    },
+    dynamic_axes={"input": {0: "batch"}, "embedding": {0: "batch"}},
     do_constant_folding=True
 )
-
 
 onnx_model = onnx.load(OUT_ONNX)
 onnx.checker.check_model(onnx_model)
 
 sess = onnxruntime.InferenceSession(str(OUT_ONNX), providers=["CPUExecutionProvider"])
-onnx_out = sess.run(None, {"input": dummy.numpy()})[0]
+onnx_out = sess.run(None, {"input": img.numpy()})[0]
 
-diff = np.abs(output.numpy() - onnx_out).max()
+diff = np.abs(emb.numpy() - onnx_out).max()
 print(f"Max diff: {diff}")
 print(f"ONNX opset: {onnx_model.opset_import[0].version}")
