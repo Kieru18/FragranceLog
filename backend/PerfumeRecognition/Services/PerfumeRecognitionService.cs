@@ -5,15 +5,18 @@ namespace PerfumeRecognition.Services;
 public sealed class PerfumeRecognitionService
 {
     private readonly IEmbeddingExtractor _extractor;
+    private readonly IBackgroundRemover _backgroundRemover;
     private readonly EmbeddingIndex _index;
     private readonly SimilaritySearch _search;
 
     public PerfumeRecognitionService(
         IEmbeddingExtractor extractor,
+        IBackgroundRemover backgroundRemover,
         EmbeddingIndex index,
         SimilaritySearch search)
     {
         _extractor = extractor;
+        _backgroundRemover = backgroundRemover;
         _index = index;
         _search = search;
     }
@@ -22,8 +25,8 @@ public sealed class PerfumeRecognitionService
         string imagePath,
         int topK)
     {
-        var raw = _extractor.Extract(imagePath);
-        var normalized = EmbeddingNormalizer.Normalize(raw);
-        return _search.FindTopK(normalized, _index, topK);
+        var processedPath = _backgroundRemover.Remove(imagePath);
+        var embedding = _extractor.Extract(processedPath);
+        return _search.FindTopK(embedding, _index, topK);
     }
 }

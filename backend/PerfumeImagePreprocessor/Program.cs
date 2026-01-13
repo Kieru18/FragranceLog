@@ -1,11 +1,9 @@
 ﻿using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
+using Microsoft.Extensions.DependencyInjection;
+using PerfumeRecognition.Services;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 static string FindSolutionRoot()
 {
@@ -44,18 +42,21 @@ Console.WriteLine($"ImagesRoot:   {imagesRoot}");
 Console.WriteLine($"OutputRoot:   {outputRoot}");
 Console.WriteLine($"ModelPath:    {modelPath}");
 
+var services = new ServiceCollection();
+
+services.AddSingleton<IBackgroundRemover>(_ =>
+    new BackgroundRemover(modelPath, outputRoot));
+
+var provider = services.BuildServiceProvider();
+
+var backgroundRemover = provider.GetRequiredService<IBackgroundRemover>();
+
+
 if (!File.Exists(modelPath))
     throw new FileNotFoundException("ONNX model not found", modelPath);
 
 Directory.CreateDirectory(outputRoot);
 
-var sessionOptions = new SessionOptions
-{
-    GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL,
-    ExecutionMode = ExecutionMode.ORT_SEQUENTIAL
-};
-
-using var session = new InferenceSession(modelPath, sessionOptions);
 
 using var db = new FragranceLogContext(
     new DbContextOptionsBuilder<FragranceLogContext>()
@@ -80,7 +81,7 @@ foreach (var p in photos)
 
     if (ext == ".png" || (ext != ".jpg" && ext != ".jpeg"))
     {
-        Console.WriteLine("Skipped due to extension");
+        Console.WriteLine($"Skipped due to extension: {ext}");
         skipped++;
         continue;
     }
@@ -98,65 +99,9 @@ foreach (var p in photos)
 
     Console.WriteLine("FILE FOUND");
 
-    using var resized = Image.Load<Rgb24>(inputPath);
-    var originalSize = resized.Size;
-    resized.Mutate(x => x.Resize(320, 320));
-
-    var input = new DenseTensor<float>(new[] { 1, 3, 320, 320 });
-
-    for (int y = 0; y < 320; y++)
-    {
-        for (int x = 0; x < 320; x++)
-        {
-            var px = resized[x, y];
-            input[0, 0, y, x] = px.R / 255f;
-            input[0, 1, y, x] = px.G / 255f;
-            input[0, 2, y, x] = px.B / 255f;
-        }
-    }
-
-    var inputName = session.InputMetadata.Keys.Single();
-    var outputName = session.OutputMetadata.Keys.First();
-
-    using var results = session.Run(new[]
-    {
-        NamedOnnxValue.CreateFromTensor(inputName, input)
-    });
-
-    var mask = results
-        .First(r => r.Name == outputName)
-        .AsTensor<float>();
-
-    using var alpha = new Image<L8>(320, 320);
-    for (int y = 0; y < 320; y++)
-    {
-        for (int x = 0; x < 320; x++)
-        {
-            var v = Math.Clamp(mask[0, 0, y, x], 0f, 1f);
-            alpha[x, y] = new L8((byte)(v * 255));
-        }
-    }
-
-    alpha.Mutate(x => x.Resize(originalSize.Width, originalSize.Height));
-
-    using var original = Image.Load<Rgba32>(inputPath);
-    for (int y = 0; y < original.Height; y++)
-    {
-        for (int x = 0; x < original.Width; x++)
-        {
-            var px = original[x, y];
-            px.A = alpha[x, y].PackedValue;
-            original[x, y] = px;
-        }
-    }
-
-    var outputPath = Path.Combine(
-        outputRoot,
-        Path.ChangeExtension(Path.GetFileName(p.Path), ".png"));
+    string outputPath = backgroundRemover.Remove(inputPath);
 
     Console.WriteLine($"Output path: {outputPath}");
-
-    original.SaveAsPng(outputPath);
 
     processed++;
     Console.WriteLine($"Processed {processed}");
