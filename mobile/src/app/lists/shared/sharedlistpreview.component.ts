@@ -7,6 +7,7 @@ import { SharedListService } from '../../services/sharedlist.service';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import { Observable } from 'rxjs';
+import { PerfumeListService } from '~/app/services/perfumelist.service';
 
 @Component({
   standalone: true,
@@ -30,7 +31,8 @@ export class SharedListPreviewComponent implements OnInit {
     private params: ModalDialogParams,
     private sharedService: SharedListService,
     private routerExtensions: RouterExtensions,
-    private authService: AuthService
+    private authService: AuthService,
+    private lists: PerfumeListService
   ) {
     this.token = this.params.context?.token;
     this.isAuthenticated$ = this.authService.isAuthenticated();
@@ -82,6 +84,13 @@ export class SharedListPreviewComponent implements OnInit {
   importList(): void {
     this.sharedService.importSharedList(this.token).subscribe({
       next: (newListId) => {
+        const url = this.routerExtensions.router.url || '';
+        const isAlreadyOnOverview = url.includes('lists-overview');
+
+        if (isAlreadyOnOverview) {
+          this.lists.requestOverviewReload();
+        }
+
         this.params.closeCallback();
         setTimeout(() => {
           this.routerExtensions.navigate(['lists-overview'], {

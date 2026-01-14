@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PerfumeListDto } from '../models/perfumelist.dto';
 import { PerfumeListItemDto } from '../models/perfumelistitem.dto';
@@ -14,7 +14,17 @@ import { SharedListDto } from '../models/sharedlist.dto';
 export class PerfumeListService {
   private readonly baseUrl = `${environment.apiUrl}/lists`;
 
+  private readonly overviewReloadSubject = new Subject<void>();
+
   constructor(private http: HttpClient) {}
+
+  requestOverviewReload(): void {
+    this.overviewReloadSubject.next();
+  }
+
+  onOverviewReload(): Observable<void> {
+    return this.overviewReloadSubject.asObservable();
+  }
 
   getLists(): Observable<PerfumeListDto[]> {
     return this.http.get<PerfumeListDto[]>(this.baseUrl);
