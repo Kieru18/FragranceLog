@@ -11,7 +11,7 @@ namespace Core.DTOs
         public double AvgRating { get; set; }
         public int RatingCount { get; set; }
         public double Score { get; set; }
-        public PerfumeHighlightType Type { get; set; }
+        public PerfumeHighlightTypeEnum Type { get; set; }
         public string Reason { get; set; } = null!;
     }
 }
