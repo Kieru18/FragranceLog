@@ -1,6 +1,6 @@
 ﻿namespace Core.Enums;
 
-public enum PerfumeRecognitionConfidence
+public enum PerfumeRecognitionConfidenceEnum
 {
     Low = 0,
     Medium = 1,

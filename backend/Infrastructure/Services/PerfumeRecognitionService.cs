@@ -88,14 +88,14 @@ public sealed class PerfumeRecognitionService : IPerfumeRecognitionService
         }
     }
 
-    private static PerfumeRecognitionConfidence MapConfidence(float score)
+    private static PerfumeRecognitionConfidenceEnum MapConfidence(float score)
     {
         if (score >= 0.92f)
-            return PerfumeRecognitionConfidence.High;
+            return PerfumeRecognitionConfidenceEnum.High;
 
         if (score >= 0.85f)
-            return PerfumeRecognitionConfidence.Medium;
+            return PerfumeRecognitionConfidenceEnum.Medium;
 
-        return PerfumeRecognitionConfidence.Low;
+        return PerfumeRecognitionConfidenceEnum.Low;
     }
 }

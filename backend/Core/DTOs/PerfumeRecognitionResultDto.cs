@@ -11,5 +11,5 @@ public sealed class PerfumeRecognitionResultDto
     public string BrandName { get; set; } = null!;
     public string? ImageUrl { get; set; }
 
-    public PerfumeRecognitionConfidence Confidence { get; set; }
+    public PerfumeRecognitionConfidenceEnum Confidence { get; set; }
 }
