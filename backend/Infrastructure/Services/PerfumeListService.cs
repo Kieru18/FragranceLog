@@ -20,7 +20,7 @@ public class PerfumeListService : IPerfumeListService
     {
         return await _context.PerfumeLists
             .Where(l => l.UserId == userId)
-            .OrderBy(l => l.IsSystem)
+            .OrderByDescending(l => l.IsSystem)
             .ThenBy(l => l.Name)
             .Select(l => new PerfumeListDto
             {
@@ -58,7 +58,7 @@ public class PerfumeListService : IPerfumeListService
                     .Take(6)
                     .ToList()
             })
-            .OrderBy(x => x.IsSystem)
+            .OrderByDescending(x => x.IsSystem)
             .ThenBy(x => x.Name)
             .ToListAsync();
 
@@ -227,7 +227,7 @@ public class PerfumeListService : IPerfumeListService
             };
 
         return await query
-            .OrderBy(x => x.IsSystem)
+            .OrderByDescending(x => x.IsSystem)
             .ThenBy(x => x.Name)
             .ToListAsync();
     }
