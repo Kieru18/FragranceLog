@@ -10,14 +10,18 @@ using Core.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data;
+using Infrastructure.Helpers;
 using Infrastructure.Services;
 using Infrastructure.Services.InsightProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using PerfumeRecognition.Services;
 using System.Globalization;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+
 
 namespace Api
 {
@@ -83,7 +87,49 @@ namespace Api
             builder.Services.AddScoped<IHomeInsightProvider, TasteProfileInsightProvider>();
 
             builder.Services.AddScoped<IHomeInsightService, HomeInsightService>();
-           
+
+            builder.Services.AddSingleton<IBackgroundRemover>(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+
+                var solutionRoot = FindSolutionRoot();
+
+                var modelPath = Path.GetFullPath(Path.Combine(
+                    solutionRoot,
+                    config["PerfumeRecognition:BackgroundRemoverModelPath"]!));
+
+                var outputRoot = Path.Combine(
+                    Path.GetTempPath(),
+                    "bg-removed");
+
+                return new BackgroundRemover(modelPath, outputRoot);
+            });
+
+            builder.Services.AddSingleton<IImageCropper, AlphaBoundingBoxCropper>();
+            builder.Services.AddSingleton<IColorDescriptorExtractor, LabHistogramColorDescriptor>();
+
+            var modelPath = Path.Combine(
+                AppContext.BaseDirectory,
+                "Assets",
+                "resnet101_ap_gem.onnx");
+
+            builder.Services.AddSingleton<IEmbeddingExtractor>(sp => new EmbeddingExtractor(modelPath));
+
+            var embeddingsPath = Path.Combine(
+                AppContext.BaseDirectory,
+                "Embeddings",
+                "embeddings.json");
+
+            var embeddings = EmbeddingJsonLoader.Load(embeddingsPath);
+
+            builder.Services.AddSingleton(new EmbeddingIndex(embeddings));
+
+            builder.Services.AddSingleton<SimilaritySearch>();
+            builder.Services.AddSingleton<PerfumeRecognition.Services.PerfumeRecognitionService>();
+
+            builder.Services.AddScoped<IPerfumeRecognitionService, Infrastructure.Services.PerfumeRecognitionService>();
+
+
             if (!builder.Environment.IsDevelopment())
             {
                 builder.Services.AddDbContext<FragranceLogContext>(options =>
@@ -191,11 +237,23 @@ namespace Api
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseMiddleware<JwtMiddleware>();
-
             app.MapControllers();
 
             app.Run();
+        }
+
+        static string FindSolutionRoot()
+        {
+            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (dir != null)
+            {
+                if (dir.GetFiles("*.sln").Any())
+                    return dir.FullName;
+
+                dir = dir.Parent;
+            }
+
+            throw new InvalidOperationException("Solution root not found");
         }
     }
 }

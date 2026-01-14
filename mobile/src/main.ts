@@ -13,6 +13,7 @@ import { Application, AndroidApplication } from '@nativescript/core';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { AuthInterceptor } from './app/services/auth.interceptor';
+import { AuthRefreshInterceptor } from './app/services/authrefresh.interceptor';
 
 const EXPERIMENTAL_ZONELESS = false;
 
@@ -65,6 +66,11 @@ runNativeScriptAngularApp({
         {
           provide: HTTP_INTERCEPTORS,
           useClass: AuthInterceptor,
+          multi: true,
+        },
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: AuthRefreshInterceptor,
           multi: true,
         },
         ModalDialogService

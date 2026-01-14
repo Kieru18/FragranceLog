@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11304.174 d18.0
+VisualStudioVersion = 18.1.11304.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{4ED17CA7-E679-4972-82C7-143903DDF01F}"
 EndProject
@@ -10,6 +10,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{166FEC7B-8D74-477C-A2EE-A7F107AC6F0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter", "DataImporter\DataImporter.csproj", "{60413738-5D9A-46BC-81C6-2CEB24381A4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfumeRecognition", "PerfumeRecognition\PerfumeRecognition.csproj", "{675D7A41-D783-42D7-BE23-169C4D0E6CE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfumeEmbeddingGenerator", "PerfumeEmbeddingGenerator\PerfumeEmbeddingGenerator.csproj", "{49B793B0-6F6F-4AF8-AB57-A2161A8DB924}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfumeImagePreprocessor", "PerfumeImagePreprocessor\PerfumeImagePreprocessor.csproj", "{08E4A20A-EE3B-4E94-B5AC-9A985D35F17A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +39,18 @@ Global
 		{60413738-5D9A-46BC-81C6-2CEB24381A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60413738-5D9A-46BC-81C6-2CEB24381A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60413738-5D9A-46BC-81C6-2CEB24381A4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{675D7A41-D783-42D7-BE23-169C4D0E6CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{675D7A41-D783-42D7-BE23-169C4D0E6CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{675D7A41-D783-42D7-BE23-169C4D0E6CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{675D7A41-D783-42D7-BE23-169C4D0E6CE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B793B0-6F6F-4AF8-AB57-A2161A8DB924}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B793B0-6F6F-4AF8-AB57-A2161A8DB924}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B793B0-6F6F-4AF8-AB57-A2161A8DB924}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B793B0-6F6F-4AF8-AB57-A2161A8DB924}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08E4A20A-EE3B-4E94-B5AC-9A985D35F17A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08E4A20A-EE3B-4E94-B5AC-9A985D35F17A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08E4A20A-EE3B-4E94-B5AC-9A985D35F17A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08E4A20A-EE3B-4E94-B5AC-9A985D35F17A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

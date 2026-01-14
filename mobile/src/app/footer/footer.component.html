@@ -15,14 +15,14 @@
     <GridLayout col="2"
         class="h-12 w-12 rounded-full bg-brand-gold"
         horizontalAlignment="center"
-        verticalAlignment="center">
+        verticalAlignment="center"
+        (tap)="beginRecognitionFlow()">
 
         <Label
             text="&#xf030;"
             class="fas text-black text-xl text-center"
             horizontalAlignment="center"
-            verticalAlignment="center"
-            [nsRouterLink]="['/add']">
+            verticalAlignment="center">
         </Label>
     </GridLayout>
 

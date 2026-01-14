@@ -1,0 +1,100 @@
+<GridLayout rows="auto, *" class="ns-dark bg-dark h-full">
+
+  <StackLayout row="0" class="px-6 pt-8 pb-4 bg-dark">
+
+    <GridLayout columns="*, auto" class="items-center">
+
+      <Label
+        text="Is your perfume here?"
+        class="text-lg font-semibold text-text-primary">
+      </Label>
+
+      <GridLayout
+        col="1"
+        width="36"
+        height="36"
+        class="rounded-full bg-dark-secondary items-center justify-center"
+        (tap)="dismiss()">
+
+        <Label
+          text="&#xf00d;"
+          class="fas text-text-secondary text-sm"
+          verticalAlignment="center"
+          horizontalAlignment="center">
+        </Label>
+
+      </GridLayout>
+
+    </GridLayout>
+
+  </StackLayout>
+
+  <ScrollView row="1">
+    <StackLayout class="px-6 pb-6 space-y-4">
+
+      <StackLayout
+        *ngFor="let r of results"
+        class="rounded-2xl bg-dark-secondary overflow-hidden"
+        (tap)="openPerfume(r.perfumeId)">
+
+        <GridLayout rows="auto, auto, auto" class="p-4">
+
+          <GridLayout
+            row="0"
+            class="h-40 rounded-xl overflow-hidden mb-3">
+
+            <Image
+              [src]="contentUrl + r.imageUrl"
+              stretch="aspectFill"
+              opacity="0.35"
+              blurRadius="16"
+              borderRadius="16">
+            </Image>
+
+            <Image
+              [src]="contentUrl + r.imageUrl"
+              stretch="aspectFit"
+              loadMode="async"
+              borderRadius="16">
+            </Image>
+
+          </GridLayout>
+
+          <StackLayout row="1">
+
+            <Label
+              [text]="r.perfumeName"
+              class="text-text-primary text-lg font-semibold mb-0.5"
+              textWrap="true">
+            </Label>
+
+            <Label
+              [text]="r.brandName"
+              class="text-text-secondary text-sm">
+            </Label>
+
+          </StackLayout>
+
+          <StackLayout row="2" orientation="horizontal" class="items-center mt-2">
+
+            <Label
+              [text]="getConfidenceLabel(r.confidence)"
+              [color]="getConfidenceColor(r.confidence)"
+              class="text-xs font-semibold mr-2">
+            </Label>
+
+            <Label
+              [text]="'Score: ' + (r.score | number:'1.0-2')"
+              class="text-text-secondary text-xs">
+            </Label>
+
+          </StackLayout>
+
+        </GridLayout>
+
+      </StackLayout>
+
+    </StackLayout>
+  </ScrollView>
+
+</GridLayout>

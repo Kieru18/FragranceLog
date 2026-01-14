@@ -69,3 +69,7 @@ test-results/
 *.coverage
 *.coveragexml
 /backend/Api/wwwroot/perfume-images
+backend/Api/Embeddings/embeddings*.json
+/backend/Api/wwwroot/perfume-images-processed
+backend/PerfumeImagePreprocessor/Assets/u2net.onnx
+backend/PerfumeRecognition/Assets/resnet101_ap_gem.onnx.data

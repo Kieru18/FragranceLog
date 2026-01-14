@@ -1,6 +1,7 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NativeScriptCommonModule, RouterExtensions } from '@nativescript/angular';
+import { RecognitionFlowService } from '../services/recognitionflow.service'
 
 @Component({
   standalone: true,
@@ -13,7 +14,9 @@ import { NativeScriptCommonModule, RouterExtensions } from '@nativescript/angula
   templateUrl: './footer.component.html'
 })
 export class FooterComponent {
-    constructor(private routerExtensions: RouterExtensions) {}
+    constructor(
+      private routerExtensions: RouterExtensions,
+      private readonly recognitionFlow: RecognitionFlowService) {}
 
   goToSearch() {
     this.routerExtensions.navigate(['/search']);
@@ -29,5 +32,9 @@ export class FooterComponent {
 
   goToProfile() {
     this.routerExtensions.navigate(['/profile']);
+  }
+
+  beginRecognitionFlow() {
+    this.recognitionFlow.start();
   }
 }
