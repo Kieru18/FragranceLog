@@ -25,9 +25,9 @@ namespace Infrastructure.Tests.Services
             _jwt = new Mock<IJwtService>();
         }
 
-        private AuthService CreateService(FragranceLogContext context)
+        private AuthService CreateService(FragranceLogContext ctx)
         {
-            return new AuthService(context, _hasher.Object, _jwt.Object);
+            return new AuthService(ctx, _hasher.Object, _jwt.Object);
         }
 
         private static ClaimsPrincipal CreatePrincipalWithUserId(string userId)
@@ -44,13 +44,15 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RegisterAsync_ShouldCreateUserAndSystemLists()
         {
-            using var context = DbContextFactory.Create();
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
 
             _hasher.Setup(h => h.Hash("Password1!")).Returns("HASH");
             _jwt.Setup(j => j.GenerateAccessToken(It.IsAny<User>())).Returns("ACCESS");
             _jwt.Setup(j => j.GenerateRefreshToken(It.IsAny<int>())).Returns("REFRESH");
 
-            var service = CreateService(context);
+            var service = CreateService(ctx);
 
             var dto = new RegisterDto
             {
@@ -64,12 +66,12 @@ namespace Infrastructure.Tests.Services
             result.AccessToken.Should().Be("ACCESS");
             result.RefreshToken.Should().Be("REFRESH");
 
-            var user = await context.Users.SingleAsync();
+            var user = await ctx.Users.SingleAsync();
             user.Username.Should().Be("user");
             user.Email.Should().Be("user@test.com");
             user.Password.Should().Be("HASH");
 
-            var lists = await context.PerfumeLists
+            var lists = await ctx.PerfumeLists
                 .Where(l => l.UserId == user.UserId)
                 .ToListAsync();
 
@@ -80,17 +82,19 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RegisterAsync_ShouldThrow_WhenUsernameAlreadyExists()
         {
-            using var context = DbContextFactory.Create();
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
 
-            context.Users.Add(new User
+            ctx.Users.Add(new User
             {
                 Username = "user",
                 Email = "other@test.com",
                 Password = "HASH"
             });
-            await context.SaveChangesAsync();
+            await ctx.SaveChangesAsync();
 
-            var service = CreateService(context);
+            var service = CreateService(ctx);
 
             var dto = new RegisterDto
             {
@@ -107,17 +111,19 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RegisterAsync_ShouldThrow_WhenEmailAlreadyExists()
         {
-            using var context = DbContextFactory.Create();
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
 
-            context.Users.Add(new User
+            ctx.Users.Add(new User
             {
                 Username = "other",
                 Email = "user@test.com",
                 Password = "HASH"
             });
-            await context.SaveChangesAsync();
+            await ctx.SaveChangesAsync();
 
-            var service = CreateService(context);
+            var service = CreateService(ctx);
 
             var dto = new RegisterDto
             {
@@ -134,7 +140,9 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task LoginAsync_ShouldReturnTokens_WhenLoginByUsernameIsValid()
         {
-            using var context = DbContextFactory.Create();
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
 
             var user = new User
             {
@@ -142,14 +150,14 @@ namespace Infrastructure.Tests.Services
                 Email = "user@test.com",
                 Password = "HASH"
             };
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
+            ctx.Users.Add(user);
+            await ctx.SaveChangesAsync();
 
             _hasher.Setup(h => h.Verify("Password1!", "HASH")).Returns(true);
             _jwt.Setup(j => j.GenerateAccessToken(user)).Returns("ACCESS");
             _jwt.Setup(j => j.GenerateRefreshToken(user.UserId)).Returns("REFRESH");
 
-            var service = CreateService(context);
+            var service = CreateService(ctx);
 
             var dto = new LoginDto
             {
@@ -166,7 +174,9 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task LoginAsync_ShouldReturnTokens_WhenLoginByEmailIsValid()
         {
-            using var context = DbContextFactory.Create();
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
 
             var user = new User
             {
@@ -174,14 +184,14 @@ namespace Infrastructure.Tests.Services
                 Email = "user@test.com",
                 Password = "HASH"
             };
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
+            ctx.Users.Add(user);
+            await ctx.SaveChangesAsync();
 
             _hasher.Setup(h => h.Verify("Password1!", "HASH")).Returns(true);
             _jwt.Setup(j => j.GenerateAccessToken(user)).Returns("ACCESS");
             _jwt.Setup(j => j.GenerateRefreshToken(user.UserId)).Returns("REFRESH");
 
-            var service = CreateService(context);
+            var service = CreateService(ctx);
 
             var dto = new LoginDto
             {
@@ -198,9 +208,11 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task LoginAsync_ShouldThrow_WhenUserDoesNotExist()
         {
-            using var context = DbContextFactory.Create();
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
 
-            var service = CreateService(context);
+            var service = CreateService(ctx);
 
             var dto = new LoginDto
             {
@@ -216,7 +228,9 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task LoginAsync_ShouldThrow_WhenPasswordIsInvalid()
         {
-            using var context = DbContextFactory.Create();
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
 
             var user = new User
             {
@@ -224,12 +238,12 @@ namespace Infrastructure.Tests.Services
                 Email = "user@test.com",
                 Password = "HASH"
             };
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
+            ctx.Users.Add(user);
+            await ctx.SaveChangesAsync();
 
             _hasher.Setup(h => h.Verify("bad", "HASH")).Returns(false);
 
-            var service = CreateService(context);
+            var service = CreateService(ctx);
 
             var dto = new LoginDto
             {
@@ -245,8 +259,10 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RefreshAsync_ShouldThrow_WhenTokenIsMissing()
         {
-            using var context = DbContextFactory.Create();
-            var service = CreateService(context);
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
+            var service = CreateService(ctx);
 
             await FluentActions
                 .Invoking(() => service.RefreshAsync(""))
@@ -256,8 +272,10 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RefreshAsync_ShouldThrow_WhenTokenIsInvalid()
         {
-            using var context = DbContextFactory.Create();
-            var service = CreateService(context);
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
+            var service = CreateService(ctx);
 
             _jwt.Setup(j => j.ValidateRefreshToken("bad"))
                 .Returns((ClaimsPrincipal?)null);
@@ -270,8 +288,10 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RefreshAsync_ShouldThrow_WhenUserIdClaimIsMissing()
         {
-            using var context = DbContextFactory.Create();
-            var service = CreateService(context);
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
+            var service = CreateService(ctx);
 
             var principal = new ClaimsPrincipal(new ClaimsIdentity());
             _jwt.Setup(j => j.ValidateRefreshToken("token")).Returns(principal);
@@ -284,8 +304,10 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RefreshAsync_ShouldThrow_WhenUserIdClaimIsNotNumeric()
         {
-            using var context = DbContextFactory.Create();
-            var service = CreateService(context);
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
+            var service = CreateService(ctx);
 
             _jwt.Setup(j => j.ValidateRefreshToken("token"))
                 .Returns(CreatePrincipalWithUserId("abc"));
@@ -298,8 +320,10 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RefreshAsync_ShouldThrow_WhenUserDoesNotExist()
         {
-            using var context = DbContextFactory.Create();
-            var service = CreateService(context);
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
+            var service = CreateService(ctx);
 
             _jwt.Setup(j => j.ValidateRefreshToken("token"))
                 .Returns(CreatePrincipalWithUserId("1"));
@@ -312,7 +336,9 @@ namespace Infrastructure.Tests.Services
         [Fact]
         public async Task RefreshAsync_ShouldReturnNewTokens_WhenTokenIsValid()
         {
-            using var context = DbContextFactory.Create();
+            var (ctx, conn) = DbContextFactory.Create();
+            using var _ = conn;
+            using var __ = ctx;
 
             var user = new User
             {
@@ -320,8 +346,8 @@ namespace Infrastructure.Tests.Services
                 Email = "user@test.com",
                 Password = "HASH"
             };
-            context.Users.Add(user);
-            await context.SaveChangesAsync();
+            ctx.Users.Add(user);
+            await ctx.SaveChangesAsync();
 
             _jwt.Setup(j => j.ValidateRefreshToken("token"))
                 .Returns(CreatePrincipalWithUserId(user.UserId.ToString()));
@@ -329,7 +355,7 @@ namespace Infrastructure.Tests.Services
             _jwt.Setup(j => j.GenerateAccessToken(user)).Returns("NEW_ACCESS");
             _jwt.Setup(j => j.GenerateRefreshToken(user.UserId)).Returns("NEW_REFRESH");
 
-            var service = CreateService(context);
+            var service = CreateService(ctx);
 
             var result = await service.RefreshAsync("token");
 

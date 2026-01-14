@@ -1,29 +1,27 @@
 ﻿using Infrastructure.Data;
+using Infrastructure.Tests.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Tests.Common
+internal static class DbContextFactory
 {
-    internal static class DbContextFactory
+    public static (FragranceLogContext ctx, SqliteConnection conn) Create()
     {
-        public static FragranceLogContext Create()
-        {
-            var connection = new SqliteConnection("Filename=:memory:");
-            connection.Open();
+        var connection = new SqliteConnection("Filename=:memory:");
+        connection.Open();
 
-            connection.CreateFunction(
-                "getdate",
-                () => DateTime.UtcNow
-            );
+        connection.CreateFunction("getdate", () => DateTime.UtcNow);
+        connection.CreateFunction("GETDATE", () => DateTime.UtcNow);
 
-            var options = new DbContextOptionsBuilder<FragranceLogContext>()
-                .UseSqlite(connection)
-                .Options;
+        var options = new DbContextOptionsBuilder<FragranceLogContext>()
+            .UseSqlite(connection)
+            .Options;
 
-            var context = new FragranceLogContext(options);
-            context.Database.EnsureCreated();
+        var context = new FragranceLogContext(options);
+        context.Database.EnsureCreated();
 
-            return context;
-        }
+        TestLookupSeeder.Seed(context);
+
+        return (context, connection);
     }
 }
