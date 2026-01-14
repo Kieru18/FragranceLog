@@ -46,6 +46,7 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit, OnDestroy 
   private overviewReloadSub?: Subscription;
 
   private readonly contentUrl = environment.contentUrl;
+  private readonly redirectUrl = environment.redirectUrl;
 
   @ViewChild('dialogBackdrop', { static: false }) dialogBackdropRef?: ElementRef<View>;
   @ViewChild('dialogPanel', { static: false }) dialogPanelRef?: ElementRef<View>;
@@ -128,7 +129,7 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit, OnDestroy 
 
       this.lists.shareList(listId).subscribe({
         next: dto => {
-          const url = `https://kieru18.github.io/FragranceLog/?token=${dto.shareToken}`;
+          const url = `${this.redirectUrl}/?token=${dto.shareToken}`;
 
           SocialShare.shareText(
             `Check out my FragranceLog perfume collection:\n${url}`,
