@@ -63,8 +63,8 @@ namespace Api
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<PasswordHasher>();
-            builder.Services.AddScoped<JwtService>();
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IPerfumeService, PerfumeService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IPerfumeVoteService, PerfumeVoteService>();

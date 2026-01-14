@@ -11,12 +11,12 @@ namespace Infrastructure.Services;
 public sealed class UserService : IUserService
 {
     private readonly FragranceLogContext _context;
-    private readonly PasswordHasher _passwordHasher;
+    private readonly IPasswordHasher _passwordHasher;
     private const string DeletedEmailDomain = "fragrance.log";
 
     public UserService(
         FragranceLogContext context,
-        PasswordHasher passwordHasher)
+        IPasswordHasher passwordHasher)
     {
         _context = context;
         _passwordHasher = passwordHasher;
