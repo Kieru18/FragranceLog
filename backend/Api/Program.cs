@@ -119,15 +119,15 @@ namespace Api
                 AppContext.BaseDirectory,
                 "Embeddings",
                 "embeddings.json");
-
+            
             var embeddings = EmbeddingJsonLoader.Load(embeddingsPath);
 
             builder.Services.AddSingleton(new EmbeddingIndex(embeddings));
 
             builder.Services.AddSingleton<SimilaritySearch>();
-            builder.Services.AddSingleton<PerfumeRecognition.Services.PerfumeRecognitionService>();
+            builder.Services.AddSingleton<PerfumeRecognition.Services.IPerfumeRecognitionService, PerfumeRecognition.Services.PerfumeRecognitionService>();
 
-            builder.Services.AddScoped<IPerfumeRecognitionService, Infrastructure.Services.PerfumeRecognitionService>();
+            builder.Services.AddScoped<Core.Interfaces.IPerfumeRecognitionService, Infrastructure.Services.PerfumeRecognitionService>();
 
 
             if (!builder.Environment.IsDevelopment())

@@ -7,13 +7,13 @@ using PerfumeRecognition.Services;
 
 namespace Infrastructure.Services;
 
-public sealed class PerfumeRecognitionService : IPerfumeRecognitionService
+public sealed class PerfumeRecognitionService : Core.Interfaces.IPerfumeRecognitionService
 {
-    private readonly PerfumeRecognition.Services.PerfumeRecognitionService _mlService;
+    private readonly PerfumeRecognition.Services.IPerfumeRecognitionService _mlService;
     private readonly FragranceLogContext _dbContext;
 
     public PerfumeRecognitionService(
-        PerfumeRecognition.Services.PerfumeRecognitionService mlService,
+        PerfumeRecognition.Services.IPerfumeRecognitionService mlService,
         FragranceLogContext dbContext)
     {
         _mlService = mlService;
