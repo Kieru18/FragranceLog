@@ -52,6 +52,8 @@ using var db = new FragranceLogContext(
         .Options);
 
 var extractor = new EmbeddingExtractor(onnxModelPath);
+var cropper = new AlphaBoundingBoxCropper();
+var colorExtractor = new LabHistogramColorDescriptor();
 
 var photos = await db.PerfumePhotos
     .AsNoTracking()
@@ -81,12 +83,15 @@ foreach (var p in photos)
 
     try
     {
-        var vector = extractor.Extract(imagePath);
+        var cropped = cropper.CropToForeground(imagePath);
+        var vector = extractor.Extract(cropped);
+        var color = colorExtractor.Extract(cropped);
 
         embeddings.Add(new PerfumeEmbedding
         {
             PerfumeId = p.PerfumeId,
-            Vector = vector
+            Vector = vector,
+            Color = color
         });
 
         processed++;

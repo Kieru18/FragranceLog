@@ -105,6 +105,8 @@ namespace Api
                 return new BackgroundRemover(modelPath, outputRoot);
             });
 
+            builder.Services.AddSingleton<IImageCropper, AlphaBoundingBoxCropper>();
+            builder.Services.AddSingleton<IColorDescriptorExtractor, LabHistogramColorDescriptor>();
 
             var modelPath = Path.Combine(
                 AppContext.BaseDirectory,
@@ -234,8 +236,6 @@ namespace Api
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseMiddleware<JwtMiddleware>();
 
             app.MapControllers();
 
