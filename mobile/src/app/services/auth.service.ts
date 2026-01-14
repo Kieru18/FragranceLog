@@ -77,7 +77,7 @@ export class AuthService {
     );
   }
 
-  logout() {
+  logout() { 
     ApplicationSettings.remove(this.accessTokenKey);
     ApplicationSettings.remove(this.refreshTokenKey);
     this.userContext.clear();
@@ -121,7 +121,7 @@ export class AuthService {
     }
 
     try {
-      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+      const payload = this.decodeJwtPayload(accessToken);
       const expSeconds = payload.exp as number | undefined;
       if (!expSeconds) {
         return;
@@ -142,11 +142,25 @@ export class AuthService {
         const observable = this.refresh();
         if (observable) {
           observable.subscribe({
-            error: () => this.logout()
-          });
+            error: err => {
+              console.log('timer refresh failed', err);
+            }
+          })
         }
       }, delay);
     } catch {
     }
+  }
+
+  private decodeJwtPayload(token: string): any {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(json);
   }
 }

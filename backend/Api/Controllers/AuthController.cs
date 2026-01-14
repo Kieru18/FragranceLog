@@ -33,6 +33,7 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpPost("refresh")]
     public async Task<ActionResult<AuthResponseDto>> RefreshToken(RefreshDto dto)
     {
