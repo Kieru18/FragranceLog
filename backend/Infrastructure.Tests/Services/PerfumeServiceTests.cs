@@ -1,4 +1,6 @@
-﻿using Core.Enums;
+﻿using Core.DTOs;
+using Core.Entities;
+using Core.Enums;
 using Core.Exceptions;
 using FluentAssertions;
 using Infrastructure.Data;
@@ -158,5 +160,250 @@ public sealed class PerfumeServiceTests
             .Invoking(x => x.GetDetailsAsync(999, null, default))
             .Should()
             .ThrowAsync<NotFoundException>();
+    }
+
+    private static async Task<(FragranceLogContext ctx, SqliteConnection conn, Perfume perfume)>
+        CreatePerfumeWithVotes(Action<FragranceLogContext, Perfume> configure)
+    {
+        var (ctx, conn) = DbContextFactory.Create();
+
+        var brand = BrandBuilder.Default().Build();
+        var perfume = PerfumeBuilder.Default().WithBrand(brand).Build();
+
+        ctx.AddRange(brand, perfume);
+        await ctx.SaveChangesAsync();
+
+        configure(ctx, perfume);
+        await ctx.SaveChangesAsync();
+
+        return (ctx, conn, perfume);
+    }
+
+    [Fact]
+    public async Task SearchAsync_filters_by_gender_majority_vote()
+    {
+        var (ctx, conn) = DbContextFactory.Create();
+        using var _ = conn;
+        using var __ = ctx;
+
+        var brand = BrandBuilder.Default().Build();
+        var u1 = UserBuilder.Default().WithId(1).Build();
+        var u2 = UserBuilder.Default().WithId(2).Build();
+        var u3 = UserBuilder.Default().WithId(3).Build();
+
+        var male = PerfumeBuilder.Default().WithId(1).WithBrand(brand).Build();
+        var female = PerfumeBuilder.Default().WithId(2).WithBrand(brand).Build();
+
+        ctx.AddRange(brand, u1, u2, u3, male, female);
+        await ctx.SaveChangesAsync();
+
+        ctx.AddRange(
+            PerfumeGenderVoteBuilder.For(male, u1, GenderEnum.Male),
+            PerfumeGenderVoteBuilder.For(male, u2, GenderEnum.Male),
+            PerfumeGenderVoteBuilder.For(male, u3, GenderEnum.Female),
+
+            PerfumeGenderVoteBuilder.For(female, u1, GenderEnum.Female),
+            PerfumeGenderVoteBuilder.For(female, u2, GenderEnum.Female),
+            PerfumeGenderVoteBuilder.For(female, u3, GenderEnum.Male)
+        );
+
+        await ctx.SaveChangesAsync();
+
+        var result = await CreateSut(ctx).SearchAsync(
+            new() { Gender = GenderEnum.Male },
+            default);
+
+        result.Items.Should().ContainSingle();
+        result.Items[0].PerfumeId.Should().Be(male.PerfumeId);
+    }
+
+    [Fact]
+    public async Task SearchAsync_filters_by_all_groups_not_any()
+    {
+        var (ctx, conn) = DbContextFactory.Create();
+        using var _ = conn;
+        using var __ = ctx;
+
+        var brand = BrandBuilder.Default().Build();
+        var g1 = GroupBuilder.Default().WithId(1).Build();
+        var g2 = GroupBuilder.Default().WithId(2).Build();
+
+        var p1 = PerfumeBuilder.Default().WithId(1).WithBrand(brand).WithGroups(g1, g2).Build();
+        var p2 = PerfumeBuilder.Default().WithId(2).WithBrand(brand).WithGroups(g1).Build();
+
+        ctx.AddRange(brand, g1, g2, p1, p2);
+        await ctx.SaveChangesAsync();
+
+        var result = await CreateSut(ctx).SearchAsync(
+            new() { GroupIds = new[] { 1, 2 } },
+            default);
+
+        result.Items.Should().ContainSingle();
+        result.Items[0].PerfumeId.Should().Be(p1.PerfumeId);
+    }
+
+    [Fact]
+    public async Task SearchAsync_excludes_unrated_perfumes_when_min_rating_applied()
+    {
+        var (ctx, conn) = DbContextFactory.Create();
+        using var _ = conn;
+        using var __ = ctx;
+
+        var brand = BrandBuilder.Default().Build();
+        var user = UserBuilder.Default().Build();
+
+        var rated = PerfumeBuilder.Default().WithId(1).WithBrand(brand).Build();
+        var unrated = PerfumeBuilder.Default().WithId(2).WithBrand(brand).Build();
+
+        ctx.AddRange(brand, user, rated, unrated);
+        await ctx.SaveChangesAsync();
+
+        ctx.Add(ReviewBuilder.Default().For(rated, user).WithRating(5).Build());
+        await ctx.SaveChangesAsync();
+
+        var result = await CreateSut(ctx).SearchAsync(
+            new() { MinRating = 1 },
+            default);
+
+        result.Items.Should().ContainSingle();
+        result.Items[0].PerfumeId.Should().Be(rated.PerfumeId);
+    }
+
+    [Fact]
+    public async Task SearchAsync_includes_unrated_perfumes_when_no_min_rating()
+    {
+        var (ctx, conn) = DbContextFactory.Create();
+        using var _ = conn;
+        using var __ = ctx;
+
+        var brand = BrandBuilder.Default().Build();
+
+        ctx.AddRange(
+            brand,
+            PerfumeBuilder.Default().WithId(1).WithBrand(brand).Build(),
+            PerfumeBuilder.Default().WithId(2).WithBrand(brand).Build()
+        );
+
+        await ctx.SaveChangesAsync();
+
+        var result = await CreateSut(ctx).SearchAsync(new(), default);
+
+        result.Items.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task SearchAsync_normalizes_page_and_page_size()
+    {
+        var (ctx, conn) = DbContextFactory.Create();
+        using var _ = conn;
+        using var __ = ctx;
+
+        var brand = BrandBuilder.Default().Build();
+
+        var perfumes = Enumerable.Range(1, 30)
+            .Select(i => PerfumeBuilder.Default().WithId(i).WithBrand(brand).Build())
+            .ToList();
+
+        ctx.Add(brand);
+        ctx.AddRange(perfumes);
+
+        await ctx.SaveChangesAsync();
+
+        var result = await CreateSut(ctx).SearchAsync(
+            new PerfumeSearchRequestDto { Page = 0, PageSize = 100 },
+            default);
+
+        result.Page.Should().Be(1);
+        result.PageSize.Should().Be(25);
+        result.Items.Should().HaveCount(25);
+    }
+
+    [Fact]
+    public async Task GetDetailsAsync_aggregates_votes_correctly()
+    {
+        var (ctx, conn, perfume) = await CreatePerfumeWithVotes((ctx, p) =>
+        {
+            var u1 = UserBuilder.Default().WithId(1).Build();
+            var u2 = UserBuilder.Default().WithId(2).Build();
+            var u3 = UserBuilder.Default().WithId(3).Build();
+
+            ctx.AddRange(u1, u2, u3);
+
+            ctx.AddRange(
+                PerfumeGenderVoteBuilder.For(p, u1, GenderEnum.Unisex),
+                PerfumeGenderVoteBuilder.For(p, u2, GenderEnum.Unisex),
+                PerfumeGenderVoteBuilder.For(p, u3, GenderEnum.Male),
+
+                PerfumeLongevityVoteBuilder.For(p, u1, LongevityEnum.Moderate),
+                PerfumeLongevityVoteBuilder.For(p, u2, LongevityEnum.Moderate),
+                PerfumeLongevityVoteBuilder.For(p, u3, LongevityEnum.LongLasting)
+            );
+        });
+
+        using var _ = conn;
+        using var __ = ctx;
+
+        var dto = await CreateSut(ctx).GetDetailsAsync(perfume.PerfumeId, null, default);
+
+        dto.Gender.Should().Be(GenderEnum.Unisex);
+        dto.Longevity.Should().BeApproximately(3.33, 0.01);
+    }
+
+    [Fact]
+    public async Task GetDetailsAsync_returns_null_user_specific_fields_when_user_is_null()
+    {
+        var (ctx, conn) = DbContextFactory.Create();
+        using var _ = conn;
+        using var __ = ctx;
+
+        var brand = BrandBuilder.Default().Build();
+        var perfume = PerfumeBuilder.Default().WithBrand(brand).Build();
+
+        ctx.AddRange(brand, perfume);
+        await ctx.SaveChangesAsync();
+
+        var dto = await CreateSut(ctx).GetDetailsAsync(perfume.PerfumeId, null, default);
+
+        dto.MyRating.Should().BeNull();
+        dto.MyReview.Should().BeNull();
+        dto.MyGenderVote.Should().BeNull();
+        dto.MySeasonVote.Should().BeNull();
+        dto.MyDaytimeVote.Should().BeNull();
+        dto.MyLongevityVote.Should().BeNull();
+        dto.MySillageVote.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetDetailsAsync_limits_reviews_to_20_and_orders_by_date_desc()
+    {
+        var (ctx, conn) = DbContextFactory.Create();
+        using var _ = conn;
+        using var __ = ctx;
+
+        var brand = BrandBuilder.Default().Build();
+        var perfume = PerfumeBuilder.Default().WithBrand(brand).Build();
+        var user = UserBuilder.Default().Build();
+
+        ctx.AddRange(brand, perfume, user);
+        await ctx.SaveChangesAsync();
+
+        for (var i = 1; i <= 30; i++)
+        {
+            ctx.Add(
+                ReviewBuilder.Default()
+                    .For(perfume, user)
+                    .WithRating(5)
+                    .WithComment($"R{i}")
+                    .WithDate(DateTime.UtcNow.AddMinutes(i))
+                    .Build()
+            );
+        }
+
+        await ctx.SaveChangesAsync();
+
+        var dto = await CreateSut(ctx).GetDetailsAsync(perfume.PerfumeId, null, default);
+
+        dto.Reviews.Should().HaveCount(20);
+        dto.Reviews.First().Text.Should().Be("R30");
     }
 }

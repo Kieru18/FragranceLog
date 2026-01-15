@@ -8,6 +8,7 @@ internal sealed class PerfumeBuilder
     private string _country = "POL";
     private Brand? _brand;
     private bool _withPhoto;
+    private readonly List<Group> _groups = new();
 
     public static PerfumeBuilder Default() => new();
 
@@ -41,6 +42,12 @@ internal sealed class PerfumeBuilder
         return this;
     }
 
+    public PerfumeBuilder WithGroups(params Group[] groups)
+    {
+        _groups.AddRange(groups);
+        return this;
+    }
+
     public Perfume Build()
     {
         if (_brand == null)
@@ -61,6 +68,11 @@ internal sealed class PerfumeBuilder
             {
                 Path = "photo.jpg"
             };
+        }
+
+        foreach (var g in _groups)
+        {
+            perfume.Groups.Add(g);
         }
 
         return perfume;
