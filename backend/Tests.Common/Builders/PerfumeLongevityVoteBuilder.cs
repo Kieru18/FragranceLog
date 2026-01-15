@@ -1,7 +1,7 @@
 ﻿using Core.Entities;
 using Core.Enums;
 
-namespace Infrastructure.Tests.Builders;
+namespace Tests.Common.Builders;
 
 internal sealed class PerfumeLongevityVoteBuilder
 {

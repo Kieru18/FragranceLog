@@ -5,7 +5,7 @@ using Core.Interfaces;
 using FluentAssertions;
 using Infrastructure.Data;
 using Infrastructure.Services;
-using Infrastructure.Tests.Common;
+using Tests.Common;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.IdentityModel.Tokens.Jwt;

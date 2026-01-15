@@ -1,7 +1,8 @@
 ﻿using Infrastructure.Data;
-using Infrastructure.Tests.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+
+namespace Tests.Common;
 
 internal static class DbContextFactory
 {

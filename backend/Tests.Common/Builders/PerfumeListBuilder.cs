@@ -1,7 +1,6 @@
 ﻿using Core.Entities;
 
-namespace Infrastructure.Tests.Builders;
-
+namespace Tests.Common.Builders;
 internal sealed class PerfumeListBuilder
 {
     private int _id = 1;

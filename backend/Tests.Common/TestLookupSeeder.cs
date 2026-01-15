@@ -1,7 +1,7 @@
 ﻿using Infrastructure.Data;
 using Core.Entities;
 
-namespace Infrastructure.Tests.Common;
+namespace Tests.Common;
 
 internal static class TestLookupSeeder
 {

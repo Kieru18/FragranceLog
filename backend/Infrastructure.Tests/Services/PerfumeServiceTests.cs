@@ -5,8 +5,8 @@ using Core.Exceptions;
 using FluentAssertions;
 using Infrastructure.Data;
 using Infrastructure.Services;
-using Infrastructure.Tests.Builders;
-using Infrastructure.Tests.Common;
+using Tests.Common.Builders;
+using Tests.Common;
 using Microsoft.Data.Sqlite;
 using Xunit;
 

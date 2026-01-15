@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
-using Infrastructure.Tests.Builders;
+
+namespace Tests.Common.Builders;
 
 internal sealed class PerfumeBuilder
 {

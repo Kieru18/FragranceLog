@@ -1,6 +1,6 @@
 ﻿using Core.Entities;
 
-namespace Infrastructure.Tests.Builders;
+namespace Tests.Common.Builders;
 
 internal sealed class PerfumeSillageVoteBuilder
 {

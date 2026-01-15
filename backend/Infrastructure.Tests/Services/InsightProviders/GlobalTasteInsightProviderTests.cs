@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Infrastructure.Data;
 using Infrastructure.Services.InsightProviders;
-using Infrastructure.Tests.Builders;
-using Infrastructure.Tests.Common;
+using Tests.Common.Builders;
+using Tests.Common;
 using Microsoft.Data.Sqlite;
 using Xunit;
 
