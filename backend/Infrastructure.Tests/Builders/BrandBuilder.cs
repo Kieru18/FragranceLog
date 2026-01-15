@@ -4,9 +4,10 @@ namespace Infrastructure.Tests.Builders;
 
 internal sealed class BrandBuilder
 {
-    private int _id = 1;
-    private string _name = "Test Brand";
-    private Company? _company;
+    private static int _seq = 1;
+
+    private int _id = _seq;
+    private string _name = $"Test Brand {_seq++}";
 
     public static BrandBuilder Default() => new();
 
@@ -16,26 +17,13 @@ internal sealed class BrandBuilder
         return this;
     }
 
-    public BrandBuilder WithCompany(Company company)
-    {
-        _company = company;
-        return this;
-    }
-
     public Brand Build()
     {
-        _company ??= new Company
-        {
-            CompanyId = 1,
-            Name = "Test Company"
-        };
-
         return new Brand
         {
             BrandId = _id,
             Name = _name,
-            Company = _company,
-            CompanyId = _company.CompanyId
+            CompanyId = 1
         };
     }
 }

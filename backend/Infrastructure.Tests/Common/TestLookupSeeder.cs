@@ -52,6 +52,14 @@ internal static class TestLookupSeeder
             new Country { Code = "ZZZ", Name = "Unknown" }
         );
 
+        ctx.Companies.Add(
+            new Company
+            {
+                CompanyId = 1,
+                Name = "Unknown"
+            }
+        );
+
         ctx.SaveChanges();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Infrastructure.Tests.Builders;
 
 internal sealed class PerfumeBuilder
 {
@@ -31,6 +32,12 @@ internal sealed class PerfumeBuilder
     public PerfumeBuilder WithPhoto()
     {
         _withPhoto = true;
+        return this;
+    }
+
+    public PerfumeBuilder WithName(string name)
+    {
+        _name = name;
         return this;
     }
 
