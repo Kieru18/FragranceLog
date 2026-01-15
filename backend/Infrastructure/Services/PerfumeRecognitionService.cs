@@ -3,17 +3,16 @@ using Core.Enums;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using PerfumeRecognition.Services;
 
 namespace Infrastructure.Services;
 
 public sealed class PerfumeRecognitionService : Core.Interfaces.IPerfumeRecognitionService
 {
-    private readonly PerfumeRecognition.Services.IPerfumeRecognitionService _mlService;
+    private readonly PerfumeRecognition.Interfaces.IPerfumeRecognitionService _mlService;
     private readonly FragranceLogContext _dbContext;
 
     public PerfumeRecognitionService(
-        PerfumeRecognition.Services.IPerfumeRecognitionService mlService,
+        PerfumeRecognition.Interfaces.IPerfumeRecognitionService mlService,
         FragranceLogContext dbContext)
     {
         _mlService = mlService;

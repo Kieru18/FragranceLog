@@ -21,6 +21,7 @@ using PerfumeRecognition.Services;
 using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using PerfumeRecognition.Interfaces;
 
 
 namespace Api
@@ -125,7 +126,7 @@ namespace Api
             builder.Services.AddSingleton(new EmbeddingIndex(embeddings));
 
             builder.Services.AddSingleton<SimilaritySearch>();
-            builder.Services.AddSingleton<PerfumeRecognition.Services.IPerfumeRecognitionService, PerfumeRecognition.Services.PerfumeRecognitionService>();
+            builder.Services.AddSingleton<PerfumeRecognition.Interfaces.IPerfumeRecognitionService, PerfumeRecognition.Services.PerfumeRecognitionService>();
 
             builder.Services.AddScoped<Core.Interfaces.IPerfumeRecognitionService, Infrastructure.Services.PerfumeRecognitionService>();
 

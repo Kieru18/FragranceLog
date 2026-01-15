@@ -7,8 +7,8 @@ using Tests.Common;
 using Microsoft.Data.Sqlite;
 using Moq;
 using PerfumeRecognition.Models;
-using PerfumeRecognition.Services;
 using Xunit;
+using PerfumeRecognition.Interfaces;
 
 namespace Infrastructure.Tests.Services;
 

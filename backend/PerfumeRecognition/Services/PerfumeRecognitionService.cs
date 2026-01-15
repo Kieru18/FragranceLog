@@ -1,4 +1,5 @@
-﻿using PerfumeRecognition.Models;
+﻿using PerfumeRecognition.Interfaces;
+using PerfumeRecognition.Models;
 
 namespace PerfumeRecognition.Services;
 
