@@ -1,6 +1,6 @@
 ﻿namespace Core.Enums
 {
-    public enum PerfumeHighlightType
+    public enum PerfumeHighlightTypeEnum
     {
         Day = 1,
         Recent = 2,

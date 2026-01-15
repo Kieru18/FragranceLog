@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using PerfumeRecognition.Interfaces;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 

@@ -3,17 +3,16 @@ using Core.Enums;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using PerfumeRecognition.Services;
 
 namespace Infrastructure.Services;
 
-public sealed class PerfumeRecognitionService : IPerfumeRecognitionService
+public sealed class PerfumeRecognitionService : Core.Interfaces.IPerfumeRecognitionService
 {
-    private readonly PerfumeRecognition.Services.PerfumeRecognitionService _mlService;
+    private readonly PerfumeRecognition.Interfaces.IPerfumeRecognitionService _mlService;
     private readonly FragranceLogContext _dbContext;
 
     public PerfumeRecognitionService(
-        PerfumeRecognition.Services.PerfumeRecognitionService mlService,
+        PerfumeRecognition.Interfaces.IPerfumeRecognitionService mlService,
         FragranceLogContext dbContext)
     {
         _mlService = mlService;
@@ -88,14 +87,14 @@ public sealed class PerfumeRecognitionService : IPerfumeRecognitionService
         }
     }
 
-    private static PerfumeRecognitionConfidence MapConfidence(float score)
+    private static PerfumeRecognitionConfidenceEnum MapConfidence(float score)
     {
         if (score >= 0.92f)
-            return PerfumeRecognitionConfidence.High;
+            return PerfumeRecognitionConfidenceEnum.High;
 
         if (score >= 0.85f)
-            return PerfumeRecognitionConfidence.Medium;
+            return PerfumeRecognitionConfidenceEnum.Medium;
 
-        return PerfumeRecognitionConfidence.Low;
+        return PerfumeRecognitionConfidenceEnum.Low;
     }
 }

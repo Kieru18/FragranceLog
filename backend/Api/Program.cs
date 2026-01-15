@@ -21,6 +21,7 @@ using PerfumeRecognition.Services;
 using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using PerfumeRecognition.Interfaces;
 
 
 namespace Api
@@ -63,8 +64,8 @@ namespace Api
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<PasswordHasher>();
-            builder.Services.AddScoped<JwtService>();
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IPerfumeService, PerfumeService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IPerfumeVoteService, PerfumeVoteService>();
@@ -119,15 +120,15 @@ namespace Api
                 AppContext.BaseDirectory,
                 "Embeddings",
                 "embeddings.json");
-
+            
             var embeddings = EmbeddingJsonLoader.Load(embeddingsPath);
 
             builder.Services.AddSingleton(new EmbeddingIndex(embeddings));
 
             builder.Services.AddSingleton<SimilaritySearch>();
-            builder.Services.AddSingleton<PerfumeRecognition.Services.PerfumeRecognitionService>();
+            builder.Services.AddSingleton<PerfumeRecognition.Interfaces.IPerfumeRecognitionService, PerfumeRecognition.Services.PerfumeRecognitionService>();
 
-            builder.Services.AddScoped<IPerfumeRecognitionService, Infrastructure.Services.PerfumeRecognitionService>();
+            builder.Services.AddScoped<Core.Interfaces.IPerfumeRecognitionService, Infrastructure.Services.PerfumeRecognitionService>();
 
 
             if (!builder.Environment.IsDevelopment())

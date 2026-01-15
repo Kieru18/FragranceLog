@@ -20,7 +20,7 @@ public class PerfumeListService : IPerfumeListService
     {
         return await _context.PerfumeLists
             .Where(l => l.UserId == userId)
-            .OrderBy(l => l.IsSystem)
+            .OrderByDescending(l => l.IsSystem)
             .ThenBy(l => l.Name)
             .Select(l => new PerfumeListDto
             {
@@ -35,32 +35,73 @@ public class PerfumeListService : IPerfumeListService
 
     public async Task<IReadOnlyList<PerfumeListOverviewDto>> GetListsOverviewAsync(int userId)
     {
-        var result = await _context.PerfumeLists
+        var lists = await _context.PerfumeLists
             .AsNoTracking()
             .Where(l => l.UserId == userId)
-            .Select(l => new PerfumeListOverviewDto
+            .Select(l => new
             {
-                PerfumeListId = l.PerfumeListId,
-                Name = l.Name,
-                IsSystem = l.IsSystem,
-
-                PerfumeCount = _context.PerfumeListItems
-                    .Count(li => li.PerfumeListId == l.PerfumeListId),
-
-                PreviewImages = _context.PerfumePhotos
-                    .Where(pp =>
-                        _context.PerfumeListItems
-                            .Where(li => li.PerfumeListId == l.PerfumeListId)
-                            .Select(li => li.PerfumeId)
-                            .Contains(pp.PerfumeId))
-                    .OrderBy(pp => pp.PerfumeId)
-                    .Select(pp => pp.Path)
-                    .Take(6)
-                    .ToList()
+                l.PerfumeListId,
+                l.Name,
+                l.IsSystem
             })
-            .OrderBy(x => x.IsSystem)
-            .ThenBy(x => x.Name)
             .ToListAsync();
+
+        if (lists.Count == 0)
+            return Array.Empty<PerfumeListOverviewDto>();
+
+        var listIds = lists.Select(l => l.PerfumeListId).ToArray();
+
+        var items = await _context.PerfumeListItems
+            .AsNoTracking()
+            .Where(li => listIds.Contains(li.PerfumeListId))
+            .Select(li => new
+            {
+                li.PerfumeListId,
+                li.PerfumeId
+            })
+            .ToListAsync();
+
+        var perfumeIds = items.Select(i => i.PerfumeId).Distinct().ToArray();
+
+        var photos = await _context.PerfumePhotos
+            .AsNoTracking()
+            .Where(p => perfumeIds.Contains(p.PerfumeId))
+            .Select(p => new
+            {
+                p.PerfumeId,
+                p.Path
+            })
+            .ToListAsync();
+
+        var result =
+            lists
+                .Select(l =>
+                {
+                    var listItems = items.Where(i => i.PerfumeListId == l.PerfumeListId).ToList();
+
+                    var previewImages =
+                        listItems
+                            .Join(
+                                photos,
+                                i => i.PerfumeId,
+                                p => p.PerfumeId,
+                                (_, p) => p.Path)
+                            .OrderBy(p => p)
+                            .Take(6)
+                            .ToList();
+
+                    return new PerfumeListOverviewDto
+                    {
+                        PerfumeListId = l.PerfumeListId,
+                        Name = l.Name,
+                        IsSystem = l.IsSystem,
+                        PerfumeCount = listItems.Count,
+                        PreviewImages = previewImages
+                    };
+                })
+                .OrderByDescending(x => x.IsSystem)
+                .ThenBy(x => x.Name)
+                .ToList();
 
         return result;
     }
@@ -227,7 +268,7 @@ public class PerfumeListService : IPerfumeListService
             };
 
         return await query
-            .OrderBy(x => x.IsSystem)
+            .OrderByDescending(x => x.IsSystem)
             .ThenBy(x => x.Name)
             .ToListAsync();
     }

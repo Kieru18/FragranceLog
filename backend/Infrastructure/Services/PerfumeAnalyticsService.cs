@@ -23,9 +23,9 @@ public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
         var now = DateTime.UtcNow;
 
         return
-            await TryWindow(now.AddHours(-24), PerfumeHighlightType.Day, "Most loved today")
-         ?? await TryWindow(now.AddHours(-72), PerfumeHighlightType.Recent, "Trending recently")
-         ?? await TryWindow(now.AddDays(-7), PerfumeHighlightType.Week, "Perfume of the Week")
+            await TryWindow(now.AddHours(-24), PerfumeHighlightTypeEnum.Day, "Most loved today")
+         ?? await TryWindow(now.AddHours(-72), PerfumeHighlightTypeEnum.Recent, "Trending recently")
+         ?? await TryWindow(now.AddDays(-7), PerfumeHighlightTypeEnum.Week, "Perfume of the Week")
          ?? await GetCommunityFavorite()
          ?? await GetSpotlightPerfume();
     }
@@ -139,7 +139,7 @@ public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
 
     private async Task<PerfumeOfTheDayDto?> TryWindow(
         DateTime from,
-        PerfumeHighlightType type,
+        PerfumeHighlightTypeEnum type,
         string reason)
     {
         var candidate =
@@ -190,14 +190,14 @@ public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
 
         return await MapToDto(
             candidate,
-            PerfumeHighlightType.Favorite,
+            PerfumeHighlightTypeEnum.Favorite,
             "Community favorite"
         );
     }
 
     private async Task<PerfumeOfTheDayDto> MapToDto(
         PerfumeScoreRow data,
-        PerfumeHighlightType type,
+        PerfumeHighlightTypeEnum type,
         string reason)
     {
         var dto =
@@ -244,7 +244,7 @@ public sealed class PerfumeAnalyticsService : IPerfumeAnalyticsService
                     RatingCount = 0,
                     Score = 0,
 
-                    Type = PerfumeHighlightType.Spotlight,
+                    Type = PerfumeHighlightTypeEnum.Spotlight,
                     Reason = "Featured perfume"
                 })
                 .FirstOrDefaultAsync();

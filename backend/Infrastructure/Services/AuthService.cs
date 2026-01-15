@@ -12,13 +12,13 @@ namespace Infrastructure.Services
     public class AuthService : IAuthService
     {
         private readonly FragranceLogContext _context;
-        private readonly PasswordHasher _hasher;
-        private readonly JwtService _jwt;
+        private readonly IPasswordHasher _hasher;
+        private readonly IJwtService _jwt;
 
         public AuthService(
                 FragranceLogContext context,
-                PasswordHasher hasher,
-                JwtService jwt
+                IPasswordHasher hasher,
+                IJwtService jwt
             )
         {
             _context = context;

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PerfumeRecognition.Interfaces;
 using PerfumeRecognition.Services;
 using SixLabors.ImageSharp;
 

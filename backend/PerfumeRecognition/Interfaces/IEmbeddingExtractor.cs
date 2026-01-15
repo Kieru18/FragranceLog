@@ -1,4 +1,4 @@
-﻿namespace PerfumeRecognition.Services;
+﻿namespace PerfumeRecognition.Interfaces;
 
 public interface IEmbeddingExtractor
 {

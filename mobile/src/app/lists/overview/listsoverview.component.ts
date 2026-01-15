@@ -1,4 +1,4 @@
-import { Component, ElementRef, NO_ERRORS_SCHEMA, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, NO_ERRORS_SCHEMA, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { NativeScriptCommonModule, NativeScriptFormsModule } from '@nativescript/angular';
 import { Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { PerfumeListDto } from '../../models/perfumelist.dto';
 import { FooterComponent } from '~/app/footer/footer.component';
 import { environment } from '~/environments/environment';
 import * as SocialShare from '@nativescript/social-share';
+import { Subscription } from 'rxjs';
 
 type PreviewSlot = { path: string | null };
 type DialogMode = 'create' | 'rename' | 'delete';
@@ -21,7 +22,7 @@ type DialogMode = 'create' | 'rename' | 'delete';
   imports: [NativeScriptCommonModule, RouterModule, FooterComponent, NativeScriptFormsModule],
   schemas: [NO_ERRORS_SCHEMA]
 })
-export class ListsOverviewComponent implements OnInit, AfterViewInit {
+export class ListsOverviewComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = false;
   error: string | null = null;
   items: PerfumeListOverviewDto[] = [];
@@ -42,7 +43,10 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
   private readonly screenHeight = Screen.mainScreen.heightDIPs;
   private isAnimating = false;
 
+  private overviewReloadSub?: Subscription;
+
   private readonly contentUrl = environment.contentUrl;
+  private readonly redirectUrl = environment.redirectUrl;
 
   @ViewChild('dialogBackdrop', { static: false }) dialogBackdropRef?: ElementRef<View>;
   @ViewChild('dialogPanel', { static: false }) dialogPanelRef?: ElementRef<View>;
@@ -61,6 +65,12 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.load();
 
+    this.overviewReloadSub = this.lists.onOverviewReload().subscribe(() => {
+      this.menu.visible = false;
+      this.dialog.visible = false;
+      this.loadSilent();
+    });
+
     this.page.on(Page.navigatedToEvent, () => {
       this.menu.visible = false;
       this.dialog.visible = false;
@@ -73,6 +83,10 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.cdRef.detectChanges();
     }, 0);
+  }
+
+  ngOnDestroy(): void {
+    this.overviewReloadSub?.unsubscribe();
   }
 
   load(): void {
@@ -115,7 +129,7 @@ export class ListsOverviewComponent implements OnInit, AfterViewInit {
 
       this.lists.shareList(listId).subscribe({
         next: dto => {
-          const url = `https://kieru18.github.io/FragranceLog/?token=${dto.shareToken}`;
+          const url = `${this.redirectUrl}/?token=${dto.shareToken}`;
 
           SocialShare.shareText(
             `Check out my FragranceLog perfume collection:\n${url}`,

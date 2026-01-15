@@ -28,7 +28,8 @@ export class ListsDetailComponent implements OnInit {
 
   items: PerfumeListItemDto[] = [];
 
-  private readonly contentUrl = `${environment.contentUrl}`;
+  private readonly contentUrl = environment.contentUrl;
+  private readonly redirectUrl = environment.redirectUrl;
 
   private removingIds = new Set<number>();
 
@@ -93,7 +94,7 @@ export class ListsDetailComponent implements OnInit {
 
     this.listsService.shareList(this.listId).subscribe({
       next: dto => {
-        const url = `https://kieru18.github.io/FragranceLog/?token=${dto.shareToken}`;
+        const url = `${this.redirectUrl}/?token=${dto.shareToken}`;
 
         SocialShare.shareText(
           `Check out my FragranceLog perfume collection:\n${url}`,

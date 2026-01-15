@@ -1,6 +1,6 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ModalDialogParams, RouterExtensions } from '@nativescript/angular';
-import { DecimalPipe, NgForOf, NgIf } from '@angular/common';
+import { DecimalPipe, NgForOf } from '@angular/common';
 import { SnackBar } from '@nativescript-community/ui-material-snackbar';
 import { PerfumeRecognitionResultDto } from '../../models/perfumerecognitionresult.dto';
 import { PerfumeRecognitionConfidence } from '../../enums/perfumerecognitionconfidence.enum';
@@ -9,7 +9,7 @@ import { environment } from '~/environments/environment';
 @Component({
   standalone: true,
   templateUrl: './perfumerecognitionmodal.component.html',
-  imports: [NgForOf, NgIf, DecimalPipe],
+  imports: [NgForOf, DecimalPipe],
   schemas: [NO_ERRORS_SCHEMA]
 })
 export class PerfumeRecognitionModalComponent {

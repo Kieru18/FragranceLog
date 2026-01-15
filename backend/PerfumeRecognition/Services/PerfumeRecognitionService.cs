@@ -1,8 +1,9 @@
-﻿using PerfumeRecognition.Models;
+﻿using PerfumeRecognition.Interfaces;
+using PerfumeRecognition.Models;
 
 namespace PerfumeRecognition.Services;
 
-public sealed class PerfumeRecognitionService
+public sealed class PerfumeRecognitionService : IPerfumeRecognitionService
 {
     private readonly IEmbeddingExtractor _extractor;
     private readonly IBackgroundRemover _backgroundRemover;
