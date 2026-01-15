@@ -16,6 +16,12 @@ internal sealed class GroupBuilder
         return this;
     }
 
+    public GroupBuilder WithName(string name)
+    {
+        _name = name;
+        return this;
+    }
+
     public Group Build()
     {
         return new Group
