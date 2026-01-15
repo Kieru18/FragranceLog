@@ -17,6 +17,12 @@ internal sealed class BrandBuilder
         return this;
     }
 
+    public BrandBuilder WithName(string name)
+    {
+        _name = name;
+        return this;
+    }
+
     public Brand Build()
     {
         return new Brand
