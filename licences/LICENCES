@@ -1,0 +1,27 @@
+# Zasoby zewnętrzne wykorzystane w projekcie FragranceLog
+
+## Modele
+
+### deep-image-retrieval
+- Źródło: https://github.com/naver/deep-image-retrieval
+- Licencja: MIT
+- Zastosowanie: wykorzystanie modelu ResNet101-AP-GeM.pt do uczenia transferowego po konwersji do formatu .onnx (ektrakcja cech wektorowych)
+
+### ResNet-50 embeddings
+- Źródło: https://huggingface.co/jxtc/resnet-50-embeddings
+- Licencja: BSD 3-Clause
+- Zastosowanie: wykorzystanie modelu do uczenia transferowego (ekstrakcja cech wektorowych)
+
+## Zbiory danych
+
+### Fragrantica.com Fragrance Dataset
+- Źródło: https://www.kaggle.com/datasets/olgagmiufana1/fragrantica-com-fragrance-dataset
+- Licencja: Creative Commons BY-NC-SA 4.0
+- Zastosowanie: import danych opisowych perfum do relacyjnej bazy danych
+  zbiór danych wykorzystywany wyłącznie w celach edukacyjnych
+  i badawczych, bez zastosowań komercyjnych
+
+### doevent/perfume image dataset
+- Źródło: https://huggingface.co/datasets/doevent/perfume
+- Licencja: MIT
+- Zastosowanie: ekstrakcja cech obrazów flakonów, wyświetlanie w aplikacji mobilnej
