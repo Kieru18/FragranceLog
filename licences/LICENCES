@@ -4,7 +4,7 @@
 
 ### deep-image-retrieval
 - Źródło: https://github.com/naver/deep-image-retrieval
-- Licencja: MIT
+- Licencja: BSD 3-Clause
 - Zastosowanie: wykorzystanie modelu ResNet101-AP-GeM.pt do uczenia transferowego po konwersji do formatu .onnx (ektrakcja cech wektorowych)
 
 ### ResNet-50 embeddings
